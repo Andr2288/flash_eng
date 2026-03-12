@@ -104,7 +104,7 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
             {/* Toggle Button */}
             <button
                 onClick={onToggle}
-                className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 text-gray-600 hover:text-blue-600 text-sm font-medium cursor-pointer"
+                className="absolute top-4 right-7 z-20 flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 text-gray-600 hover:text-blue-600 text-sm font-medium cursor-pointer"
             >
                 <BarChart2 className="w-4 h-4" />
                 <span className="hidden sm:inline">Статистика</span>
@@ -116,27 +116,19 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
             {/* Sidebar Panel */}
             <div
                 className={`absolute top-0 right-0 h-full z-10 transition-all duration-300 ease-in-out ${
-                    isOpen ? "w-64" : "w-0"
+                    isOpen ? "w-56" : "w-0"
                 } overflow-hidden`}
             >
                 <div className="w-64 h-full bg-white border-l border-gray-200 shadow-xl flex flex-col">
                     {/* Header */}
-                    <div className="p-5 border-b border-gray-100">
-                        <div className="flex items-center gap-2 mt-10">
-                            <div className="w-7 h-7 bg-linear-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                                <BarChart2 className="w-4 h-4 text-white" />
-                            </div>
-                            <h3 className="font-bold text-gray-800 text-sm">
-                                Статистика слів
-                            </h3>
-                        </div>
-                        <p className="text-xs text-gray-400 mt-1.5 ml-9">
+                    <div className="p-5 pt-18">
+                        <p className="text-md text-gray-400 mt-1.5 ml-9">
                             Всього: {total} слів
                         </p>
                     </div>
 
                     {/* Stats */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+                    <div className="flex-1 overflow-y-auto p-4 pt-0 mr-3.5 space-y-2.5">
                         {Object.entries(STATUS_CONFIG).map(
                             ([status, config]) => {
                                 const count = stats[status] || 0;
@@ -148,7 +140,7 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
                                 return (
                                     <div
                                         key={status}
-                                        className={`rounded-xl border p-3.5 ${config.bg} ${config.border}`}
+                                        className={`rounded-xl border p-3.5 mr-3.5 ${config.bg} ${config.border}`}
                                     >
                                         <div className="flex items-center justify-between mb-2">
                                             <div className="flex items-center gap-2">
@@ -183,7 +175,6 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
                         )}
                     </div>
 
-                    {/* Current Exercise */}
                     <div className="p-4 border-t border-gray-100 bg-gray-50/50">
                         <p className="text-xs text-gray-400 text-center">
                             Поточна вправа
