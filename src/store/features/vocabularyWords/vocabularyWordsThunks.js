@@ -239,6 +239,7 @@ Requirements:
 - hint: Create an explanation/description for the word/phrase/pattern. Make it clear and concise but don't use the word itself or its direct translations. The explanation should be 1 sentence long and help learners identify the word.
 - As Ukrainian example as English example must sound native and natural - DO NOT translate word-by-word
 - Reference Cambridge, Oxford, Collins, or YouGlish for usage guidance.
+- Look at the BAD EXAMPLE - it's VERY important
 
 Example for word "clear" in "weather forecast" style:
 
@@ -268,7 +269,7 @@ Bad example:
   "sentenceTranslation": "Якщо ти відчуваєш голод, намагайся не втрачати здоровий глузд та залишатися спокійним",
   "correctAnswer": "lose your temper",
   "hint": "When you get very angry and cannot control your feelings."
-} Why is it a bad example? Because if you put "correctForm" into gap it sounds: "If you feel angry, try not to ____ your temper and stay calm." -> "If you feel angry, try not to lose your temper your temper and stay calm."`;
+} Why is it a bad example? Because if you put "correctForm" into gap it sounds: "If you feel angry, try not to ____ your temper and stay calm." -> "If you feel angry, try not to lose your temper your temper and stay calm." So in this case you must use "correctAnswer":"lose"`;
 
         const response = await client.responses.create({
             model: GPTModel.GPT41Mini,
@@ -317,6 +318,7 @@ Requirements:
 - hint: Create an explanation/description for the word/phrase/pattern. Make it clear and concise but don't use the word itself or its direct translations. The explanation should be 1 sentence long and help learners identify the word.
 - As Ukrainian example as English example must sound native and natural - DO NOT translate word-by-word
 - Reference Cambridge, Oxford, Collins, or YouGlish for usage guidance.
+- Look at the BAD EXAMPLE - it's VERY important
 
 Example for word "clear" in "weather forecast" style:
 
@@ -346,7 +348,7 @@ Bad example:
   "sentenceTranslation": "Якщо ти відчуваєш голод, намагайся не втрачати здоровий глузд та залишатися спокійним",
   "correctAnswer": "lose your temper",
   "hint": "When you get very angry and cannot control your feelings."
-} Why is it a bad example? Because if you put "correctForm" into gap it sounds: "If you feel angry, try not to ____ your temper and stay calm." -> "If you feel angry, try not to lose your temper your temper and stay calm."`;
+} Why is it a bad example? Because if you put "correctForm" into gap it sounds: "If you feel angry, try not to ____ your temper and stay calm." -> "If you feel angry, try not to lose your temper your temper and stay calm." So in this case you must use "correctAnswer":"lose"`;
 
         const response = await client.responses.create({
             model: GPTModel.GPT41Mini,
