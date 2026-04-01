@@ -83,15 +83,15 @@ const findMissedVocabularyItems = (state) => {
             vocabularyItem.metodology_parameters[currentTypeStatusProperty] =
                 "MISSED";
 
-            if (
-                vocabularyItem.metodology_parameters[
-                    currentTypeCheckpointProperty
-                ] > 0
-            ) {
-                vocabularyItem.metodology_parameters[
-                    currentTypeCheckpointProperty
-                ] = state.checkpoints[currentCheckpointIndex - 1].checkpoint;
-            }
+            // if (
+            //     vocabularyItem.metodology_parameters[
+            //         currentTypeCheckpointProperty
+            //     ] > 0
+            // ) {
+            //     vocabularyItem.metodology_parameters[
+            //         currentTypeCheckpointProperty
+            //     ] = state.checkpoints[currentCheckpointIndex - 1].checkpoint;
+            // }
         }
     }
 };
