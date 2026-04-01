@@ -24,12 +24,12 @@ import {
 import { useThunk } from "../hooks/use-thunk.js";
 
 const STATUS_CONFIG = {
-    NEW: {
-        label: "Нові",
-        color: "bg-blue-500",
-        textColor: "text-blue-700",
-        bg: "bg-blue-50",
-        border: "border-blue-200",
+    MISSED: {
+        label: "Пропущені",
+        color: "bg-red-500",
+        textColor: "text-red-700",
+        bg: "bg-red-50",
+        border: "border-red-200",
     },
     LEARNING: {
         label: "Вивчаються",
@@ -38,12 +38,12 @@ const STATUS_CONFIG = {
         bg: "bg-green-50",
         border: "border-green-200",
     },
-    REVIEW: {
-        label: "На повторенні",
-        color: "bg-purple-500",
-        textColor: "text-purple-700",
-        bg: "bg-purple-50",
-        border: "border-purple-200",
+    NEW: {
+        label: "Нові",
+        color: "bg-blue-500",
+        textColor: "text-blue-700",
+        bg: "bg-blue-50",
+        border: "border-blue-200",
     },
     AGAIN: {
         label: "Повторити",
@@ -52,13 +52,13 @@ const STATUS_CONFIG = {
         bg: "bg-orange-50",
         border: "border-orange-200",
     },
-    MISSED: {
-        label: "Пропущені",
-        color: "bg-red-500",
-        textColor: "text-red-700",
-        bg: "bg-red-50",
-        border: "border-red-200",
-    },
+    // REVIEW: {
+    //     label: "На повторенні",
+    //     color: "bg-purple-500",
+    //     textColor: "text-purple-700",
+    //     bg: "bg-purple-50",
+    //     border: "border-purple-200",
+    // },
 };
 
 const ExerciseType = {
@@ -87,14 +87,25 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
         "status_translate_sentence_exercise";
 
     const stats = useMemo(() => {
-        const counts = { NEW: 0, LEARNING: 0, REVIEW: 0, AGAIN: 0, MISSED: 0 };
+        const rawCounts = {
+            NEW: 0,
+            LEARNING: 0,
+            REVIEW: 0,
+            AGAIN: 0,
+            MISSED: 0,
+        };
+
         data.forEach((word) => {
             const status = word.metodology_parameters?.[statusKey];
-            if (status && counts[status] !== undefined) {
-                counts[status]++;
+            if (status && rawCounts[status] !== undefined) {
+                rawCounts[status]++;
             }
         });
-        return counts;
+
+        return {
+            ...rawCounts,
+            LEARNING: rawCounts.LEARNING + rawCounts.REVIEW + rawCounts.AGAIN,
+        };
     }, [data, statusKey]);
 
     const total = data.length;

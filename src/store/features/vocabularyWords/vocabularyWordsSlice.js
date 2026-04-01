@@ -471,8 +471,6 @@ const vocabularyWordsSlice = createSlice({
                     createdAt: word.created_at,
                 },
             }));
-
-            console.log(state.data);
         });
 
         builder.addCase(updateVocabularyWord.pending, (state) => {
