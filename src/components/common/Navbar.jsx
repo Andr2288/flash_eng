@@ -1,8 +1,18 @@
 import { Link, useLocation } from "react-router-dom";
-import { Settings, User, BookOpen, Target, Sparkles } from "lucide-react";
+import {
+    Settings,
+    User,
+    BookOpen,
+    Target,
+    Sparkles,
+    LogOut,
+} from "lucide-react";
+
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const Navbar = () => {
     const location = useLocation();
+    const { signOut } = useAuth();
 
     const isActive = (path) => location.pathname === path;
 
@@ -87,6 +97,23 @@ const Navbar = () => {
                     })}
                 </ul>
             </nav>
+
+            <div className="mt-auto border-t border-gray-200 py-6">
+                <ul className="space-y-2 px-4">
+                    <li>
+                        <button
+                            type="button"
+                            onClick={() => signOut()}
+                            className="group relative w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        >
+                            <div className="w-5 h-5 transition-transform duration-200 group-hover:scale-110">
+                                <LogOut className="w-5 h-5" />
+                            </div>
+                            <span className="font-medium">Вийти</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </div>
     );
 };

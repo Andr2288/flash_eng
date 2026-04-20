@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { Loader } from "lucide-react";
 
 import Navbar from "./components/common/Navbar.jsx";
 
@@ -17,83 +18,114 @@ import {
     ListenAndFillTheGapExercise,
 } from "./components/exercises/index.js";
 
-import { useState } from "react";
+import { useAuth } from "./context/AuthContext.jsx";
 
 function App() {
-    const [authUser, setAuthUser] = useState(true);
+    const { user, loading } = useAuth();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
+                <Loader className="w-10 h-10 animate-spin text-blue-600" />
+                <p className="text-sm text-gray-500">Завантаження…</p>
+            </div>
+        );
+    }
 
     return (
         <div>
-            <Navbar />
+            {user ? <Navbar /> : null}
 
             <Routes>
                 <Route
                     path="/"
-                    element={authUser ? <HomePage /> : <Navigate to="/login" />}
+                    element={
+                        user ? <HomePage /> : <Navigate to="/login" replace />
+                    }
                 />
                 <Route
                     path="/practice"
                     element={
-                        authUser ? <PracticePage /> : <Navigate to="/login" />
+                        user ? (
+                            <PracticePage />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
                     }
                 />
                 <Route
                     path="/signup"
-                    element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
+                    element={
+                        user ? (
+                            <Navigate to="/" replace />
+                        ) : (
+                            <SignUpPage />
+                        )
+                    }
                 />
                 <Route
                     path="/login"
-                    element={!authUser ? <LoginPage /> : <Navigate to="/" />}
+                    element={
+                        user ? (
+                            <Navigate to="/" replace />
+                        ) : (
+                            <LoginPage />
+                        )
+                    }
                 />
                 <Route
                     path="/settings"
                     element={
-                        authUser ? <SettingsPage /> : <Navigate to="/login" />
+                        user ? (
+                            <SettingsPage />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
                     }
                 />
                 <Route
                     path="/profile"
                     element={
-                        authUser ? <ProfilePage /> : <Navigate to="/login" />
+                        user ? (
+                            <ProfilePage />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
                     }
                 />
 
                 <Route
                     path="/practice/translate-sentence"
                     element={
-                        authUser ? (
+                        user ? (
                             <TranslateSentenceExercise />
                         ) : (
-                            <Navigate to="/login" />
+                            <Navigate to="/login" replace />
                         )
                     }
                 />
                 <Route
                     path="/practice/fill-the-gap"
                     element={
-                        authUser ? (
+                        user ? (
                             <FillTheGapExercise />
                         ) : (
-                            <Navigate to="/login" />
+                            <Navigate to="/login" replace />
                         )
                     }
                 />
                 <Route
                     path="/practice/listen-and-fill"
                     element={
-                        authUser ? (
+                        user ? (
                             <ListenAndFillTheGapExercise />
                         ) : (
-                            <Navigate to="/login" />
+                            <Navigate to="/login" replace />
                         )
                     }
                 />
             </Routes>
         </div>
-
-        // <div className="max-w-full min-h-screen container flex items-center justify-center mx-auto bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
-        //     <ListenAndFillTheGapExercise></ListenAndFillTheGapExercise>
-        // </div>
     );
 }
 

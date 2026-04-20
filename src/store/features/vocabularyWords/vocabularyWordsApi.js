@@ -33,11 +33,28 @@ const TTSVoice = {
 
 Object.freeze(TTSVoice);
 
+async function requireUserId() {
+    const {
+        data: { session },
+        error: sessionError,
+    } = await supabase.auth.getSession();
+    if (sessionError) {
+        throw new Error(sessionError.message);
+    }
+    if (!session?.user?.id) {
+        throw new Error("Потрібно увійти в акаунт");
+    }
+    return session.user.id;
+}
+
 async function addVocabularyWord(newWord) {
+    const userId = await requireUserId();
+
     const { data, error } = await supabase
         .from("vocabulary_words")
         .insert([
             {
+                user_id: userId,
                 text: newWord.text,
                 topic: newWord.topic || null,
                 relevant_translations: newWord.relevant_translations || null,
@@ -53,9 +70,12 @@ async function addVocabularyWord(newWord) {
 }
 
 async function fetchVocabularyWords() {
+    const userId = await requireUserId();
+
     const { data: vocabulary_words, error } = await supabase
         .from("vocabulary_words")
         .select("*")
+        .eq("user_id", userId)
         .order("id", { ascending: false });
 
     if (error) {
@@ -66,6 +86,8 @@ async function fetchVocabularyWords() {
 }
 
 async function updateVocabularyWord({ id, exerciseType, metodology_parameters }) {
+    const userId = await requireUserId();
+
     const { data, error } = await supabase
         .from("vocabulary_words")
         .update({
@@ -77,6 +99,7 @@ async function updateVocabularyWord({ id, exerciseType, metodology_parameters })
                 metodology_parameters[`checkpoint_${exerciseType}`],
         })
         .eq("id", id)
+        .eq("user_id", userId)
         .select();
 
     if (error) {
