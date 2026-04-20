@@ -1,5 +1,3 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-
 import OpenAI from "openai";
 import { supabase } from "./supabase.js";
 
@@ -10,92 +8,6 @@ const client = new OpenAI({
     dangerouslyAllowBrowser: true,
 });
 
-// export const TEXT_TYPES = [
-//     "documentary",
-//     "story",
-//     "news",
-//     "article",
-//     "blog",
-//     "scientific",
-//     "announcement",
-//     "advertisement",
-//     "instruction",
-//     "review on product / video / post etc",
-//     "letter",
-//     "documentation",
-//     "speech",
-//     "comment",
-//     "social media post",
-// ];
-
-// export const getRandomSentenceType = () => {
-//     const randomIndex = Math.floor(Math.random() * TEXT_TYPES.length);
-//     return TEXT_TYPES[randomIndex];
-// };
-
-const addVocabularyWord = createAsyncThunk(
-    "vocabularyWords/add",
-    async (newWord) => {
-        const { data, error } = await supabase
-            .from("vocabulary_words")
-            .insert([
-                {
-                    text: newWord.text,
-                    topic: newWord.topic || null,
-                    relevant_translations:
-                        newWord.relevant_translations || null,
-                },
-            ])
-            .select();
-
-        if (error) {
-            throw new Error(error.message);
-        }
-
-        return data[0];
-    }
-);
-
-const fetchVocabularyWords = createAsyncThunk(
-    "vocabularyWords/fetch",
-    async () => {
-        const { data: vocabulary_words, error } = await supabase
-            .from("vocabulary_words")
-            .select("*")
-            .order("id", { ascending: false });
-
-        if (error) {
-            throw new Error(error.message);
-        }
-
-        return vocabulary_words;
-    }
-);
-
-const updateVocabularyWord = createAsyncThunk(
-    "vocabularyWords/update",
-    async ({ id, exerciseType, metodology_parameters }) => {
-        const { data, error } = await supabase
-            .from("vocabulary_words")
-            .update({
-                [`status_${exerciseType}`]:
-                    metodology_parameters[`status_${exerciseType}`],
-                [`last_reviewed_${exerciseType}`]:
-                    metodology_parameters[`last_reviewed_${exerciseType}`],
-                [`checkpoint_${exerciseType}`]:
-                    metodology_parameters[`checkpoint_${exerciseType}`],
-            })
-            .eq("id", id)
-            .select();
-
-        if (error) {
-            throw new Error(error.message);
-        }
-
-        return data;
-    }
-);
-
 const GPTModel = {
     GPT4oMini: "gpt-4o-mini",
     GPT41Mini: "gpt-4.1-mini",
@@ -104,10 +16,78 @@ const GPTModel = {
 
 Object.freeze(GPTModel);
 
-const generateExerciseVocabularyItem = createAsyncThunk(
-    "vocabularyWords/generateExerciseVocabularyItem",
-    async (vocabularyWordMainParameters) => {
-        const input = `Generate a JSON object for an English word/phrase/pattern.
+const TTSVoice = {
+    Alloy: "alloy",
+    Ash: "ash",
+    Ballad: "ballad",
+    Coral: "coral",
+    Echo: "echo",
+    Fable: "fable",
+    Nova: "nova",
+    Onyx: "onyx",
+    Shimmer: "shimmer",
+    Verse: "verse",
+    Marin: "marin",
+    Cedar: "cedar",
+};
+
+Object.freeze(TTSVoice);
+
+async function addVocabularyWord(newWord) {
+    const { data, error } = await supabase
+        .from("vocabulary_words")
+        .insert([
+            {
+                text: newWord.text,
+                topic: newWord.topic || null,
+                relevant_translations: newWord.relevant_translations || null,
+            },
+        ])
+        .select();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data[0];
+}
+
+async function fetchVocabularyWords() {
+    const { data: vocabulary_words, error } = await supabase
+        .from("vocabulary_words")
+        .select("*")
+        .order("id", { ascending: false });
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return vocabulary_words;
+}
+
+async function updateVocabularyWord({ id, exerciseType, metodology_parameters }) {
+    const { data, error } = await supabase
+        .from("vocabulary_words")
+        .update({
+            [`status_${exerciseType}`]:
+                metodology_parameters[`status_${exerciseType}`],
+            [`last_reviewed_${exerciseType}`]:
+                metodology_parameters[`last_reviewed_${exerciseType}`],
+            [`checkpoint_${exerciseType}`]:
+                metodology_parameters[`checkpoint_${exerciseType}`],
+        })
+        .eq("id", id)
+        .select();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data;
+}
+
+async function generateExerciseVocabularyItem(vocabularyWordMainParameters) {
+    const input = `Generate a JSON object for an English word/phrase/pattern.
 
 INPUT:
 - Word/phrase/pattern: "${vocabularyWordMainParameters.text}"
@@ -154,66 +134,39 @@ OUTPUT:
     "used_form": "on July 5th"
 }`;
 
-        const response = await client.responses.create({
-            //model: "gpt-4o-mini", // швидкий // погана граматика
-            //model: "gpt-4.1-mini", // трішки краща граматика
-            model: GPTModel.GPT5Mini,
+    const response = await client.responses.create({
+        model: GPTModel.GPT5Mini,
 
-            reasoning: { effort: "low" },
-            //temperature: 0.6,
-            input,
-        });
+        reasoning: { effort: "low" },
+        input,
+    });
 
-        let parsed;
-        try {
-            parsed = JSON.parse(response.output_text);
-            console.log(response.usage);
-        } catch (e) {
-            throw new Error("OpenAI returned invalid JSON");
-        }
-        return parsed;
+    let parsed;
+    try {
+        parsed = JSON.parse(response.output_text);
+        console.log(response.usage);
+    } catch (e) {
+        throw new Error("OpenAI returned invalid JSON");
     }
-);
+    return parsed;
+}
 
-const TTSVoice = {
-    Alloy: "alloy",
-    Ash: "ash",
-    Ballad: "ballad",
-    Coral: "coral",
-    Echo: "echo",
-    Fable: "fable",
-    Nova: "nova",
-    Onyx: "onyx",
-    Shimmer: "shimmer",
-    Verse: "verse",
-    Marin: "marin",
-    Cedar: "cedar",
-};
+async function generateSpeech(text) {
+    const response = await client.audio.speech.create({
+        model: "gpt-4o-mini-tts",
+        voice: TTSVoice.Marin,
+        input: text,
+    });
 
-Object.freeze(TTSVoice);
+    const arrayBuffer = await response.arrayBuffer();
+    const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
+    const url = URL.createObjectURL(blob);
 
-const generateSpeech = createAsyncThunk(
-    "vocabularyWords/generateSpeech",
-    async (text) => {
-        const response = await client.audio.speech.create({
-            model: "gpt-4o-mini-tts",
-            voice: TTSVoice.Marin,
-            input: text,
-        });
+    return url;
+}
 
-        const arrayBuffer = await response.arrayBuffer();
-        const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
-        const url = URL.createObjectURL(blob);
-
-        return url;
-    }
-);
-
-const generateSentenceCompletion = createAsyncThunk(
-    "vocabularyWords/generateSentenceCompletion",
-    async (vocabularyWordMainParameters) => {
-        //const selectedSentenceType = getRandomSentenceType();
-        const input = `Create a sentence completion exercise for word/phrase/pattern.
+async function generateSentenceCompletion(vocabularyWordMainParameters) {
+    const input = `Create a sentence completion exercise for word/phrase/pattern.
 
 INPUT:
 - Word/phrase/pattern: "${vocabularyWordMainParameters.text}"
@@ -270,32 +223,25 @@ Bad example:
   "hint": "When you get very angry and cannot control your feelings."
 } Why is it a bad example? Because if you put "correctForm" into gap it sounds: "If you feel angry, try not to ____ your temper and stay calm." -> "If you feel angry, try not to lose your temper your temper and stay calm." So in this case you must use "correctAnswer":"lose"`;
 
-        const response = await client.responses.create({
-            //model: "gpt-4o-mini", // швидкий // погана граматика
-            //model: "gpt-4.1-mini", // трішки краща граматика
-            model: GPTModel.GPT5Mini,
+    const response = await client.responses.create({
+        model: GPTModel.GPT5Mini,
 
-            reasoning: { effort: "low" },
-            //temperature: 0.6,
-            input,
-        });
+        reasoning: { effort: "low" },
+        input,
+    });
 
-        let parsed;
-        try {
-            parsed = JSON.parse(response.output_text);
-            console.log("Sentence completion generated:", response.usage);
-        } catch (e) {
-            throw new Error("OpenAI returned invalid JSON");
-        }
-        return parsed;
+    let parsed;
+    try {
+        parsed = JSON.parse(response.output_text);
+        console.log("Sentence completion generated:", response.usage);
+    } catch (e) {
+        throw new Error("OpenAI returned invalid JSON");
     }
-);
+    return parsed;
+}
 
-const generateListenAndFill = createAsyncThunk(
-    "vocabularyWords/generateListenAndFill",
-    async (vocabularyWordMainParameters) => {
-        //const selectedSentenceType = getRandomSentenceType();
-        const input = `Create a sentence completion exercise for word/phrase/pattern.
+async function generateListenAndFill(vocabularyWordMainParameters) {
+    const input = `Create a sentence completion exercise for word/phrase/pattern.
 
 INPUT:
 - Word/phrase/pattern: "${vocabularyWordMainParameters.text}"
@@ -352,26 +298,22 @@ Bad example:
   "hint": "When you get very angry and cannot control your feelings."
 } Why is it a bad example? Because if you put "correctForm" into gap it sounds: "If you feel angry, try not to ____ your temper and stay calm." -> "If you feel angry, try not to lose your temper your temper and stay calm." So in this case you must use "correctAnswer":"lose"`;
 
-        const response = await client.responses.create({
-            //model: "gpt-4o-mini", // швидкий // погана граматика
-            //model: "gpt-4.1-mini", // трішки краща граматика
-            model: GPTModel.GPT5Mini,
+    const response = await client.responses.create({
+        model: GPTModel.GPT5Mini,
 
-            reasoning: { effort: "low" },
-            //temperature: 0.6,
-            input,
-        });
+        reasoning: { effort: "low" },
+        input,
+    });
 
-        let parsed;
-        try {
-            parsed = JSON.parse(response.output_text);
-            console.log("Listen and fill generated:", response.usage);
-        } catch (e) {
-            throw new Error("OpenAI returned invalid JSON");
-        }
-        return parsed;
+    let parsed;
+    try {
+        parsed = JSON.parse(response.output_text);
+        console.log("Listen and fill generated:", response.usage);
+    } catch (e) {
+        throw new Error("OpenAI returned invalid JSON");
     }
-);
+    return parsed;
+}
 
 export {
     addVocabularyWord,

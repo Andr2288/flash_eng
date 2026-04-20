@@ -1,11 +1,3 @@
-import { createSlice, current } from "@reduxjs/toolkit";
-import {
-    addVocabularyWord,
-    fetchVocabularyWords,
-    updateVocabularyWord,
-    generateExerciseVocabularyItem,
-} from "./vocabularyWordsThunks";
-
 const findMissedVocabularyItems = (state) => {
     let currentTypeStatusProperty = "";
     let currentTypeCheckpointProperty = "";
@@ -26,7 +18,6 @@ const findMissedVocabularyItems = (state) => {
     console.log(state.exerciseState.exerciseType);
 
     for (const vocabularyItem of state.data) {
-        // 1. Find daysPassedAfterLastReview
         if (
             vocabularyItem.metodology_parameters[currentTypeStatusProperty] ===
                 "MISSED" ||
@@ -47,7 +38,6 @@ const findMissedVocabularyItems = (state) => {
         const diffInMs = today - lastReviewed;
         const daysPassedAfterLastReview = diffInMs / (1000 * 60 * 60 * 24);
 
-        // 2. Find currentCheckpointIndex
         const currentCheckpointIndex = state.checkpoints.findIndex(
             (checkpoint) => {
                 return (
@@ -63,7 +53,6 @@ const findMissedVocabularyItems = (state) => {
             continue;
         }
 
-        // 3. Update Missed Item
         if (
             daysPassedAfterLastReview >
             state.checkpoints[currentCheckpointIndex].threshold
@@ -79,19 +68,8 @@ const findMissedVocabularyItems = (state) => {
                     `
             );
 
-            // Update Item In Data Array
             vocabularyItem.metodology_parameters[currentTypeStatusProperty] =
                 "MISSED";
-
-            // if (
-            //     vocabularyItem.metodology_parameters[
-            //         currentTypeCheckpointProperty
-            //     ] > 0
-            // ) {
-            //     vocabularyItem.metodology_parameters[
-            //         currentTypeCheckpointProperty
-            //     ] = state.checkpoints[currentCheckpointIndex - 1].checkpoint;
-            // }
         }
     }
 };
@@ -115,7 +93,6 @@ const selectNextItems = (state) => {
 
     const nextSelection = [];
 
-    // Пріоритет 1: MISSED Item
     const missedItemIndex = state.data.findIndex((vocabularyItem) => {
         return (
             vocabularyItem.metodology_parameters[currentTypeStatusProperty] ===
@@ -129,7 +106,6 @@ const selectNextItems = (state) => {
         );
     }
 
-    // Пріоритет 2: Item reviewed 1 day ago
     const yesterdayItemIndex = state.data.findIndex((vocabularyItem) => {
         if (
             !vocabularyItem.metodology_parameters[
@@ -170,7 +146,6 @@ const selectNextItems = (state) => {
         );
     }
 
-    // Пріоритет 3: Item reviewed 7 days ago
     const sevenDaysAgoItemIndex = state.data.findIndex((vocabularyItem) => {
         if (
             !vocabularyItem.metodology_parameters[
@@ -211,7 +186,6 @@ const selectNextItems = (state) => {
         );
     }
 
-    // Пріоритет 4: Item reviewed 14 days ago
     const fourteenDaysAgoItemIndex = state.data.findIndex((vocabularyItem) => {
         if (
             !vocabularyItem.metodology_parameters[
@@ -253,7 +227,6 @@ const selectNextItems = (state) => {
         );
     }
 
-    // Пріоритет 5: Item reviewed 30 days ago
     const thirtyDaysAgoItemIndex = state.data.findIndex((vocabularyItem) => {
         if (
             !vocabularyItem.metodology_parameters[
@@ -295,7 +268,6 @@ const selectNextItems = (state) => {
         );
     }
 
-    // Пріоритет 6: New Items (30%)
     const newItems = state.data
         .filter(
             (vocabularyItem) =>
@@ -303,7 +275,7 @@ const selectNextItems = (state) => {
                     currentTypeStatusProperty
                 ] === "NEW"
         )
-        .slice(0, 3); // беремо рівно 3
+        .slice(0, 3);
 
     if (newItems.length > 0) {
         nextSelection.push(...newItems);
@@ -313,7 +285,6 @@ const selectNextItems = (state) => {
         });
     }
 
-    // Пріоритет 7: AGAIN today item
     const againItemIndex = state.data.findIndex((vocabularyItem) => {
         if (
             !vocabularyItem.metodology_parameters[
@@ -350,187 +321,4 @@ const selectNextItems = (state) => {
     return nextSelection;
 };
 
-const vocabularyWordsSlice = createSlice({
-    name: "vocabularyWords",
-    initialState: {
-        singleStatusMode: true,
-        data: [],
-        exerciseState: {
-            exerciseType: "translate-sentence",
-            generatedExerciseData: null,
-            currentSelection: [],
-            currentVocabularyWordIndex: 0,
-            isLoading: false,
-            generateNextStage: true,
-        },
-        checkpoints: [
-            {
-                checkpoint: 0,
-                threshold: 1,
-            },
-            {
-                checkpoint: 1,
-                threshold: 1,
-            },
-            {
-                checkpoint: 2,
-                threshold: 5,
-            },
-            {
-                checkpoint: 7,
-                threshold: 7,
-            },
-            {
-                checkpoint: 14,
-                threshold: 16,
-            },
-        ],
-    },
-    reducers: {
-        updateExerciseState: (state, action) => {
-            state.exerciseState = {
-                ...state.exerciseState,
-                ...action.payload,
-            };
-        },
-        makeNextSelection: (state) => {
-            state.exerciseState.currentSelection = [];
-            findMissedVocabularyItems(state);
-            state.exerciseState.currentSelection = selectNextItems(state);
-        },
-    },
-    extraReducers(builder) {
-        builder.addCase(addVocabularyWord.fulfilled, (state, action) => {
-            const word = action.payload;
-            state.data.push({
-                id: word.id,
-                main_parameters: {
-                    text: word.text,
-                    topic: word.topic,
-                    relevant_translations: word.relevant_translations,
-                },
-                metodology_parameters: {
-                    status_translate_sentence_exercise:
-                        word.status_translate_sentence_exercise,
-                    status_fill_the_gap_exercise:
-                        word.status_fill_the_gap_exercise,
-                    status_listen_and_fill_the_gap_exercise:
-                        word.status_listen_and_fill_the_gap_exercise,
-
-                    checkpoint_translate_sentence_exercise:
-                        word.checkpoint_translate_sentence_exercise,
-                    checkpoint_fill_the_gap_exercise:
-                        word.checkpoint_fill_the_gap_exercise,
-                    checkpoint_listen_and_fill_the_gap_exercise:
-                        word.checkpoint_listen_and_fill_the_gap_exercise,
-
-                    last_reviewed_translate_sentence_exercise:
-                        word.last_reviewed_translate_sentence_exercise,
-                    last_reviewed_fill_the_gap_exercise:
-                        word.last_reviewed_fill_the_gap_exercise,
-                    last_reviewed_listen_and_fill_the_gap_exercise:
-                        word.last_reviewed_listen_and_fill_the_gap_exercise,
-                },
-            });
-
-            if (state.exerciseState.currentSelection.length === 0) {
-                state.exerciseState.currentSelection = selectNextItems(state);
-            }
-        });
-
-        builder.addCase(fetchVocabularyWords.fulfilled, (state, action) => {
-            state.data = action.payload.map((word) => ({
-                id: word.id,
-                main_parameters: {
-                    text: word.text,
-                    topic: word.topic,
-                    relevant_translations: word.relevant_translations,
-                },
-                metodology_parameters: {
-                    status_translate_sentence_exercise:
-                        word.status_translate_sentence_exercise,
-                    status_fill_the_gap_exercise:
-                        word.status_fill_the_gap_exercise,
-                    status_listen_and_fill_the_gap_exercise:
-                        word.status_listen_and_fill_the_gap_exercise,
-
-                    checkpoint_translate_sentence_exercise:
-                        word.checkpoint_translate_sentence_exercise,
-                    checkpoint_fill_the_gap_exercise:
-                        word.checkpoint_fill_the_gap_exercise,
-                    checkpoint_listen_and_fill_the_gap_exercise:
-                        word.checkpoint_listen_and_fill_the_gap_exercise,
-
-                    last_reviewed_translate_sentence_exercise:
-                        word.last_reviewed_translate_sentence_exercise,
-                    last_reviewed_fill_the_gap_exercise:
-                        word.last_reviewed_fill_the_gap_exercise,
-                    last_reviewed_listen_and_fill_the_gap_exercise:
-                        word.last_reviewed_listen_and_fill_the_gap_exercise,
-
-                    createdAt: word.created_at,
-                },
-            }));
-        });
-
-        builder.addCase(updateVocabularyWord.pending, (state) => {
-            state.exerciseState.isLoading = true;
-        });
-
-        builder.addCase(updateVocabularyWord.fulfilled, (state, action) => {
-            const word = action.payload[0];
-            console.log(action.payload[0]);
-            const index = state.data.findIndex((w) => w.id === word.id);
-            if (index !== -1) {
-                state.data[index] = {
-                    id: word.id,
-                    main_parameters: {
-                        text: word.text,
-                        topic: word.topic,
-                        relevant_translations: word.relevant_translations,
-                    },
-                    metodology_parameters: {
-                        status_translate_sentence_exercise:
-                            word.status_translate_sentence_exercise,
-                        status_fill_the_gap_exercise:
-                            word.status_fill_the_gap_exercise,
-                        status_listen_and_fill_the_gap_exercise:
-                            word.status_listen_and_fill_the_gap_exercise,
-
-                        checkpoint_translate_sentence_exercise:
-                            word.checkpoint_translate_sentence_exercise,
-                        checkpoint_fill_the_gap_exercise:
-                            word.checkpoint_fill_the_gap_exercise,
-                        checkpoint_listen_and_fill_the_gap_exercise:
-                            word.checkpoint_listen_and_fill_the_gap_exercise,
-
-                        last_reviewed_translate_sentence_exercise:
-                            word.last_reviewed_translate_sentence_exercise,
-                        last_reviewed_fill_the_gap_exercise:
-                            word.last_reviewed_fill_the_gap_exercise,
-                        last_reviewed_listen_and_fill_the_gap_exercise:
-                            word.last_reviewed_listen_and_fill_the_gap_exercise,
-                    },
-                };
-            }
-            state.exerciseState.isLoading = false;
-        });
-
-        builder.addCase(generateExerciseVocabularyItem.pending, (state) => {
-            state.exerciseState.isLoading = true;
-            state.exerciseState.generateNextStage = false;
-        });
-
-        builder.addCase(
-            generateExerciseVocabularyItem.fulfilled,
-            (state, action) => {
-                state.exerciseState.generatedExerciseData = action.payload;
-                state.exerciseState.isLoading = false;
-            }
-        );
-    },
-});
-
-export const { updateExerciseState, makeNextSelection } =
-    vocabularyWordsSlice.actions;
-export const vocabularyWordsReducer = vocabularyWordsSlice.reducer;
+export { findMissedVocabularyItems, selectNextItems };

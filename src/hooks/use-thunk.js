@@ -1,23 +1,20 @@
 import { useState, useCallback } from "react";
-import { useDispatch } from "react-redux";
 
-export function useThunk(thunk) {
+export function useThunk(asyncFn) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const dispatch = useDispatch();
 
     const runThunk = useCallback(
         (arg) => {
             setIsLoading(true);
-            return dispatch(thunk(arg))
-                .unwrap()
+            return Promise.resolve(asyncFn(arg))
                 .catch((err) => {
                     setError(err);
                     throw err;
                 })
                 .finally(() => setIsLoading(false));
         },
-        [dispatch, thunk]
+        [asyncFn]
     );
 
     return [runThunk, isLoading, error];

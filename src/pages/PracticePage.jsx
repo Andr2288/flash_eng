@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useShallow } from "zustand/react/shallow";
 
 import {
     TranslateSentenceExercise,
@@ -17,6 +17,7 @@ import {
     BarChart2,
 } from "lucide-react";
 import {
+    useVocabularyWordsStore,
     fetchVocabularyWords,
     makeNextSelection,
     updateExerciseState,
@@ -201,15 +202,16 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
 };
 
 const PracticePage = () => {
-    const dispatch = useDispatch();
-
     const [uiState, setUiState] = useState({
         showExercise: false,
     });
 
-    const { exerciseState, data } = useSelector((state) => {
-        return state.vocabularyWords;
-    });
+    const { exerciseState, data } = useVocabularyWordsStore(
+        useShallow((state) => ({
+            exerciseState: state.exerciseState,
+            data: state.data,
+        }))
+    );
 
     const [
         doFetchVocabularyWords,
@@ -285,15 +287,13 @@ const PracticePage = () => {
     Object.freeze(ExerciseType);
 
     const handleExerciseButtonClick = (exerciseType) => {
-        dispatch(
-            updateExerciseState({
-                currentVocabularyWordIndex: 0,
-                generateNextStage: true,
-                exerciseType,
-            })
-        );
+        updateExerciseState({
+            currentVocabularyWordIndex: 0,
+            generateNextStage: true,
+            exerciseType,
+        });
 
-        dispatch(makeNextSelection());
+        makeNextSelection();
 
         setUiState((prev) => {
             return {

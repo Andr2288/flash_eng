@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useShallow } from "zustand/react/shallow";
 import { useThunk } from "../../hooks/use-thunk";
 import {
-    fetchVocabularyWords,
+    useVocabularyWordsStore,
     generateListenAndFill,
     generateSpeech,
     makeNextSelection,
@@ -12,8 +12,6 @@ import {
 import { Loader, CheckCircle, XCircle, Volume2 } from "lucide-react";
 
 const ListenAndFillTheGapExercise = () => {
-    const dispatch = useDispatch();
-
     const [
         doUpdateVocabularyWord,
         isUpdatingVocabularyWord,
@@ -26,11 +24,15 @@ const ListenAndFillTheGapExercise = () => {
     const [doGenerateSpeech, isGeneratingSpeech, generateSpeechError] =
         useThunk(generateSpeech);
 
-    const { singleStatusMode, data, exerciseState, checkpoints } = useSelector(
-        (state) => {
-            return state.vocabularyWords;
-        }
-    );
+    const { singleStatusMode, data, exerciseState, checkpoints } =
+        useVocabularyWordsStore(
+            useShallow((state) => ({
+                singleStatusMode: state.singleStatusMode,
+                data: state.data,
+                exerciseState: state.exerciseState,
+                checkpoints: state.checkpoints,
+            }))
+        );
 
     // TranslateSentenceExercise state
     const [exerciseData, setExerciseData] = useState(null);
@@ -268,13 +270,11 @@ const ListenAndFillTheGapExercise = () => {
         const nextExerciseType =
             exercises[Math.floor(Math.random() * exercises.length)];
 
-        dispatch(
-            updateExerciseState({
-                exerciseType: nextExerciseType,
-                currentVocabularyWordIndex: nextIndex,
-                generateNextStage: true,
-            })
-        );
+        updateExerciseState({
+            exerciseType: nextExerciseType,
+            currentVocabularyWordIndex: nextIndex,
+            generateNextStage: true,
+        });
     };
 
     const getNextVocabularyItemIndex = () => {
@@ -282,7 +282,7 @@ const ListenAndFillTheGapExercise = () => {
             exerciseState.currentVocabularyWordIndex ===
             exerciseState.currentSelection.length - 1
         ) {
-            dispatch(makeNextSelection());
+            makeNextSelection();
             return 0;
         } else {
             return exerciseState.currentVocabularyWordIndex + 1;

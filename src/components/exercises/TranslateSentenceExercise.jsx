@@ -1,14 +1,14 @@
 import { useThunk } from "../../hooks/use-thunk";
 import {
+    useVocabularyWordsStore,
     addVocabularyWord,
-    fetchVocabularyWords,
     updateVocabularyWord,
     generateExerciseVocabularyItem,
     generateSpeech,
     updateExerciseState,
     makeNextSelection,
 } from "../../store";
-import { useDispatch, useSelector } from "react-redux";
+import { useShallow } from "zustand/react/shallow";
 
 import { useState, useEffect, useCallback } from "react";
 
@@ -38,11 +38,13 @@ const TranslateSentenceExercise = () => {
     const [doGenerateSpeech, isGeneratingSpeech, generateSpeechError] =
         useThunk(generateSpeech);
 
-    const { data, exerciseState, checkpoints } = useSelector((state) => {
-        return state.vocabularyWords;
-    });
-
-    const dispatch = useDispatch();
+    const { data, exerciseState, checkpoints } = useVocabularyWordsStore(
+        useShallow((state) => ({
+            data: state.data,
+            exerciseState: state.exerciseState,
+            checkpoints: state.checkpoints,
+        }))
+    );
 
     const [uiState, setUiState] = useState({
         showTranslation: false,
@@ -55,7 +57,7 @@ const TranslateSentenceExercise = () => {
             exerciseState.currentVocabularyWordIndex ===
             exerciseState.currentSelection.length - 1
         ) {
-            dispatch(makeNextSelection());
+            makeNextSelection();
             return 0;
         } else {
             console.log(
@@ -136,13 +138,11 @@ const TranslateSentenceExercise = () => {
             const nextExerciseType =
                 exercises[Math.floor(Math.random() * exercises.length)];
 
-            dispatch(
-                updateExerciseState({
-                    exerciseType: nextExerciseType,
-                    currentVocabularyWordIndex: nextVocabularyItemIndex,
-                    generateNextStage: true,
-                })
-            );
+            updateExerciseState({
+                exerciseType: nextExerciseType,
+                currentVocabularyWordIndex: nextVocabularyItemIndex,
+                generateNextStage: true,
+            });
         } catch (error) {
             console.error("Помилка оновлення:", error);
         }
