@@ -15,6 +15,7 @@ import {
     Type,
     Languages,
     BarChart2,
+    Loader,
 } from "lucide-react";
 import {
     useVocabularyWordsStore,
@@ -206,6 +207,8 @@ const PracticePage = () => {
         showExercise: false,
     });
 
+    const [vocabularyLoadSettled, setVocabularyLoadSettled] = useState(false);
+
     const { exerciseState, data } = useVocabularyWordsStore(
         useShallow((state) => ({
             exerciseState: state.exerciseState,
@@ -220,8 +223,13 @@ const PracticePage = () => {
     ] = useThunk(fetchVocabularyWords);
 
     useEffect(() => {
-        doFetchVocabularyWords();
+        doFetchVocabularyWords()
+            .catch(() => {})
+            .finally(() => setVocabularyLoadSettled(true));
     }, [doFetchVocabularyWords]);
+
+    const showVocabularyLoader =
+        !vocabularyLoadSettled || isLoadingVocabularyWords;
 
     const ExerciseType = {
         TranslateSentenceExercise: "translate_sentence_exercise",
@@ -336,79 +344,103 @@ const PracticePage = () => {
             {!uiState.showExercise && (
                 <div className="flex-1 overflow-y-auto p-8">
                     <div className="max-w-7xl mx-auto">
-                        <div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                                <Target className="w-5 h-5 mr-2 text-blue-500" />
-                                Основні вправи
-                            </h3>
-                            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
-                                {coreExercisesData.map((exercise) => {
-                                    const Icon = exercise.icon;
+                        {showVocabularyLoader ? (
+                            <div className="flex flex-col items-center justify-center min-h-[45vh] gap-4">
+                                <Loader className="w-10 h-10 animate-spin text-blue-600" />
+                                <p className="text-sm text-gray-600">
+                                    Зачекайте, будь ласка
+                                </p>
+                            </div>
+                        ) : loadingVocabularyWordsError ? (
+                            <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center max-w-lg mx-auto">
+                                <p className="text-red-800 font-medium">
+                                    Ой. Щось пішло не так :(
+                                </p>
+                                <p className="text-sm text-red-600/90 mt-2">
+                                    Спробуйте оновити сторінку або перевірте
+                                    з’єднання.
+                                </p>
+                            </div>
+                        ) : (
+                            <div>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                                    <Target className="w-5 h-5 mr-2 text-blue-500" />
+                                    Основні вправи
+                                </h3>
+                                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+                                    {coreExercisesData.map((exercise) => {
+                                        const Icon = exercise.icon;
 
-                                    return (
-                                        <div
-                                            key={exercise.id}
-                                            onClick={() =>
-                                                handleExerciseButtonClick(
-                                                    exercise.type
-                                                )
-                                            }
-                                            className={`group relative bg-white rounded-2xl p-8 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-2`}
-                                        >
-                                            <div>
-                                                <div
-                                                    className={`absolute inset-0 bg-linear-to-br ${exercise.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`}
-                                                />
-
-                                                <div
-                                                    className={`w-16 h-16 bg-linear-to-br ${exercise.color} rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300`}
-                                                >
-                                                    <Icon className="w-8 h-8 text-white" />
-                                                </div>
-
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <h4 className="text-xl font-bold text-gray-900">
-                                                        {exercise.title}
-                                                    </h4>
-                                                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
-                                                </div>
-
-                                                <p className="text-gray-600 mb-6">
-                                                    {exercise.description}
-                                                </p>
-                                            </div>
-
-                                            <div className="relative">
-                                                <div className="flex items-center space-x-4 mb-6 text-sm">
+                                        return (
+                                            <div
+                                                key={exercise.id}
+                                                onClick={() =>
+                                                    handleExerciseButtonClick(
+                                                        exercise.type
+                                                    )
+                                                }
+                                                className={`group relative bg-white rounded-2xl p-8 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-2`}
+                                            >
+                                                <div>
                                                     <div
-                                                        className={`flex items-center ${exercise.difficultyColor}`}
+                                                        className={`absolute inset-0 bg-linear-to-br ${exercise.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`}
+                                                    />
+
+                                                    <div
+                                                        className={`w-16 h-16 bg-linear-to-br ${exercise.color} rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300`}
                                                     >
-                                                        <span
-                                                            className={`w-2 h-2 ${exercise.difficultyBg} rounded-full mr-2`}
-                                                        />
-                                                        {exercise.difficulty}
+                                                        <Icon className="w-8 h-8 text-white" />
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <h4 className="text-xl font-bold text-gray-900">
+                                                            {exercise.title}
+                                                        </h4>
+                                                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                                                    </div>
+
+                                                    <p className="text-gray-600 mb-6">
+                                                        {exercise.description}
+                                                    </p>
+                                                </div>
+
+                                                <div className="relative">
+                                                    <div className="flex items-center space-x-4 mb-6 text-sm">
+                                                        <div
+                                                            className={`flex items-center ${exercise.difficultyColor}`}
+                                                        >
+                                                            <span
+                                                                className={`w-2 h-2 ${exercise.difficultyBg} rounded-full mr-2`}
+                                                            />
+                                                            {
+                                                                exercise.difficulty
+                                                            }
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-2 mb-2">
+                                                        {exercise.features.map(
+                                                            (
+                                                                feature,
+                                                                index
+                                                            ) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="flex items-center text-sm text-gray-600"
+                                                                >
+                                                                    <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3" />
+                                                                    {feature}
+                                                                </div>
+                                                            )
+                                                        )}
                                                     </div>
                                                 </div>
-
-                                                <div className="space-y-2 mb-2">
-                                                    {exercise.features.map(
-                                                        (feature, index) => (
-                                                            <div
-                                                                key={index}
-                                                                className="flex items-center text-sm text-gray-600"
-                                                            >
-                                                                <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3" />
-                                                                {feature}
-                                                            </div>
-                                                        )
-                                                    )}
-                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             )}
