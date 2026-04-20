@@ -9,7 +9,7 @@ import { Provider } from "react-redux";
 
 createRoot(document.getElementById("root")).render(
     <Provider store={store}>
-        <BrowserRouter basename="/z_english_learning">
+        <BrowserRouter>
             <App />
         </BrowserRouter>
     </Provider>
