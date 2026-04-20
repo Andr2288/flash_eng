@@ -1,3 +1,40 @@
+/**
+ * Після оновлення статусів MISSED: у `state.data` спочатку всі MISSED
+ * для поточного типу вправи в порядку, зворотному до того, як вони йшли
+ * у масиві до розбиття; далі всі інші слова без зміни відносного порядку.
+ */
+const reorderDataMissedReversedThenRest = (state) => {
+    let statusProperty;
+
+    if (state.singleStatusMode) {
+        statusProperty = "status_translate_sentence_exercise";
+    } else {
+        statusProperty = `status_${state.exerciseState.exerciseType}`;
+    }
+
+    const missed = [];
+    const rest = [];
+
+    for (const item of state.data) {
+        if (item.metodology_parameters[statusProperty] === "MISSED") {
+            missed.push(item);
+        } else {
+            rest.push(item);
+        }
+    }
+
+    missed.reverse();
+
+    const missedWordsForLog = missed
+        .map((item) => item.main_parameters.text)
+        .join(", ");
+    console.log(
+        `[reorderDataMissedReversedThenRest] MISSED (${missed.length}): ${missedWordsForLog || "—"}`
+    );
+
+    state.data = [...missed, ...rest];
+};
+
 const findMissedVocabularyItems = (state) => {
     let currentTypeStatusProperty = "";
     let currentTypeCheckpointProperty = "";
@@ -57,16 +94,16 @@ const findMissedVocabularyItems = (state) => {
             daysPassedAfterLastReview >
             state.checkpoints[currentCheckpointIndex].threshold
         ) {
-            console.log(
-                `Знайшов елемент, де пропущено повторення: ${vocabularyItem.main_parameters.text}
-                    Current Checkpoint: ${vocabularyItem.metodology_parameters[currentTypeCheckpointProperty]}
-                    Last previewed: ${new Date(vocabularyItem.metodology_parameters[currentTypeLastReviewedProperty])}
-                    Threshold for Current Checkpoint: ${state.checkpoints[currentCheckpointIndex].threshold}
-                    Days passed after last review: ${daysPassedAfterLastReview}
-                    ***
-                    Set Status to: "MISSED"
-                    `
-            );
+            // console.log(
+            //     `Знайшов елемент, де пропущено повторення: ${vocabularyItem.main_parameters.text}
+            //         Current Checkpoint: ${vocabularyItem.metodology_parameters[currentTypeCheckpointProperty]}
+            //         Last previewed: ${new Date(vocabularyItem.metodology_parameters[currentTypeLastReviewedProperty])}
+            //         Threshold for Current Checkpoint: ${state.checkpoints[currentCheckpointIndex].threshold}
+            //         Days passed after last review: ${daysPassedAfterLastReview}
+            //         ***
+            //         Set Status to: "MISSED"
+            //         `
+            // );
 
             vocabularyItem.metodology_parameters[currentTypeStatusProperty] =
                 "MISSED";
@@ -321,4 +358,8 @@ const selectNextItems = (state) => {
     return nextSelection;
 };
 
-export { findMissedVocabularyItems, selectNextItems };
+export {
+    findMissedVocabularyItems,
+    reorderDataMissedReversedThenRest,
+    selectNextItems,
+};

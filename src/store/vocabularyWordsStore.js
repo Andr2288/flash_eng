@@ -4,6 +4,7 @@ import { immer } from "zustand/middleware/immer";
 import * as api from "./features/vocabularyWords/vocabularyWordsApi.js";
 import {
     findMissedVocabularyItems,
+    reorderDataMissedReversedThenRest,
     selectNextItems,
 } from "./features/vocabularyWords/vocabularyWordsStateLogic.js";
 
@@ -40,6 +41,7 @@ const useVocabularyWordsStore = create(
             set((state) => {
                 state.exerciseState.currentSelection = [];
                 findMissedVocabularyItems(state);
+                reorderDataMissedReversedThenRest(state);
                 state.exerciseState.currentSelection = selectNextItems(state);
             });
         },
