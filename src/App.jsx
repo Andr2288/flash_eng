@@ -18,7 +18,7 @@ import {
     ListenAndFillTheGapExercise,
 } from "./components/exercises/index.js";
 
-import { useAuth } from "./context/AuthContext.jsx";
+import { useAuth } from "./context/useAuth.js";
 
 function App() {
     const { user, loading } = useAuth();
