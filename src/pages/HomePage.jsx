@@ -231,15 +231,16 @@ const HomePage = () => {
                 return;
             }
 
-            if (event.ctrlKey && event.key === "f") {
-                event.preventDefault();
+            if (event.ctrlKey && event.code === "KeyF") {
                 if (
                     currentView === "flashcards" &&
                     flashcardViewMode === "grid"
                 ) {
                     const searchInput = document.getElementById("search-input");
                     if (searchInput) {
+                        event.preventDefault();
                         searchInput.focus();
+                        return;
                     }
                 }
                 return;
@@ -421,8 +422,8 @@ const HomePage = () => {
                     />
                 </div>
             ) : (
-                <div className="flex min-h-screen min-w-0 flex-col">
-                    <div className="sticky top-0 z-30 min-w-0 shrink-0 bg-white border-b border-l border-gray-200">
+                <div className="flex h-[100dvh] min-h-0 w-full min-w-0 max-h-[100dvh] flex-col overflow-hidden">
+                    <div className="z-30 min-w-0 shrink-0 border-b border-l border-gray-200 bg-white">
                         <div className="p-8">
                             <div className="max-w-7xl mx-auto flex justify-between items-center">
                                 <div className="flex items-center space-x-2">
@@ -635,9 +636,9 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    <div className="flex-1 p-8">
+                    <div className="min-h-0 flex-1 overflow-y-auto p-8 [scrollbar-gutter:stable]">
                         {isLoadingFlashcards ? (
-                            <div className="flex flex-col items-center justify-center min-h-[45vh] gap-4">
+                            <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4">
                                 <Loader className="w-10 h-10 animate-spin text-blue-600" />
                                 <p className="text-sm text-gray-600">
                                     Зачекайте, будь ласка

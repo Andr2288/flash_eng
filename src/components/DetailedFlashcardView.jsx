@@ -345,12 +345,12 @@ const DetailedFlashcardView = ({
                 event.key === "У"
             ) {
                 event.preventDefault();
-                if (!isChanging) {
+                if (!isFlipped && !isChanging) {
                     onEdit(currentCard);
                 }
             } else if (event.key === "Delete") {
                 event.preventDefault();
-                if (!isChanging) {
+                if (!isFlipped && !isChanging) {
                     handleDeleteClick(currentCard);
                 }
             }
@@ -404,29 +404,33 @@ const DetailedFlashcardView = ({
         <div className="max-w-4xl mx-auto">
             {/* Main Card Container */}
             <div className="relative">
-                {/* Card Actions */}
-                <div className="absolute top-6 right-6 flex space-x-2 z-20">
-                    <button
-                        onClick={() => {
-                            if (!isChanging) onEdit(currentCard);
-                        }}
-                        disabled={isChanging}
-                        className="bg-white/90 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed text-blue-600 p-2 rounded-full shadow-sm transition-colors"
-                        title="Редагувати (E)"
-                    >
-                        <Edit className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={() => {
-                            if (!isChanging) handleDeleteClick(currentCard);
-                        }}
-                        disabled={isChanging}
-                        className="bg-white/90 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed text-red-600 p-2 rounded-full shadow-sm transition-colors"
-                        title="Видалити (Del)"
-                    >
-                        <Trash2 className="w-5 h-5" />
-                    </button>
-                </div>
+                {/* Card Actions — лише на лицьовому боку */}
+                {!isFlipped && (
+                    <div className="absolute top-6 right-6 z-20 flex space-x-2">
+                        <button
+                            onClick={() => {
+                                if (!isChanging) onEdit(currentCard);
+                            }}
+                            disabled={isChanging}
+                            className="bg-white/90 p-2 text-blue-600 shadow-sm transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 rounded-full"
+                            title="Редагувати (E)"
+                        >
+                            <Edit className="h-5 w-5" />
+                        </button>
+                        <button
+                            onClick={() => {
+                                if (!isChanging) {
+                                    handleDeleteClick(currentCard);
+                                }
+                            }}
+                            disabled={isChanging}
+                            className="bg-white/90 p-2 text-red-600 shadow-sm transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 rounded-full"
+                            title="Видалити (Del)"
+                        >
+                            <Trash2 className="h-5 w-5" />
+                        </button>
+                    </div>
+                )}
 
                 {/* Card Content */}
                 <div className="bg-white rounded-2xl shadow-md overflow-hidden h-[380px] md:h-[458px] relative">

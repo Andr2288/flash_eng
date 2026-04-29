@@ -115,9 +115,10 @@ const FlashcardForm = ({
         }
     }, [editingCard, isOpen, preselectedCategoryId, initialText]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!formData.text.trim()) return;
+    const saveEditedCard = async () => {
+        if (!formData.text.trim()) {
+            return;
+        }
 
         try {
             const submitData = {
@@ -243,7 +244,12 @@ const FlashcardForm = ({
             aiContent.explanation = capitalizeFirstLetter(
                 aiContent.explanation
             );
-            aiContent.notes = capitalizeFirstLetter(aiContent.notes);
+            const aiNotes =
+                capitalizeFirstLetter(aiContent.notes || "") || "";
+            const userNotesTrim = (formData.notes || "").trim();
+            const notesForSubmit = userNotesTrim
+                ? formData.notes
+                : aiNotes;
 
             const submitData = {
                 text: formData.text.trim(),
@@ -252,7 +258,7 @@ const FlashcardForm = ({
                 shortDescription: aiContent.shortDescription || "",
                 explanation: aiContent.explanation || "",
                 examples: examples,
-                notes: aiContent.notes || "",
+                notes: notesForSubmit,
                 isAIGenerated: true,
                 categoryId: formData.categoryId || null,
             };
@@ -282,6 +288,15 @@ const FlashcardForm = ({
             toast.error(errorMessage);
         } finally {
             setIsQuickCreating(false);
+        }
+    };
+
+    const handlePrimaryAction = async (e) => {
+        e?.preventDefault();
+        if (editingCard) {
+            await saveEditedCard();
+        } else {
+            await quickCreateFlashcard();
         }
     };
 
@@ -324,7 +339,7 @@ const FlashcardForm = ({
         return () => {
             window.removeEventListener("keydown", handleKeyPress);
         };
-    }, [isOpen, formData.text, isQuickCreating]);
+    }, [isOpen, formData, isQuickCreating]);
 
     if (!isOpen) return null;
 
@@ -345,11 +360,6 @@ const FlashcardForm = ({
                                     {editingCard
                                         ? "Редагувати картку"
                                         : "Створити нову картку"}
-                                    {!editingCard && initialText && (
-                                        <span className="text-sm font-normal text-blue-600 block">
-                                            З пошуку: "{initialText}"
-                                        </span>
-                                    )}
                                 </h2>
                                 <div className="flex items-center space-x-4 mt-1">
                                     {settingsLoaded && (
@@ -375,40 +385,40 @@ const FlashcardForm = ({
 
                 {/* Scrollable Content */}
                 <div className="flex-1 overflow-y-auto bg-white">
-                    <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                    <form
+                        id="flashcard-form"
+                        onSubmit={handlePrimaryAction}
+                        className="p-8 space-y-6"
+                    >
                         {/* Word/Text */}
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-3">
                                 Слово/Фраза{" "}
                                 <span className="text-red-500">*</span>
                             </label>
-                            <textarea
+                            <input
                                 ref={textInputRef}
+                                type="text"
                                 value={formData.text}
                                 onChange={(e) => {
-                                    const value = e.target.value;
+                                    const value = e.target.value.replace(
+                                        /[\r\n]+/g,
+                                        " "
+                                    );
                                     const capitalized =
-                                        value.charAt(0).toUpperCase() +
-                                        value.slice(1);
+                                        value.length > 0
+                                            ? value.charAt(0).toUpperCase() +
+                                              value.slice(1)
+                                            : "";
                                     handleInputChange("text", capitalized);
                                 }}
                                 placeholder="Введіть слово або фразу..."
-                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all duration-200 bg-white hover:border-gray-300 text-gray-900 placeholder-gray-500"
-                                rows="1"
+                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white hover:border-gray-300 text-gray-900 placeholder-gray-500"
+                                maxLength={200}
                                 required
                                 disabled={isQuickCreating}
+                                autoComplete="off"
                             />
-
-                            {/* Quick creation indicator */}
-                            {isQuickCreating && (
-                                <div className="mt-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 flex items-center space-x-3">
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-600"></div>
-                                    <div className="text-sm text-green-700">
-                                        <p className="font-semibold">Створення картки...</p>
-                                        <p className="text-xs">Будь ласка, зачекай кілька секунд</p>
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
                         {/* Category Selection */}
@@ -477,7 +487,7 @@ const FlashcardForm = ({
                     <div className="flex space-x-4">
                         <button
                             type="submit"
-                            onClick={handleSubmit}
+                            form="flashcard-form"
                             disabled={
                                 isLoading ||
                                 !formData.text.trim() ||
@@ -486,7 +496,14 @@ const FlashcardForm = ({
                             className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-blue-400 disabled:to-blue-500 disabled:cursor-default text-white px-6 py-3 rounded-md font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none disabled:hover:scale-100 cursor-pointer"
                         >
                             {isLoading || isQuickCreating ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                <>
+                                    <div className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                                    <span>
+                                        {isQuickCreating
+                                            ? "Створення картки…"
+                                            : "Збереження…"}
+                                    </span>
+                                </>
                             ) : (
                                 <>
                                     <Save className="w-5 h-5" />

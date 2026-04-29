@@ -134,6 +134,9 @@ const DetailedCardInfo = ({
     }
 
     const examples = getExamples(displayCard);
+    const notesText =
+        displayCard?.notes != null ? String(displayCard.notes).trim() : "";
+    const hasNotes = notesText.length > 0;
 
     return (
         <div className={`bg-white overflow-hidden ${className}`}>
@@ -220,6 +223,20 @@ const DetailedCardInfo = ({
                             </div>
                         )}
 
+                        {hasNotes && (
+                            <div>
+                                <h4 className="mb-3 flex items-center text-sm font-semibold uppercase tracking-wide text-yellow-800">
+                                    <StickyNote className="mr-1 h-4 w-4 text-yellow-600" />
+                                    Нотатки
+                                </h4>
+                                <div className="rounded-lg border-l-4 border-yellow-400 bg-yellow-50/95 p-4 shadow-sm">
+                                    <p className="text-lg leading-relaxed whitespace-pre-wrap text-yellow-950/90">
+                                        {notesText}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
                         {displayCard.explanation && (
                             <div className="mb-10">
                                 <h4 className="text-sm font-semibold text-blue-700 mb-3 uppercase tracking-wide">
@@ -233,20 +250,6 @@ const DetailedCardInfo = ({
                                         ),
                                     }}
                                 />
-                            </div>
-                        )}
-
-                        {displayCard.notes && (
-                            <div>
-                                <h4 className="text-sm font-semibold text-rose-700 mb-3 uppercase tracking-wide flex items-center">
-                                    <StickyNote className="w-4 h-4 mr-1" />
-                                    Особисті нотатки
-                                </h4>
-                                <div className="bg-rose-50/80 rounded-lg p-4 border-l-4 border-rose-300">
-                                    <p className="text-gray-800 leading-relaxed text-lg">
-                                        {displayCard.notes}
-                                    </p>
-                                </div>
                             </div>
                         )}
 
@@ -274,7 +277,7 @@ const DetailedCardInfo = ({
                         {!displayCard.translation &&
                             !displayCard.explanation &&
                             examples.length === 0 &&
-                            !displayCard.notes && (
+                            !hasNotes && (
                                 <div className="flex items-center justify-center h-32">
                                     <div className="text-center text-gray-500">
                                         <p className="text-lg mb-2">
