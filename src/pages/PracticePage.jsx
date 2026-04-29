@@ -24,6 +24,7 @@ import {
     updateExerciseState,
 } from "../store/index.js";
 import { useThunk } from "../hooks/use-thunk.js";
+import { useNavReselectStore } from "../store/useNavReselectStore.js";
 
 const STATUS_CONFIG = {
     MISSED: {
@@ -222,11 +223,18 @@ const PracticePage = () => {
         loadingVocabularyWordsError,
     ] = useThunk(fetchVocabularyWords);
 
+    const practiceNavReselect = useNavReselectStore(
+        (s) => s.bumps["/practice"] ?? 0
+    );
+
     useEffect(() => {
+        if (practiceNavReselect > 0) {
+            setVocabularyLoadSettled(false);
+        }
         doFetchVocabularyWords()
             .catch(() => {})
             .finally(() => setVocabularyLoadSettled(true));
-    }, [doFetchVocabularyWords]);
+    }, [doFetchVocabularyWords, practiceNavReselect]);
 
     const showVocabularyLoader =
         !vocabularyLoadSettled || isLoadingVocabularyWords;
@@ -342,10 +350,10 @@ const PracticePage = () => {
 
             {/* Scrollable Content */}
             {!uiState.showExercise && (
-                <div className="flex-1 overflow-y-auto p-8">
-                    <div className="max-w-7xl mx-auto">
+                <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8">
+                    <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col">
                         {showVocabularyLoader ? (
-                            <div className="flex flex-col items-center justify-center min-h-[45vh] gap-4">
+                            <div className="flex flex-1 flex-col items-center justify-center gap-4">
                                 <Loader className="w-10 h-10 animate-spin text-blue-600" />
                                 <p className="text-sm text-gray-600">
                                     Зачекайте, будь ласка

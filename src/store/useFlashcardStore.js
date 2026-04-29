@@ -12,16 +12,26 @@ const useFlashcardStore = create((set, get) => ({
     isLoading: false,
     currentCategoryFilter: null,
 
-    getFlashcards: async (categoryId = null) => {
-        set({ isLoading: true });
-        const data = await fetchFlashcards(categoryId);
-        set({
-            flashcards: data,
-            allFlashcards: categoryId ? get().allFlashcards : data,
-            isLoading: false,
-            currentCategoryFilter: categoryId,
-        });
-        return data;
+    getFlashcards: async (categoryId = null, options = {}) => {
+        const silent = options.silent === true;
+        if (!silent) {
+            set({ isLoading: true });
+        }
+        try {
+            const data = await fetchFlashcards(categoryId);
+            set({
+                flashcards: data,
+                allFlashcards: categoryId ? get().allFlashcards : data,
+                currentCategoryFilter: categoryId,
+                ...(silent ? {} : { isLoading: false }),
+            });
+            return data;
+        } catch (error) {
+            if (!silent) {
+                set({ isLoading: false });
+            }
+            throw error;
+        }
     },
 
     createFlashcard: async (formData) => {

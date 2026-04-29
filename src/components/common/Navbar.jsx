@@ -9,10 +9,12 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "../../context/useAuth.js";
+import { useNavReselectStore } from "../../store/useNavReselectStore.js";
 
 const Navbar = () => {
     const location = useLocation();
     const { signOut } = useAuth();
+    const bumpPath = useNavReselectStore((s) => s.bumpPath);
 
     const isActive = (path) => location.pathname === path;
 
@@ -73,6 +75,12 @@ const Navbar = () => {
                             <li key={item.path}>
                                 <Link
                                     to={item.path}
+                                    onClick={(e) => {
+                                        if (location.pathname === item.path) {
+                                            e.preventDefault();
+                                            bumpPath(item.path);
+                                        }
+                                    }}
                                     className={`group relative flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                                         active
                                             ? `bg-linear-to-r ${item.gradient} text-white shadow-lg transform scale-105`

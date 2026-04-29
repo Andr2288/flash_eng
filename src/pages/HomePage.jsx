@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useFlashcardStore } from "../store/useFlashcardStore.js";
 import { useCategoryStore } from "../store/useCategoryStore.js";
 import { useUserSettingsStore } from "../store/useUserSettingsStore.js";
@@ -14,11 +14,13 @@ import {
     Sparkles,
     Search,
     X,
+    Loader,
 } from "lucide-react";
 import DetailedFlashcardView from "../components/DetailedFlashcardView.jsx";
 import FlashcardForm from "../components/FlashcardForm.jsx";
 import CategoryList from "../components/CategoryList.jsx";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal.jsx";
+import { useNavReselectStore } from "../store/useNavReselectStore.js";
 
 const HomePage = () => {
     const {
@@ -31,19 +33,9 @@ const HomePage = () => {
         setCategoryFilter,
     } = useFlashcardStore();
 
-    const {
-        isLoading: isLoadingCategories,
-        getCategories,
-    } = useCategoryStore();
+    const { getCategories } = useCategoryStore();
 
-    const {
-        settings,
-        loadSettings,
-        isLoading: isLoadingSettings,
-        areSettingsLoaded,
-        getCategorySortSettings,
-        getFlashcardSortSettings,
-    } = useUserSettingsStore();
+    const { loadSettings, areSettingsLoaded } = useUserSettingsStore();
 
     const [currentView, setCurrentView] = useState("categories");
     const [flashcardViewMode, setFlashcardViewMode] = useState("grid");
@@ -63,6 +55,9 @@ const HomePage = () => {
 
     const [isAppInitialized, setIsAppInitialized] = useState(false);
     const [initializationStarted, setInitializationStarted] = useState(false);
+
+    const homeNavReselect = useNavReselectStore((s) => s.bumps["/"] ?? 0);
+    const lastHomeNavReselectRef = useRef(null);
 
     const filteredFlashcards = useMemo(() => {
         if (!searchQuery.trim()) {
@@ -122,6 +117,33 @@ const HomePage = () => {
     }, []);
 
     useEffect(() => {
+        if (lastHomeNavReselectRef.current === null) {
+            lastHomeNavReselectRef.current = homeNavReselect;
+            return;
+        }
+        if (homeNavReselect === lastHomeNavReselectRef.current) {
+            return;
+        }
+        lastHomeNavReselectRef.current = homeNavReselect;
+        if (homeNavReselect === 0) {
+            return;
+        }
+        setCurrentView("categories");
+        setSelectedCategoryData(null);
+        setCategoryFilter(null);
+        setCurrentCardIndex(0);
+        setSearchQuery("");
+        void (async () => {
+            try {
+                await getCategories();
+                await getFlashcards();
+            } catch (error) {
+                console.error("❌ HomePage: nav refresh failed:", error);
+            }
+        })();
+    }, [homeNavReselect, getCategories, getFlashcards, setCategoryFilter]);
+
+    useEffect(() => {
         return () => {
             setInitializationStarted(false);
             setIsAppInitialized(false);
@@ -133,37 +155,6 @@ const HomePage = () => {
             setAllFlashcards(flashcards);
         }
     }, [flashcards, currentView]);
-
-    const getSortingSettings = () => {
-        try {
-            if (areSettingsLoaded() && settings) {
-                const categorySortSettings = getCategorySortSettings();
-                const flashcardSortSettings = getFlashcardSortSettings();
-
-                return {
-                    categories: categorySortSettings,
-                    flashcards: flashcardSortSettings,
-                };
-            }
-        } catch (error) {
-            console.warn("⚠️ HomePage: Error getting sort settings:", error);
-        }
-
-        const fallbackSettings = {
-            categories: { sortBy: "date", sortOrder: "desc" },
-            flashcards: { sortBy: "date", sortOrder: "desc" },
-        };
-
-        console.log(
-            "📋 HomePage: Using fallback sort settings:",
-            fallbackSettings
-        );
-        return fallbackSettings;
-    };
-
-    const sortingSettings = useMemo(() => {
-        return getSortingSettings();
-    }, [settings, areSettingsLoaded()]);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -419,45 +410,19 @@ const HomePage = () => {
 
     const cardsToDisplay = searchQuery.trim() ? filteredFlashcards : flashcards;
 
-    const shouldShowLoading = !isAppInitialized && currentView === "categories";
-
-    if (shouldShowLoading) {
-        return (
-            <div className="ml-68 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">
-                        Завантаження додатку...
-                    </p>
-                    <p className="mt-2 text-sm text-gray-500">
-                        {isLoadingSettings
-                            ? "Налаштування..."
-                            : isLoadingCategories
-                              ? "Категорії..."
-                              : "Ініціалізація..."}
-                    </p>
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <div className="ml-68 min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
+        <div className="ml-68 min-h-screen min-w-0 bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
             {currentView === "categories" ? (
-                <div>
+                <div className="min-w-0">
                     <CategoryList
                         onCategorySelect={handleCategorySelect}
                         selectedCategoryId={selectedCategoryData?._id}
-                        uncategorizedCount={
-                            allFlashcards?.filter((card) => !card.categoryId)
-                                .length || 0
-                        }
-                        sortSettings={sortingSettings.categories}
+                        isBootstrapping={!isAppInitialized}
                     />
                 </div>
             ) : (
-                <>
-                    <div className="sticky top-0 z-30 bg-white border-b border-l border-gray-200">
+                <div className="flex min-h-screen min-w-0 flex-col">
+                    <div className="sticky top-0 z-30 min-w-0 shrink-0 bg-white border-b border-l border-gray-200">
                         <div className="p-8">
                             <div className="max-w-7xl mx-auto flex justify-between items-center">
                                 <div className="flex items-center space-x-2">
@@ -670,12 +635,12 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    <div className="p-8">
+                    <div className="flex-1 p-8">
                         {isLoadingFlashcards ? (
-                            <div className="text-center py-12">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                                <p className="mt-4 text-gray-600">
-                                    Завантаження карток...
+                            <div className="flex flex-col items-center justify-center min-h-[45vh] gap-4">
+                                <Loader className="w-10 h-10 animate-spin text-blue-600" />
+                                <p className="text-sm text-gray-600">
+                                    Зачекайте, будь ласка
                                 </p>
                             </div>
                         ) : cardsToDisplay.length === 0 ? (
@@ -867,7 +832,7 @@ const HomePage = () => {
                             </>
                         )}
                     </div>
-                </>
+                </div>
             )}
 
             <FlashcardForm

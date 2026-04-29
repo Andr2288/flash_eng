@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
     Folder,
     Edit,
@@ -7,10 +7,8 @@ import {
     ChevronDown,
     Calendar,
     SortAsc,
-    TrendingUp,
     BookOpen,
-    CheckCircle,
-    Clock,
+    Loader,
 } from "lucide-react";
 import { useCategoryStore } from "../store/useCategoryStore.js";
 import { useFlashcardStore } from "../store/useFlashcardStore.js";
@@ -21,9 +19,9 @@ import ConfirmDeleteCategoryModal from "./ConfirmDeleteCategoryModal.jsx";
 const CategoryList = ({
     onCategorySelect,
     selectedCategoryId,
-    uncategorizedCount = 0,
+    isBootstrapping = false,
 }) => {
-    const { categories, isLoading, deleteCategory } = useCategoryStore();
+    const { categories, deleteCategory } = useCategoryStore();
     const { flashcards, getFlashcards } = useFlashcardStore();
     const { updateSetting, getGeneralSettings } = useUserSettingsStore();
 
@@ -44,127 +42,60 @@ const CategoryList = ({
     const [categoryToDelete, setCategoryToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Category progress cache
     const [categoryProgress, setCategoryProgress] = useState({});
-    const [isLoadingProgress, setIsLoadingProgress] = useState(false);
 
-    const calculateDetailedProgress = React.useCallback((categoryCards) => {
+    const calculateFolderProgress = useCallback((categoryCards) => {
         if (!categoryCards || categoryCards.length === 0) {
-            return {
-                total: 0,
-                review: 0,
-                learning: 0,
-                new: 0,
-                percentage: 0,
-                totalExercises: 0,
-                completedExercises: 0,
-            };
+            return { total: 0, percentage: 0 };
         }
 
         const totalCards = categoryCards.length;
-        const reviewCards = categoryCards.filter(
-            (card) => card.status === "review"
-        ).length;
-        const learningCards = categoryCards.filter(
-            (card) => card.status === "learning"
-        ).length;
-        const newCards = Math.max(0, totalCards - reviewCards - learningCards);
-
         const totalPossibleExercises = totalCards * 4;
         let completedExercises = 0;
 
         categoryCards.forEach((card) => {
-            let cardExercises = 0;
-            if (card.isSentenceCompletionExercise) cardExercises++;
-            if (card.isMultipleChoiceExercise) cardExercises++;
-            if (card.isListenAndFillExercise) cardExercises++;
-            if (card.isListenAndChooseExercise) cardExercises++;
-
-            completedExercises += cardExercises;
+            let n = 0;
+            if (card.isSentenceCompletionExercise) n++;
+            if (card.isMultipleChoiceExercise) n++;
+            if (card.isListenAndFillExercise) n++;
+            if (card.isListenAndChooseExercise) n++;
+            completedExercises += n;
         });
 
-        const detailedPercentage =
+        const percentage =
             totalPossibleExercises > 0
                 ? Math.round(
                       (completedExercises / totalPossibleExercises) * 100
                   )
                 : 0;
 
-        return {
-            total: totalCards,
-            review: reviewCards,
-            learning: learningCards,
-            new: newCards,
-            percentage: detailedPercentage,
-            totalExercises: totalPossibleExercises,
-            completedExercises: completedExercises,
-        };
+        return { total: totalCards, percentage };
     }, []);
 
-    // Load category progress
-    const loadCategoryProgress = React.useCallback(async () => {
-        setIsLoadingProgress(true);
-        try {
-            await getFlashcards();
-            const currentFlashcards = useFlashcardStore.getState().flashcards;
-            const currentCategories = useCategoryStore.getState().categories;
-
-            const progressMap = {};
-
-            for (const category of currentCategories) {
-                const categoryCards = currentFlashcards.filter(
-                    (card) =>
-                        card.categoryId && card.categoryId._id === category._id
-                );
-                progressMap[category._id] =
-                    calculateDetailedProgress(categoryCards);
-            }
-
-            const uncategorizedCards = currentFlashcards.filter(
-                (card) => !card.categoryId
-            );
-            progressMap["uncategorized"] =
-                calculateDetailedProgress(uncategorizedCards);
-
-            progressMap["all"] = calculateDetailedProgress(currentFlashcards);
-
-            setCategoryProgress(progressMap);
-        } catch (error) {
-            console.error("Error loading category progress:", error);
-        } finally {
-            setIsLoadingProgress(false);
-        }
-    }, [calculateDetailedProgress]);
-
-    // Load all flashcards to calculate progress
     useEffect(() => {
-        loadCategoryProgress();
-    }, [loadCategoryProgress]);
+        const progressMap = {};
 
-    useEffect(() => {
-        if (categories.length > 0 && flashcards.length >= 0) {
-            const progressMap = {};
-
-            for (const category of categories) {
-                const categoryCards = flashcards.filter(
-                    (card) =>
-                        card.categoryId && card.categoryId._id === category._id
-                );
-                progressMap[category._id] =
-                    calculateDetailedProgress(categoryCards);
-            }
-
-            const uncategorizedCards = flashcards.filter(
-                (card) => !card.categoryId
+        for (const category of categories) {
+            const categoryCards = flashcards.filter(
+                (card) =>
+                    card.categoryId && card.categoryId._id === category._id
             );
-            progressMap["uncategorized"] =
-                calculateDetailedProgress(uncategorizedCards);
-
-            progressMap["all"] = calculateDetailedProgress(flashcards);
-
-            setCategoryProgress(progressMap);
+            progressMap[category._id] =
+                calculateFolderProgress(categoryCards);
         }
-    }, [flashcards, categories, calculateDetailedProgress]);
+
+        const uncategorizedCards = flashcards.filter(
+            (card) => !card.categoryId
+        );
+        progressMap.uncategorized =
+            calculateFolderProgress(uncategorizedCards);
+        progressMap.all = calculateFolderProgress(flashcards);
+
+        setCategoryProgress(progressMap);
+    }, [flashcards, categories, calculateFolderProgress]);
+
+    const getProgressInfo = (categoryId) =>
+        categoryProgress[categoryId] || { total: 0, percentage: 0 };
 
     const handleEdit = (category, e) => {
         e.stopPropagation();
@@ -186,7 +117,7 @@ const CategoryList = ({
             await deleteCategory(categoryToDelete._id);
             setShowDeleteModal(false);
             setCategoryToDelete(null);
-            loadCategoryProgress();
+            await getFlashcards(null, { silent: true });
         } catch (error) {
             // Error handling is done in the store
         } finally {
@@ -204,9 +135,7 @@ const CategoryList = ({
     const handleFormSubmit = async () => {
         setIsSubmitting(true);
         try {
-            setTimeout(() => {
-                loadCategoryProgress();
-            }, 500);
+            await getFlashcards(null, { silent: true });
         } finally {
             setIsSubmitting(false);
         }
@@ -253,20 +182,6 @@ const CategoryList = ({
         return sorted;
     };
 
-    const getProgressInfo = (categoryId) => {
-        return (
-            categoryProgress[categoryId] || {
-                total: 0,
-                review: 0,
-                learning: 0,
-                new: 0,
-                percentage: 0,
-                totalExercises: 0,
-                completedExercises: 0,
-            }
-        );
-    };
-
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString("uk-UA", {
             year: "numeric",
@@ -275,13 +190,11 @@ const CategoryList = ({
         });
     };
 
-    const getProgressTooltip = (progress) => {
-        if (progress.total === 0) return "Немає карток";
-
-        return (
-            `${progress.completedExercises} з ${progress.totalExercises} вправ завершено\n` +
-            `Картки: ${progress.review} завершено, ${progress.learning} вивчається, ${progress.new} нових`
-        );
+    const pluralizeCards = (n) => {
+        if (n % 100 >= 11 && n % 100 <= 14) return "карток";
+        if (n % 10 === 1) return "картка";
+        if (n % 10 >= 2 && n % 10 <= 4) return "картки";
+        return "карток";
     };
 
     // Keyboard shortcuts
@@ -322,11 +235,13 @@ const CategoryList = ({
         onDelete,
     }) => {
         const progress = getProgressInfo(categoryData._id);
+        const cardCount =
+            categoryData.flashcardsCount ?? progress.total ?? 0;
 
         return (
             <div
                 onClick={onClick}
-                className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer border-l-4 group ${
+                className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer border-l-4 ${
                     isSelected
                         ? "ring-2 ring-opacity-50 shadow-md"
                         : "border-l-transparent hover:border-l-4"
@@ -388,91 +303,21 @@ const CategoryList = ({
                                 )}
 
                                 <div className="flex items-center space-x-4 text-sm">
-                                    {/* Cards count */}
                                     <div className="flex items-center space-x-1 text-gray-700">
                                         <BookOpen className="w-4 h-4" />
                                         <span className="font-medium">
-                                            {categoryData.flashcardsCount ||
-                                                progress.total}{" "}
-                                            {(categoryData.flashcardsCount ||
-                                                progress.total) %
-                                                100 >=
-                                                11 &&
-                                            (categoryData.flashcardsCount ||
-                                                progress.total) %
-                                                100 <=
-                                                14
-                                                ? "карток"
-                                                : (categoryData.flashcardsCount ||
-                                                        progress.total) %
-                                                        10 ===
-                                                    1
-                                                  ? "картка"
-                                                  : (categoryData.flashcardsCount ||
-                                                          progress.total) %
-                                                          10 >=
-                                                          2 &&
-                                                      (categoryData.flashcardsCount ||
-                                                          progress.total) %
-                                                          10 <=
-                                                          4
-                                                    ? "картки"
-                                                    : "карток"}
+                                            {cardCount}{" "}
+                                            {pluralizeCards(cardCount)}
                                         </span>
                                     </div>
-
-                                    {/* Progress indicators */}
-                                    {progress.total > 0 && (
-                                        <>
-                                            <div className="flex items-center space-x-1 text-green-600">
-                                                <CheckCircle className="w-4 h-4" />
-                                                <span className="font-medium">
-                                                    {progress.review}
-                                                </span>
-                                            </div>
-
-                                            <div className="flex items-center space-x-1 text-blue-600">
-                                                <Clock className="w-4 h-4" />
-                                                <span className="font-medium">
-                                                    {progress.learning}
-                                                </span>
-                                            </div>
-
-                                            {progress.new > 0 && (
-                                                <div className="flex items-center space-x-1 text-gray-500">
-                                                    <span className="w-4 h-4 flex items-center justify-center">
-                                                        •
-                                                    </span>
-                                                    <span className="font-medium">
-                                                        {progress.new} нових
-                                                    </span>
-                                                </div>
-                                            )}
-
-                                            <div className="flex items-center space-x-1 text-purple-600">
-                                                <TrendingUp className="w-4 h-4" />
-                                                <span className="font-medium text-xs">
-                                                    {
-                                                        progress.completedExercises
-                                                    }
-                                                    /{progress.totalExercises}{" "}
-                                                    вправ
-                                                </span>
-                                            </div>
-                                        </>
-                                    )}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Right side - Progress and actions */}
                         <div className="flex items-center space-x-6">
                             {progress.total > 0 && (
                                 <div className="flex items-center space-x-3">
-                                    <div
-                                        className="relative w-16 h-16"
-                                        title={getProgressTooltip(progress)}
-                                    >
+                                    <div className="relative w-16 h-16">
                                         <svg
                                             className="w-16 h-16 transform -rotate-90"
                                             viewBox="0 0 36 36"
@@ -502,9 +347,8 @@ const CategoryList = ({
                                 </div>
                             )}
 
-                            {/* Action buttons */}
                             {canEdit && (
-                                <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="flex space-x-1">
                                     <button
                                         onClick={(e) => onEdit(categoryData, e)}
                                         className="p-2 bg-white hover:bg-blue-50 text-blue-600 rounded-lg shadow-sm border border-gray-200 transition-colors"
@@ -530,41 +374,29 @@ const CategoryList = ({
         );
     };
 
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
-        );
-    }
-
-    // Prepare system categories data
-    const allProgress = getProgressInfo("all");
     const allCategoriesData = {
         _id: "all",
         name: "Всі картки",
         description: "Показати всі флешкартки разом",
         color: "#3B82F6",
-        flashcardsCount: allProgress.total,
+        flashcardsCount: flashcards.length,
         createdAt: new Date().toISOString(),
     };
 
-    const uncategorizedProgress = getProgressInfo("uncategorized");
     const uncategorizedData = {
         _id: "uncategorized",
         name: "Без папки",
         description: "Картки які не належать до жодної папки",
         color: "#059669",
-        flashcardsCount: uncategorizedProgress.total,
+        flashcardsCount: flashcards.filter((card) => !card.categoryId).length,
         createdAt: new Date().toISOString(),
     };
 
     const sortedCategories = getSortedCategories();
 
     return (
-        <div>
-            {/* Header */}
-            <div className="bg-white border-b border-gray-200">
+        <div className="flex min-h-screen min-w-0 flex-col">
+            <div className="sticky top-0 z-20 min-w-0 shrink-0 bg-white border-b border-gray-200">
                 <div className="p-8">
                     <div className="mx-auto flex justify-between items-center">
                         <div className="flex flex-row items-center">
@@ -638,104 +470,112 @@ const CategoryList = ({
                 </div>
             </div>
 
-            {/* Categories List */}
-            <div className="px-30 py-8 space-y-4">
-                {/* System Categories */}
-                <div className="space-y-4">
-                    <CategoryRow
-                        categoryData={allCategoriesData}
-                        isSelected={!selectedCategoryId}
-                        onClick={() => onCategorySelect(null)}
-                        canEdit={false}
-                    />
-
-                    <CategoryRow
-                        categoryData={uncategorizedData}
-                        isSelected={selectedCategoryId === "uncategorized"}
-                        onClick={() =>
-                            onCategorySelect({
-                                _id: "uncategorized",
-                                name: "Без папки",
-                            })
-                        }
-                        canEdit={false}
-                    />
+            {isBootstrapping ? (
+                <div className="flex flex-1 flex-col items-center justify-center min-h-[45vh] gap-4 px-8">
+                    <Loader className="w-10 h-10 animate-spin text-blue-600" />
+                    <p className="text-sm text-gray-600">
+                        Зачекайте, будь ласка
+                    </p>
                 </div>
+            ) : (
+                <div className="flex-1 px-8 py-8 sm:px-12 lg:px-16 space-y-4">
+                    <div className="space-y-4">
+                        <CategoryRow
+                            categoryData={allCategoriesData}
+                            isSelected={!selectedCategoryId}
+                            onClick={() => onCategorySelect(null)}
+                            canEdit={false}
+                        />
 
-                {/* Separator */}
-                {sortedCategories.length > 0 && (
-                    <div className="border-t border-gray-200 pt-4">
-                        <h3 className="text-sm font-medium text-gray-500 mb-3">
-                            Мої папки ({sortedCategories.length})
-                        </h3>
+                        <CategoryRow
+                            categoryData={uncategorizedData}
+                            isSelected={
+                                selectedCategoryId === "uncategorized"
+                            }
+                            onClick={() =>
+                                onCategorySelect({
+                                    _id: "uncategorized",
+                                    name: "Без папки",
+                                })
+                            }
+                            canEdit={false}
+                        />
                     </div>
-                )}
 
-                {/* User Categories */}
-                <div className="space-y-3">
-                    {isLoadingProgress && sortedCategories.length > 0 && (
-                        <div className="text-center py-4">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                            <p className="text-sm text-gray-600">
-                                Завантаження...
-                            </p>
+                    {sortedCategories.length > 0 && (
+                        <div className="border-t border-gray-200 pt-4">
+                            <h3 className="text-sm font-medium text-gray-500 mb-3">
+                                Мої папки ({sortedCategories.length})
+                            </h3>
                         </div>
                     )}
 
-                    {sortedCategories.map((category) => {
-                        const categoryData = {
-                            ...category,
-                            flashcardsCount: category.flashcardsCount || 0,
-                        };
+                    <div className="space-y-3">
+                        {sortedCategories.map((category) => {
+                            const categoryData = {
+                                ...category,
+                                flashcardsCount:
+                                    category.flashcardsCount ??
+                                    flashcards.filter(
+                                        (card) =>
+                                            card.categoryId?._id ===
+                                            category._id
+                                    ).length,
+                            };
 
-                        return (
-                            <CategoryRow
-                                key={category._id}
-                                categoryData={categoryData}
-                                isSelected={selectedCategoryId === category._id}
-                                onClick={() => handleCategoryClick(category)}
-                                canEdit={true}
-                                onEdit={handleEdit}
-                                onDelete={handleDeleteClick}
-                            />
-                        );
-                    })}
-                </div>
-
-                {/* Empty State */}
-                {sortedCategories.length === 0 && (
-                    <div className="text-center py-16 bg-white rounded-xl shadow-sm">
-                        <div className="text-blue-400 mb-4">
-                            <Folder className="w-16 h-16 mx-auto" />
-                        </div>
-                        <h3 className="text-xl font-medium text-gray-900 mb-2">
-                            Немає папок
-                        </h3>
-                        <p className="text-gray-600 mb-6">
-                            Створіть свою першу папку для організації карток
-                        </p>
-
-                        <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 mb-6">
-                            <span>Швидке створення:</span>
-                            <kbd className="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded">
-                                Ctrl
-                            </kbd>
-                            <span>+</span>
-                            <kbd className="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded">
-                                Space
-                            </kbd>
-                        </div>
-
-                        <button
-                            onClick={() => setShowForm(true)}
-                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl inline-flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
-                        >
-                            <Plus className="w-5 h-5" />
-                            <span>Створити папку</span>
-                        </button>
+                            return (
+                                <CategoryRow
+                                    key={category._id}
+                                    categoryData={categoryData}
+                                    isSelected={
+                                        selectedCategoryId === category._id
+                                    }
+                                    onClick={() =>
+                                        handleCategoryClick(category)
+                                    }
+                                    canEdit={true}
+                                    onEdit={handleEdit}
+                                    onDelete={handleDeleteClick}
+                                />
+                            );
+                        })}
                     </div>
-                )}
-            </div>
+
+                    {sortedCategories.length === 0 && (
+                        <div className="text-center py-16 bg-white rounded-xl shadow-sm">
+                            <div className="text-blue-400 mb-4">
+                                <Folder className="w-16 h-16 mx-auto" />
+                            </div>
+                            <h3 className="text-xl font-medium text-gray-900 mb-2">
+                                Немає папок
+                            </h3>
+                            <p className="text-gray-600 mb-6">
+                                Створіть свою першу папку для організації
+                                карток
+                            </p>
+
+                            <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 mb-6">
+                                <span>Швидке створення:</span>
+                                <kbd className="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded">
+                                    Ctrl
+                                </kbd>
+                                <span>+</span>
+                                <kbd className="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded">
+                                    Space
+                                </kbd>
+                            </div>
+
+                            <button
+                                onClick={() => setShowForm(true)}
+                                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl inline-flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+                            >
+                                <Plus className="w-5 h-5" />
+                                <span>Створити папку</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Category Form Modal */}
             <CategoryForm

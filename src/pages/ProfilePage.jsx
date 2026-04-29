@@ -17,6 +17,7 @@ import {
     fetchVocabularyWords,
 } from "../store/index.js";
 import { useThunk } from "../hooks/use-thunk.js";
+import { useNavReselectStore } from "../store/useNavReselectStore.js";
 
 const TOPIC_PALETTE = [
     "#3B82F6",
@@ -79,6 +80,10 @@ const ProfilePage = () => {
     const [doFetchVocabularyWords, isFetchingWords] =
         useThunk(fetchVocabularyWords);
 
+    const profileNavReselect = useNavReselectStore(
+        (s) => s.bumps["/profile"] ?? 0
+    );
+
     const loadVocabulary = useCallback(async () => {
         setStatsLoading(true);
         setLoadError(null);
@@ -97,7 +102,7 @@ const ProfilePage = () => {
 
     useEffect(() => {
         loadVocabulary();
-    }, [loadVocabulary]);
+    }, [loadVocabulary, profileNavReselect]);
 
     const handleProfileUpdate = async (formData) => {
         setIsUpdatingProfile(true);
@@ -189,12 +194,39 @@ const ProfilePage = () => {
         calculateStats(data);
     }, [data, statsLoading, calculateStats]);
 
+    const profileHeader = (
+        <div className="shrink-0 bg-white border-b border-gray-200">
+            <div className="p-8">
+                <div className="max-w-7xl mx-auto flex items-center">
+                    <div className="bg-linear-to-r from-orange-600 to-red-600 w-10 h-10 rounded-lg flex items-center justify-center mr-3 shadow-md">
+                        <User className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-bold text-gray-900">
+                            Профіль
+                        </h1>
+                        <p className="text-gray-600">
+                            Статистика словника та акаунту FlashEng
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
     if (authLoading || !user) {
         return (
-            <div className="ml-68 min-h-screen bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100 flex items-center justify-center">
-                <div className="text-center">
-                    <User className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Завантаження профілю...</p>
+            <div className="ml-68 flex min-h-screen min-w-0 flex-col bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
+                {profileHeader}
+                <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8">
+                    <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col">
+                        <div className="flex flex-1 flex-col items-center justify-center gap-4">
+                            <Loader className="w-10 h-10 animate-spin text-blue-600" />
+                            <p className="text-sm text-gray-600">
+                                Зачекайте, будь ласка
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -205,27 +237,11 @@ const ProfilePage = () => {
     const err = loadError;
 
     return (
-        <div className="ml-68 min-h-screen bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
-            <div className="bg-white border-b border-gray-200">
-                <div className="p-8">
-                    <div className="max-w-7xl mx-auto flex items-center">
-                        <div className="bg-linear-to-r from-orange-600 to-red-600 w-10 h-10 rounded-lg flex items-center justify-center mr-3 shadow-md">
-                            <User className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                            <h1 className="text-xl font-bold text-gray-900">
-                                Профіль
-                            </h1>
-                            <p className="text-gray-600">
-                                Статистика словника та акаунту FlashEng
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="ml-68 flex min-h-screen min-w-0 flex-col bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
+            {profileHeader}
 
-            <div className="p-8">
-                <div className="max-w-7xl mx-auto space-y-8">
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8">
+                <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col space-y-8">
                     <div className="bg-white rounded-xl shadow-md p-6">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div className="flex items-center space-x-4 flex-1 min-w-0">
@@ -293,10 +309,10 @@ const ProfilePage = () => {
                     ) : statsLoading ||
                       isFetchingWords ||
                       stats == null ? (
-                        <div className="text-center py-12">
-                            <Loader className="w-10 h-10 animate-spin text-blue-600 mx-auto" />
-                            <p className="mt-4 text-gray-600">
-                                Завантаження статистики...
+                        <div className="flex flex-1 flex-col items-center justify-center gap-4">
+                            <Loader className="w-10 h-10 animate-spin text-blue-600" />
+                            <p className="text-sm text-gray-600">
+                                Зачекайте, будь ласка
                             </p>
                         </div>
                     ) : (
