@@ -157,10 +157,8 @@ const TranslateSentenceExercise = () => {
 
     const handlePlayAudio = async (text) => {
         try {
-            // Генеруємо аудіо через OpenAI TTS API
             const audioUrl = await doGenerateSpeech(text);
 
-            // Відтворюємо нещодавно згенероване аудіо
             const audio = new Audio(audioUrl);
             audio.play();
         } catch (error) {

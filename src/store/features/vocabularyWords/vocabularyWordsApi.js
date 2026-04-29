@@ -1,5 +1,9 @@
 import OpenAI from "openai";
 import { supabase } from "./supabase.js";
+import {
+    generatePrompt,
+    generateRegenerateExamplesPrompt,
+} from "../../../lib/prompts.js";
 
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 const DEEPL_API_KEY = import.meta.env.VITE_DEEPL_API_KEY;
@@ -41,6 +45,23 @@ const DeepLTargetLanguage = {
 };
 
 Object.freeze(DeepLTargetLanguage);
+
+function parseJsonOutput(text) {
+    const cleaned = text
+        .replace(/^```json\s*/i, "")
+        .replace(/^```\s*/i, "")
+        .replace(/\s*```$/, "")
+        .trim();
+    return JSON.parse(cleaned);
+}
+
+function buildResponsesCreatePayload(model, input) {
+    const payload = { model, input };
+    if (String(model).startsWith("gpt-5")) {
+        payload.reasoning = { effort: "low" };
+    }
+    return payload;
+}
 
 async function translateWithDeepL({
     text,
@@ -409,6 +430,72 @@ Bad example:
     return parsed;
 }
 
+async function generateFlashcardField({
+    text,
+    englishLevel = "B1",
+    promptType,
+    categoryContext = "",
+    model = GPTModel.GPT5Mini,
+}) {
+    const prompt = generatePrompt(
+        promptType,
+        text,
+        englishLevel,
+        categoryContext
+    );
+
+    const response = await client.responses.create({
+        ...buildResponsesCreatePayload(model, prompt),
+    });
+
+    const output = response.output_text?.trim() || "";
+
+    if (promptType === "examples") {
+        return parseJsonOutput(output);
+    }
+
+    return output;
+}
+
+async function generateCompleteFlashcard({
+    text,
+    englishLevel = "B1",
+    categoryContext = "",
+    model = GPTModel.GPT5Mini,
+}) {
+    const prompt = generatePrompt(
+        "completeFlashcard",
+        text,
+        englishLevel,
+        categoryContext
+    );
+
+    const response = await client.responses.create({
+        ...buildResponsesCreatePayload(model, prompt),
+    });
+
+    return parseJsonOutput(response.output_text || "");
+}
+
+async function regenerateFlashcardExamples({
+    text,
+    englishLevel = "B1",
+    categoryContext = "",
+    model = GPTModel.GPT5Mini,
+}) {
+    const prompt = generateRegenerateExamplesPrompt(
+        text,
+        englishLevel,
+        categoryContext
+    );
+
+    const response = await client.responses.create({
+        ...buildResponsesCreatePayload(model, prompt),
+    });
+
+    return parseJsonOutput(response.output_text || "");
+}
+
 export {
     addVocabularyWord,
     fetchVocabularyWords,
@@ -417,6 +504,9 @@ export {
     generateSpeech,
     generateSentenceCompletion,
     generateListenAndFill,
+    generateFlashcardField,
+    generateCompleteFlashcard,
+    regenerateFlashcardExamples,
     translateWithDeepL,
     DeepLTargetLanguage,
 };
