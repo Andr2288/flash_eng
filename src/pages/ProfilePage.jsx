@@ -30,7 +30,6 @@ const TOPIC_PALETTE = [
     "#14B8A6",
 ];
 
-/** Значення з metadata, яке не варто показувати (плейсхолдери в Dashboard тощо). */
 function metaDisplayString(value) {
     const t = value != null ? String(value).trim() : "";
     if (!t) {

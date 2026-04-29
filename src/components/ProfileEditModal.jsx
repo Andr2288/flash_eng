@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Save, X, Camera, User } from "lucide-react";
+import { Save, X, Camera, User, Loader } from "lucide-react";
 
 const MAX_NAME_LEN = 50;
 const AVATAR_MAX_EDGE = 512;
@@ -87,6 +87,18 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isLoading]);
 
+    useEffect(() => {
+        const html = document.documentElement;
+        const previousBody = document.body.style.overflow;
+        const previousHtml = html.style.overflow;
+        document.body.style.overflow = "hidden";
+        html.style.overflow = "hidden";
+        return () => {
+            document.body.style.overflow = previousBody;
+            html.style.overflow = previousHtml;
+        };
+    }, []);
+
     const handleSave = async () => {
         setSaveError("");
         const err = validateFullName(formData.fullName);
@@ -164,33 +176,51 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
         !isLoading && nameTrim.length >= 2 && nameTrim.length <= MAX_NAME_LEN;
 
     return (
-        <div className="fixed inset-0 bg-gray-600/80 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[95vh] overflow-hidden flex flex-col">
-                <div className="p-8 border-b border-gray-200 bg-linear-to-r from-slate-50 to-gray-50 rounded-t-2xl shrink-0">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h2 className="text-xl font-bold text-gray-900">
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-gray-600/80 p-4"
+            role="presentation"
+            onClick={(e) => {
+                if (e.target === e.currentTarget && !isLoading) {
+                    handleCancel();
+                }
+            }}
+        >
+            <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="profile-edit-title"
+                className="flex max-h-[min(92vh,720px)] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-2xl shadow-gray-900/10"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <header className="shrink-0 border-b border-gray-100 bg-linear-to-br from-slate-50 to-white px-6 py-5 sm:px-8 sm:py-6">
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0">
+                            <h2
+                                id="profile-edit-title"
+                                className="text-lg font-semibold tracking-tight text-gray-900 sm:text-xl"
+                            >
                                 Редагувати профіль
                             </h2>
-                            <p className="text-sm text-gray-600 mt-1">
-                                Ім’я в metadata; фото — у Storage (публічне
-                                посилання)
+                            <p className="mt-1.5 text-sm leading-relaxed text-gray-600">
+                                Оновіть ім&apos;я та фото. Після збереження
+                                зміни з&apos;являться на сторінці профілю.
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={handleCancel}
                             disabled={isLoading}
-                            className="text-gray-400 hover:text-gray-600 p-2 transition-colors disabled:cursor-not-allowed hover:bg-gray-100 rounded-full cursor-pointer"
-                            title="Закрити (Esc)"
+                            className="shrink-0 rounded-xl p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            title="Закрити"
+                            aria-label="Закрити вікно"
                         >
-                            <X className="w-6 h-6" />
+                            <X className="h-5 w-5" strokeWidth={2} />
                         </button>
                     </div>
-                </div>
+                </header>
 
                 <form
-                    className="flex flex-col flex-1 min-h-0"
+                    className="flex min-h-0 flex-1 flex-col"
                     onSubmit={(e) => {
                         e.preventDefault();
                         if (!isLoading) {
@@ -198,8 +228,8 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
                         }
                     }}
                 >
-                    <div className="flex-1 overflow-y-auto">
-                        <div className="p-8 space-y-6">
+                    <div className="min-h-0 flex-1 overflow-y-auto">
+                        <div className="space-y-6 px-6 py-6 sm:px-8 sm:py-8">
                             {saveError ? (
                                 <div
                                     className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
@@ -211,38 +241,50 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
 
                             <div className="text-center">
                                 <div className="relative inline-block">
-                                    <div className="w-24 h-24 rounded-full bg-linear-to-r from-orange-100 to-red-100 overflow-hidden mx-auto shadow-md">
+                                    <div className="mx-auto h-28 w-28 overflow-hidden rounded-full bg-linear-to-br from-orange-100 to-red-100 shadow-md ring-4 ring-white">
                                         {formData.profilePic ? (
                                             <img
                                                 src={formData.profilePic}
                                                 alt=""
-                                                className="w-full h-full object-cover"
+                                                className="h-full w-full object-cover"
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <User className="w-12 h-12 text-orange-400" />
+                                            <div className="flex h-full w-full items-center justify-center">
+                                                <User
+                                                    className="h-14 w-14 text-orange-400"
+                                                    strokeWidth={1.5}
+                                                />
                                             </div>
                                         )}
                                     </div>
 
-                                    <label className="absolute -bottom-1 -right-1 w-8 h-8 bg-linear-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-full flex items-center justify-center cursor-pointer transition-colors shadow-lg">
-                                        <Camera className="w-4 h-4 text-white" />
+                                    <label
+                                        className={`absolute -bottom-0.5 -right-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-linear-to-r from-orange-500 to-red-500 shadow-lg transition-all hover:from-orange-600 hover:to-red-600 hover:shadow-md ${isLoading ? "pointer-events-none opacity-50" : "cursor-pointer"}`}
+                                        aria-label="Завантажити фото профілю"
+                                    >
+                                        <Camera
+                                            className="h-4 w-4 text-white"
+                                            strokeWidth={2}
+                                        />
                                         <input
                                             type="file"
                                             accept="image/jpeg,image/jpg,image/png,image/webp"
                                             onChange={handleImageUpload}
-                                            className="hidden"
+                                            className="sr-only"
                                             disabled={isLoading}
                                         />
                                     </label>
                                 </div>
 
-                                <div className="mt-3 space-y-2">
+                                <div className="mt-4 space-y-2">
                                     <p className="text-xs text-gray-500">
-                                        Натисніть на камеру, щоб змінити фото
+                                        Оберіть нове фото кнопкою з іконкою камери
                                     </p>
                                     {imageError ? (
-                                        <p className="text-xs text-red-600">
+                                        <p
+                                            className="text-xs font-medium text-red-600"
+                                            role="status"
+                                        >
                                             {imageError}
                                         </p>
                                     ) : null}
@@ -251,9 +293,9 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
                                             type="button"
                                             onClick={removeProfilePic}
                                             disabled={isLoading}
-                                            className="text-xs text-red-600 hover:text-red-800 disabled:opacity-50"
+                                            className="text-xs font-medium text-red-600 underline-offset-2 hover:text-red-800 hover:underline disabled:opacity-50"
                                         >
-                                            Видалити фото
+                                            Прибрати фото
                                         </button>
                                     ) : null}
                                 </div>
@@ -262,10 +304,12 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
                             <div>
                                 <label
                                     htmlFor="profile-full-name"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                    className="mb-2 block text-sm font-medium text-gray-800"
                                 >
                                     Повне ім&apos;я{" "}
-                                    <span className="text-red-500">*</span>
+                                    <span className="text-red-500" aria-hidden>
+                                        *
+                                    </span>
                                 </label>
                                 <input
                                     id="profile-full-name"
@@ -273,72 +317,64 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
                                     type="text"
                                     value={formData.fullName}
                                     onChange={handleNameChange}
-                                    placeholder={`Введіть ваше повне ім'я`}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-100"
+                                    placeholder="Наприклад, Олена Коваленко"
+                                    autoComplete="name"
+                                    aria-invalid={nameError ? true : undefined}
+                                    aria-describedby={
+                                        nameError
+                                            ? "profile-name-error"
+                                            : undefined
+                                    }
+                                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm transition-colors placeholder:text-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500/25 disabled:cursor-not-allowed disabled:bg-gray-50"
                                     maxLength={MAX_NAME_LEN}
                                     required
                                     disabled={isLoading}
                                 />
-                                <div className="flex justify-between items-center mt-1 gap-2">
+                                <div className="mt-2 flex flex-wrap items-start justify-between gap-2">
                                     <p className="text-xs text-gray-500">
-                                        {formData.fullName.length}/
-                                        {MAX_NAME_LEN} символів
+                                        {formData.fullName.length} /{" "}
+                                        {MAX_NAME_LEN}
                                     </p>
                                     {nameError ? (
-                                        <p className="text-xs text-red-600 text-right">
+                                        <p
+                                            className="text-xs font-medium text-red-600"
+                                            id="profile-name-error"
+                                        >
                                             {nameError}
                                         </p>
                                     ) : null}
                                 </div>
                             </div>
-
-                            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                                <div className="text-xs text-blue-800">
-                                    <p className="font-medium mb-1">
-                                        Вимоги до зображення:
-                                    </p>
-                                    <ul className="space-y-1">
-                                        <li>• Формат: JPEG, PNG, WebP</li>
-                                        <li>
-                                            • До 5MB; перед відправкою фото
-                                            стискається
-                                        </li>
-                                        <li>
-                                            • Зберігається в Supabase Storage —
-                                            у профілі лише посилання, не base64
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
-                    <div className="p-8 border-t border-gray-200 bg-linear-to-r from-slate-50 to-gray-50 rounded-b-2xl shrink-0">
-                        <div className="flex gap-3">
-                            <button
-                                type="submit"
-                                disabled={!canSave}
-                                className="flex-1 bg-linear-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-70 text-white py-3 px-6 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 disabled:cursor-not-allowed shadow-md hover:shadow-lg cursor-pointer"
-                            >
-                                {isLoading ? (
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                                ) : (
-                                    <>
-                                        <Save className="w-5 h-5" />
-                                        <span>Зберегти</span>
-                                    </>
-                                )}
-                            </button>
+                    <footer className="shrink-0 border-t border-gray-100 bg-gray-50/50 px-6 py-4 sm:px-8">
+                        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                             <button
                                 type="button"
                                 onClick={handleCancel}
                                 disabled={isLoading}
-                                className="px-6 py-3 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 text-gray-700 rounded-lg font-medium transition-all duration-200 disabled:cursor-not-allowed cursor-pointer"
+                                className="rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 Скасувати
                             </button>
+                            <button
+                                type="submit"
+                                disabled={!canSave}
+                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-orange-500 to-red-500 px-5 py-3 text-sm font-semibold text-white shadow-md transition-all hover:from-orange-600 hover:to-red-600 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+                            >
+                                {isLoading ? (
+                                    <Loader
+                                        className="h-5 w-5 animate-spin"
+                                        aria-hidden
+                                    />
+                                ) : (
+                                    <Save className="h-5 w-5" strokeWidth={2} />
+                                )}
+                                {isLoading ? "Збереження…" : "Зберегти"}
+                            </button>
                         </div>
-                    </div>
+                    </footer>
                 </form>
             </div>
         </div>
