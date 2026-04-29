@@ -1,7 +1,6 @@
 import { useThunk } from "../../hooks/use-thunk";
 import {
     useVocabularyWordsStore,
-    addVocabularyWord,
     updateVocabularyWord,
     generateExerciseVocabularyItem,
     translateWithDeepL,
@@ -11,19 +10,11 @@ import {
 } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 import { Loader, Eye, Lightbulb, Volume2 } from "lucide-react";
 
-import Modal from "../common/Modal.jsx";
-
 const TranslateSentenceExercise = () => {
-    const [
-        doAddVocabularyWord,
-        isAddingVocabularyWord,
-        addVocabularyWordError,
-    ] = useThunk(addVocabularyWord);
-
     const [
         doUpdateVocabularyWord,
         isUpdatingVocabularyWord,
@@ -56,7 +47,6 @@ const TranslateSentenceExercise = () => {
     const [uiState, setUiState] = useState({
         showTranslation: false,
         showTip: false,
-        showAddVocabularyWordModal: false,
     });
 
     const getNextVocabularyItemIndex = () => {
@@ -166,20 +156,6 @@ const TranslateSentenceExercise = () => {
         }
     };
 
-    const handleCloseModal = useCallback(() => {
-        setUiState((prev) => {
-            return {
-                ...prev,
-                showAddVocabularyWordModal: false,
-            };
-        });
-    }, []);
-
-    const handleAddWord = (newWord) => {
-        doAddVocabularyWord(newWord);
-        handleCloseModal();
-    };
-
     useEffect(() => {
         const run = async () => {
             if (
@@ -220,41 +196,15 @@ const TranslateSentenceExercise = () => {
 
     useEffect(() => {
         const handleKeyPress = (event) => {
-            if (
-                !event.ctrlKey &&
-                event.code === "Space" &&
-                !uiState.showAddVocabularyWordModal
-            ) {
-                event.preventDefault();
-                setUiState((prev) => ({
-                    ...prev,
-                    showAddVocabularyWordModal: true,
-                }));
-                return;
-            }
-
-            if (
-                event.ctrlKey &&
-                event.altKey &&
-                !uiState.showAddVocabularyWordModal
-            ) {
+            if (event.ctrlKey && event.altKey) {
                 event.preventDefault();
                 handleNextButtonClick("AGAIN");
                 return;
             }
 
-            if (
-                event.ctrlKey &&
-                event.code === "Space" &&
-                !uiState.showAddVocabularyWordModal
-            ) {
+            if (event.ctrlKey && event.code === "Space") {
                 event.preventDefault();
                 handleNextButtonClick("REVIEW");
-                return;
-            }
-
-            if (event.key === "Escape" && uiState.showAddVocabularyWordModal) {
-                handleCloseModal();
                 return;
             }
         };
@@ -264,7 +214,7 @@ const TranslateSentenceExercise = () => {
         return () => {
             window.removeEventListener("keydown", handleKeyPress);
         };
-    }, [handleNextButtonClick, uiState.showAddVocabularyWordModal]);
+    }, [handleNextButtonClick]);
 
     const highlightUsedForm = (sentence, usedForm) => {
         if (!usedForm || !sentence) return sentence;
@@ -521,14 +471,6 @@ const TranslateSentenceExercise = () => {
                     Добре
                 </button>
             </div>
-
-            <Modal
-                isActive={uiState.showAddVocabularyWordModal}
-                closeModal={handleCloseModal}
-                onSubmit={handleAddWord}
-                isLoading={isAddingVocabularyWord}
-                existingWords={data}
-            />
         </div>
     );
 };

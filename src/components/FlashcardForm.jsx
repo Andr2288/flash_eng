@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     Save,
     X,
@@ -10,6 +10,27 @@ import { useUserSettingsStore } from "../store/useUserSettingsStore.js";
 import { generateCompleteFlashcard } from "../store/features/vocabularyWords/vocabularyWordsApi.js";
 import toast from "react-hot-toast";
 
+/** Нормалізація для порівняння з існуючими картками (як у словнику вправ) */
+function normalizeFlashcardWordText(str) {
+    return String(str || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .toLowerCase();
+}
+
+function findDuplicateFlashcard(text, existingFlashcards, excludeId) {
+    const n = normalizeFlashcardWordText(text);
+    if (!n) {
+        return false;
+    }
+    return existingFlashcards.some((card) => {
+        if (excludeId && card?._id === excludeId) {
+            return false;
+        }
+        return normalizeFlashcardWordText(card?.text) === n;
+    });
+}
+
 const FlashcardForm = ({
     isOpen,
     onClose,
@@ -18,6 +39,7 @@ const FlashcardForm = ({
     isLoading,
     preselectedCategoryId,
     initialText,
+    existingFlashcards = [],
 }) => {
     const { categories, getCategories, getCategoryById } = useCategoryStore();
     const {
@@ -45,6 +67,8 @@ const FlashcardForm = ({
 
     // Auto-save state for quick creation
     const [isQuickCreating, setIsQuickCreating] = useState(false);
+
+    const [wordDuplicateError, setWordDuplicateError] = useState("");
 
     // Ref for auto-focus
     const textInputRef = useRef(null);
@@ -115,8 +139,39 @@ const FlashcardForm = ({
         }
     }, [editingCard, isOpen, preselectedCategoryId, initialText]);
 
+    useEffect(() => {
+        if (!isOpen) {
+            return;
+        }
+        if (!formData.text.trim()) {
+            setWordDuplicateError("");
+            return;
+        }
+        if (
+            findDuplicateFlashcard(
+                formData.text,
+                existingFlashcards,
+                editingCard?._id
+            )
+        ) {
+            setWordDuplicateError("Цей елемент вже є в базі");
+        } else {
+            setWordDuplicateError("");
+        }
+    }, [isOpen, formData.text, existingFlashcards, editingCard?._id]);
+
     const saveEditedCard = async () => {
         if (!formData.text.trim()) {
+            return;
+        }
+
+        if (
+            findDuplicateFlashcard(
+                formData.text,
+                existingFlashcards,
+                editingCard?._id
+            )
+        ) {
             return;
         }
 
@@ -210,6 +265,10 @@ const FlashcardForm = ({
 
     const quickCreateFlashcard = async () => {
         if (!validateTextField()) {
+            return;
+        }
+
+        if (findDuplicateFlashcard(formData.text, existingFlashcards, null)) {
             return;
         }
 
@@ -392,11 +451,15 @@ const FlashcardForm = ({
                     >
                         {/* Word/Text */}
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-3">
+                            <label
+                                htmlFor="flashcard-word-text"
+                                className="block text-sm font-semibold text-gray-700 mb-3"
+                            >
                                 Слово/Фраза{" "}
                                 <span className="text-red-500">*</span>
                             </label>
                             <input
+                                id="flashcard-word-text"
                                 ref={textInputRef}
                                 type="text"
                                 value={formData.text}
@@ -413,12 +476,31 @@ const FlashcardForm = ({
                                     handleInputChange("text", capitalized);
                                 }}
                                 placeholder="Введіть слово або фразу..."
-                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white hover:border-gray-300 text-gray-900 placeholder-gray-500"
+                                aria-invalid={wordDuplicateError ? true : undefined}
+                                aria-describedby={
+                                    wordDuplicateError
+                                        ? "flashcard-word-duplicate-error"
+                                        : undefined
+                                }
+                                className={`w-full px-4 py-3 border-2 rounded-xl transition-all duration-200 bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 disabled:opacity-70 ${
+                                    wordDuplicateError
+                                        ? "border-red-300 focus:border-red-500"
+                                        : "border-gray-200 focus:border-blue-500 hover:border-gray-300"
+                                }`}
                                 maxLength={200}
                                 required
                                 disabled={isQuickCreating}
                                 autoComplete="off"
                             />
+                            {wordDuplicateError ? (
+                                <p
+                                    id="flashcard-word-duplicate-error"
+                                    className="mt-2 text-sm text-red-600"
+                                    role="status"
+                                >
+                                    {wordDuplicateError}
+                                </p>
+                            ) : null}
                         </div>
 
                         {/* Category Selection */}
@@ -491,7 +573,8 @@ const FlashcardForm = ({
                             disabled={
                                 isLoading ||
                                 !formData.text.trim() ||
-                                isQuickCreating
+                                isQuickCreating ||
+                                !!wordDuplicateError
                             }
                             className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-blue-400 disabled:to-blue-500 disabled:cursor-default text-white px-6 py-3 rounded-md font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none disabled:hover:scale-100 cursor-pointer"
                         >

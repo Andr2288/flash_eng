@@ -230,6 +230,7 @@ const PracticePage = () => {
     useEffect(() => {
         if (practiceNavReselect > 0) {
             setVocabularyLoadSettled(false);
+            setUiState((prev) => ({ ...prev, showExercise: false }));
         }
         doFetchVocabularyWords()
             .catch(() => {})

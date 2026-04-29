@@ -25,6 +25,7 @@ import { useNavReselectStore } from "../store/useNavReselectStore.js";
 const HomePage = () => {
     const {
         flashcards,
+        allFlashcards: storeAllFlashcards,
         isLoading: isLoadingFlashcards,
         getFlashcards,
         createFlashcard,
@@ -32,6 +33,19 @@ const HomePage = () => {
         deleteFlashcard,
         setCategoryFilter,
     } = useFlashcardStore();
+
+    const existingFlashcardsForForm = useMemo(() => {
+        const byId = new Map();
+        for (const c of [
+            ...(storeAllFlashcards || []),
+            ...(flashcards || []),
+        ]) {
+            if (c?._id) {
+                byId.set(c._id, c);
+            }
+        }
+        return Array.from(byId.values());
+    }, [storeAllFlashcards, flashcards]);
 
     const { getCategories } = useCategoryStore();
 
@@ -848,6 +862,7 @@ const HomePage = () => {
                         ? searchQuery.trim()
                         : undefined
                 }
+                existingFlashcards={existingFlashcardsForForm}
             />
 
             <ConfirmDeleteModal

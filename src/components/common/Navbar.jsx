@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
     Settings,
     User,
@@ -13,10 +13,19 @@ import { useNavReselectStore } from "../../store/useNavReselectStore.js";
 
 const Navbar = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const { signOut } = useAuth();
     const bumpPath = useNavReselectStore((s) => s.bumpPath);
 
-    const isActive = (path) => location.pathname === path;
+    const isActive = (path) => {
+        if (path === "/practice") {
+            return (
+                location.pathname === "/practice" ||
+                location.pathname.startsWith("/practice/")
+            );
+        }
+        return location.pathname === path;
+    };
 
     const menuItems = [
         {
@@ -76,6 +85,24 @@ const Navbar = () => {
                                 <Link
                                     to={item.path}
                                     onClick={(e) => {
+                                        if (item.path === "/practice") {
+                                            if (location.pathname === "/practice") {
+                                                e.preventDefault();
+                                                bumpPath("/practice");
+                                                return;
+                                            }
+                                            if (
+                                                location.pathname.startsWith(
+                                                    "/practice/"
+                                                )
+                                            ) {
+                                                e.preventDefault();
+                                                navigate("/practice");
+                                                bumpPath("/practice");
+                                                return;
+                                            }
+                                            return;
+                                        }
                                         if (location.pathname === item.path) {
                                             e.preventDefault();
                                             bumpPath(item.path);
