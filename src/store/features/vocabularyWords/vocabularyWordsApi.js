@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { supabase } from "./supabase.js";
 
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+const DEEPL_API_KEY = import.meta.env.VITE_DEEPL_API_KEY;
 
 const client = new OpenAI({
     apiKey: OPENAI_API_KEY,
@@ -32,6 +33,72 @@ const TTSVoice = {
 };
 
 Object.freeze(TTSVoice);
+
+const DeepLTargetLanguage = {
+    EnglishBritish: "EN-GB",
+    EnglishAmerican: "EN-US",
+    Ukrainian: "UK",
+};
+
+Object.freeze(DeepLTargetLanguage);
+
+async function translateWithDeepL({
+    text,
+    targetLang = DeepLTargetLanguage.Ukrainian,
+    sourceLang = null,
+}) {
+    if (!DEEPL_API_KEY) {
+        throw new Error("VITE_DEEPL_API_KEY не знайдено");
+    }
+    if (!text?.trim()) {
+        throw new Error("Немає тексту для перекладу");
+    }
+
+    const useFreeApi = DEEPL_API_KEY.includes(":fx");
+    const endpoint = import.meta.env.DEV
+        ? useFreeApi
+            ? "/api/deepl-free/v2/translate"
+            : "/api/deepl-pro/v2/translate"
+        : useFreeApi
+          ? "https://api-free.deepl.com/v2/translate"
+          : "https://api.deepl.com/v2/translate";
+
+    const body = new URLSearchParams();
+    body.append("text", text);
+    body.append("target_lang", targetLang);
+    if (sourceLang) {
+        body.append("source_lang", sourceLang);
+    }
+
+    const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+            Authorization: `DeepL-Auth-Key ${DEEPL_API_KEY}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: body.toString(),
+    });
+
+    if (!response.ok) {
+        let errorMessage = `DeepL API error: ${response.status}`;
+        try {
+            const errorPayload = await response.json();
+            if (errorPayload?.message) {
+                errorMessage = `DeepL API error: ${errorPayload.message}`;
+            }
+        } catch {
+            // keep generic message when DeepL doesn't return JSON
+        }
+        throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    const translatedText = data?.translations?.[0]?.text;
+    if (!translatedText) {
+        throw new Error("DeepL повернув порожній переклад");
+    }
+    return translatedText;
+}
 
 async function requireUserId() {
     const {
@@ -85,7 +152,11 @@ async function fetchVocabularyWords() {
     return vocabulary_words;
 }
 
-async function updateVocabularyWord({ id, exerciseType, metodology_parameters }) {
+async function updateVocabularyWord({
+    id,
+    exerciseType,
+    metodology_parameters,
+}) {
     const userId = await requireUserId();
 
     const { data, error } = await supabase
@@ -346,4 +417,6 @@ export {
     generateSpeech,
     generateSentenceCompletion,
     generateListenAndFill,
+    translateWithDeepL,
+    DeepLTargetLanguage,
 };

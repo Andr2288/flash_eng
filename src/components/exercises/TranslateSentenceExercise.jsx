@@ -4,6 +4,7 @@ import {
     addVocabularyWord,
     updateVocabularyWord,
     generateExerciseVocabularyItem,
+    translateWithDeepL,
     generateSpeech,
     updateExerciseState,
     makeNextSelection,
@@ -34,6 +35,12 @@ const TranslateSentenceExercise = () => {
         isLoadingExerciseVocabularyItem,
         generateExerciseVocabularyItemError,
     ] = useThunk(generateExerciseVocabularyItem);
+
+    const [
+        doTranslateWithDeepL,
+        isLoadingTranslateWithDeepL,
+        translateWithDeepLError,
+    ] = useThunk(translateWithDeepL);
 
     const [doGenerateSpeech, isGeneratingSpeech, generateSpeechError] =
         useThunk(generateSpeech);
@@ -176,19 +183,38 @@ const TranslateSentenceExercise = () => {
     };
 
     useEffect(() => {
-        if (
-            exerciseState.currentSelection.length > 0 &&
-            exerciseState.generateNextStage
-        ) {
-            //console.log(JSON.stringify(data, null, 2));
-            doGenerateExerciseVocabularyItem(
-                exerciseState.currentSelection[
-                    exerciseState.currentVocabularyWordIndex
-                ].main_parameters
-            );
-        }
+        const run = async () => {
+            if (
+                exerciseState.currentSelection.length > 0 &&
+                exerciseState.generateNextStage
+            ) {
+                const generated = await doGenerateExerciseVocabularyItem(
+                    exerciseState.currentSelection[
+                        exerciseState.currentVocabularyWordIndex
+                    ].main_parameters
+                );
+
+                // console.log(generated.example_ukr);
+                //
+                // const translated = await doTranslateWithDeepL({
+                //     text: generated.example_eng,
+                // });
+                //
+                // updateExerciseState({
+                //     generatedExerciseData: {
+                //         ...generated,
+                //         example_ukr: translated,
+                //     },
+                // });
+                //
+                // console.log(translated);
+            }
+        };
+
+        run();
     }, [
         doGenerateExerciseVocabularyItem,
+        doTranslateWithDeepL,
         exerciseState.currentSelection,
         exerciseState.currentVocabularyWordIndex,
         exerciseState.generateNextStage,

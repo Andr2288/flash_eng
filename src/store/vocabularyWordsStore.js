@@ -195,6 +195,8 @@ const useVocabularyWordsStore = create(
 
         generateListenAndFill: (vocabularyWordMainParameters) =>
             api.generateListenAndFill(vocabularyWordMainParameters),
+
+        translateWithDeepL: (params) => api.translateWithDeepL(params),
     }))
 );
 
@@ -216,6 +218,8 @@ const generateSentenceCompletion = (arg) =>
     useVocabularyWordsStore.getState().generateSentenceCompletion(arg);
 const generateListenAndFill = (arg) =>
     useVocabularyWordsStore.getState().generateListenAndFill(arg);
+const translateWithDeepL = (arg) =>
+    useVocabularyWordsStore.getState().translateWithDeepL(arg);
 
 export {
     useVocabularyWordsStore,
@@ -228,4 +232,5 @@ export {
     generateSpeech,
     generateSentenceCompletion,
     generateListenAndFill,
+    translateWithDeepL,
 };

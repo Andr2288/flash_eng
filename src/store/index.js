@@ -9,4 +9,5 @@ export {
     generateSpeech,
     generateSentenceCompletion,
     generateListenAndFill,
+    translateWithDeepL,
 } from "./vocabularyWordsStore.js";
