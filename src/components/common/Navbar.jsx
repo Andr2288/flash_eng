@@ -86,7 +86,10 @@ const Navbar = () => {
                                     to={item.path}
                                     onClick={(e) => {
                                         if (item.path === "/practice") {
-                                            if (location.pathname === "/practice") {
+                                            if (
+                                                location.pathname ===
+                                                "/practice"
+                                            ) {
                                                 e.preventDefault();
                                                 bumpPath("/practice");
                                                 return;
@@ -133,7 +136,7 @@ const Navbar = () => {
                 </ul>
             </nav>
 
-            <div className="mt-auto border-t border-gray-200 py-6">
+            <div className="mt-auto border-t border-gray-200 py-8">
                 <ul className="space-y-2 px-4">
                     <li>
                         <button

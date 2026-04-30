@@ -80,15 +80,13 @@ const CategoryList = ({
                 (card) =>
                     card.categoryId && card.categoryId._id === category._id
             );
-            progressMap[category._id] =
-                calculateFolderProgress(categoryCards);
+            progressMap[category._id] = calculateFolderProgress(categoryCards);
         }
 
         const uncategorizedCards = flashcards.filter(
             (card) => !card.categoryId
         );
-        progressMap.uncategorized =
-            calculateFolderProgress(uncategorizedCards);
+        progressMap.uncategorized = calculateFolderProgress(uncategorizedCards);
         progressMap.all = calculateFolderProgress(flashcards);
 
         setCategoryProgress(progressMap);
@@ -235,8 +233,7 @@ const CategoryList = ({
         onDelete,
     }) => {
         const progress = getProgressInfo(categoryData._id);
-        const cardCount =
-            categoryData.flashcardsCount ?? progress.total ?? 0;
+        const cardCount = categoryData.flashcardsCount ?? progress.total ?? 0;
 
         return (
             <div
@@ -264,7 +261,7 @@ const CategoryList = ({
                     }
                 }}
             >
-                <div className="p-6">
+                <div className="px-8 py-5">
                     <div className="flex items-center justify-between">
                         {/* Left side - Main info */}
                         <div className="flex items-center space-x-4 flex-1">
@@ -395,8 +392,8 @@ const CategoryList = ({
     const sortedCategories = getSortedCategories();
 
     return (
-        <div className="flex min-h-screen min-w-0 flex-col">
-            <div className="sticky top-0 z-20 min-w-0 shrink-0 bg-white border-b border-gray-200">
+        <div className="flex h-[100dvh] max-h-[100dvh] min-h-0 min-w-0 flex-col overflow-hidden">
+            <div className="z-20 min-w-0 shrink-0 bg-white border-b border-gray-200">
                 <div className="p-8">
                     <div className="mx-auto flex justify-between items-center">
                         <div className="flex flex-row items-center">
@@ -478,7 +475,7 @@ const CategoryList = ({
                     </p>
                 </div>
             ) : (
-                <div className="flex-1 px-8 py-8 sm:px-12 lg:px-16 space-y-4">
+                <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8 sm:px-12 lg:px-16 space-y-4 [scrollbar-gutter:stable]">
                     <div className="space-y-4">
                         <CategoryRow
                             categoryData={allCategoriesData}
@@ -489,9 +486,7 @@ const CategoryList = ({
 
                         <CategoryRow
                             categoryData={uncategorizedData}
-                            isSelected={
-                                selectedCategoryId === "uncategorized"
-                            }
+                            isSelected={selectedCategoryId === "uncategorized"}
                             onClick={() =>
                                 onCategorySelect({
                                     _id: "uncategorized",
@@ -503,7 +498,7 @@ const CategoryList = ({
                     </div>
 
                     {sortedCategories.length > 0 && (
-                        <div className="border-t border-gray-200 pt-4">
+                        <div className="pt-8">
                             <h3 className="text-sm font-medium text-gray-500 mb-3">
                                 Мої папки ({sortedCategories.length})
                             </h3>
@@ -550,8 +545,7 @@ const CategoryList = ({
                                 Немає папок
                             </h3>
                             <p className="text-gray-600 mb-6">
-                                Створіть свою першу папку для організації
-                                карток
+                                Створіть свою першу папку для організації карток
                             </p>
 
                             <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 mb-6">

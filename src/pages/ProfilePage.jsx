@@ -172,8 +172,7 @@ const ProfilePage = () => {
                 name,
                 color: TOPIC_PALETTE[index % TOPIC_PALETTE.length],
                 count,
-                percentage:
-                    totalWords > 0 ? (count / totalWords) * 100 : 0,
+                percentage: totalWords > 0 ? (count / totalWords) * 100 : 0,
             }))
             .sort((a, b) => b.count - a.count);
 
@@ -215,9 +214,9 @@ const ProfilePage = () => {
 
     if (authLoading || !user) {
         return (
-            <div className="ml-68 flex min-h-screen min-w-0 flex-col bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
+            <div className="ml-68 flex h-[100dvh] max-h-[100dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
                 {profileHeader}
-                <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8">
+                <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
                     <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col">
                         <div className="flex flex-1 flex-col items-center justify-center gap-4">
                             <Loader className="w-10 h-10 animate-spin text-blue-600" />
@@ -236,11 +235,11 @@ const ProfilePage = () => {
     const err = loadError;
 
     return (
-        <div className="ml-68 flex min-h-screen min-w-0 flex-col bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
+        <div className="ml-68 flex h-[100dvh] max-h-[100dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
             {profileHeader}
 
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8">
-                <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col space-y-8">
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
+                <div className="mx-auto w-full max-w-7xl space-y-8">
                     <div className="bg-white rounded-xl shadow-md p-6">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div className="flex items-center space-x-4 flex-1 min-w-0">
@@ -296,7 +295,9 @@ const ProfilePage = () => {
                             <p className="text-red-800 font-medium">
                                 Не вдалося завантажити дані
                             </p>
-                            <p className="text-sm text-red-600/90 mt-2">{err}</p>
+                            <p className="text-sm text-red-600/90 mt-2">
+                                {err}
+                            </p>
                             <button
                                 type="button"
                                 onClick={() => loadVocabulary()}
@@ -305,9 +306,7 @@ const ProfilePage = () => {
                                 Спробувати ще раз
                             </button>
                         </div>
-                    ) : statsLoading ||
-                      isFetchingWords ||
-                      stats == null ? (
+                    ) : statsLoading || isFetchingWords || stats == null ? (
                         <div className="flex flex-1 flex-col items-center justify-center gap-4">
                             <Loader className="w-10 h-10 animate-spin text-blue-600" />
                             <p className="text-sm text-gray-600">
@@ -352,7 +351,8 @@ const ProfilePage = () => {
                                         </div>
                                     </div>
                                     <p className="text-xs text-gray-500 mt-2">
-                                        Усього додано за поточний тиждень (пн–нд)
+                                        Усього додано за поточний тиждень
+                                        (пн–нд)
                                     </p>
                                 </div>
                             </div>
@@ -432,50 +432,48 @@ const ProfilePage = () => {
                                     </div>
                                     {stats.topicStats.length === 0 ? (
                                         <p className="text-sm text-gray-500">
-                                            Додайте слова з темами — тут з’явиться
-                                            розподіл.
+                                            Додайте слова з темами — тут
+                                            з’явиться розподіл.
                                         </p>
                                     ) : (
                                         <div className="space-y-4">
-                                            {stats.topicStats.map(
-                                                (topic) => (
-                                                    <div
-                                                        key={topic.id}
-                                                        className="flex items-center space-x-3"
-                                                    >
-                                                        <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                            {stats.topicStats.map((topic) => (
+                                                <div
+                                                    key={topic.id}
+                                                    className="flex items-center space-x-3"
+                                                >
+                                                    <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                                        <div
+                                                            className="w-4 h-4 rounded shrink-0"
+                                                            style={{
+                                                                backgroundColor:
+                                                                    topic.color,
+                                                            }}
+                                                        />
+                                                        <span className="text-sm font-medium text-gray-700 truncate">
+                                                            {topic.name}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center space-x-3 shrink-0">
+                                                        <div className="w-24 bg-gray-200 rounded-full h-2">
                                                             <div
-                                                                className="w-4 h-4 rounded shrink-0"
+                                                                className="h-full rounded-full"
                                                                 style={{
                                                                     backgroundColor:
                                                                         topic.color,
+                                                                    width: `${Math.max(
+                                                                        5,
+                                                                        topic.percentage
+                                                                    )}%`,
                                                                 }}
                                                             />
-                                                            <span className="text-sm font-medium text-gray-700 truncate">
-                                                                {topic.name}
-                                                            </span>
                                                         </div>
-                                                        <div className="flex items-center space-x-3 shrink-0">
-                                                            <div className="w-24 bg-gray-200 rounded-full h-2">
-                                                                <div
-                                                                    className="h-full rounded-full"
-                                                                    style={{
-                                                                        backgroundColor:
-                                                                            topic.color,
-                                                                        width: `${Math.max(
-                                                                            5,
-                                                                            topic.percentage
-                                                                        )}%`,
-                                                                    }}
-                                                                />
-                                                            </div>
-                                                            <span className="text-sm font-medium text-gray-600 w-8 text-right">
-                                                                {topic.count}
-                                                            </span>
-                                                        </div>
+                                                        <span className="text-sm font-medium text-gray-600 w-8 text-right">
+                                                            {topic.count}
+                                                        </span>
                                                     </div>
-                                                )
-                                            )}
+                                                </div>
+                                            ))}
                                         </div>
                                     )}
                                 </div>

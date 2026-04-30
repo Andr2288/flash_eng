@@ -228,13 +228,28 @@ const PracticePage = () => {
     );
 
     useEffect(() => {
+        let disposed = false;
+
         if (practiceNavReselect > 0) {
-            setVocabularyLoadSettled(false);
-            setUiState((prev) => ({ ...prev, showExercise: false }));
+            queueMicrotask(() => {
+                if (disposed) {
+                    return;
+                }
+                setVocabularyLoadSettled(false);
+                setUiState((prev) => ({ ...prev, showExercise: false }));
+            });
         }
         doFetchVocabularyWords()
             .catch(() => {})
-            .finally(() => setVocabularyLoadSettled(true));
+            .finally(() => {
+                if (!disposed) {
+                    setVocabularyLoadSettled(true);
+                }
+            });
+
+        return () => {
+            disposed = true;
+        };
     }, [doFetchVocabularyWords, practiceNavReselect]);
 
     const showVocabularyLoader =
@@ -328,7 +343,7 @@ const PracticePage = () => {
     };
 
     return (
-        <div className="fixed md:ml-68 inset-0 flex flex-col min-h-screen bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
+        <div className="ml-68 flex h-[100dvh] max-h-[100dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
             {/* Hero Section */}
             {!uiState.showExercise && (
                 <div className="shrink-0 bg-white border-b border-gray-200 overflow-hidden p-8">
@@ -351,8 +366,8 @@ const PracticePage = () => {
 
             {/* Scrollable Content */}
             {!uiState.showExercise && (
-                <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8">
-                    <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col">
+                <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
+                    <div className="mx-auto w-full max-w-7xl">
                         {showVocabularyLoader ? (
                             <div className="flex flex-1 flex-col items-center justify-center gap-4">
                                 <Loader className="w-10 h-10 animate-spin text-blue-600" />
@@ -456,7 +471,7 @@ const PracticePage = () => {
 
             {/* Exercise View with Stats Sidebar */}
             {uiState.showExercise && (
-                <div className="relative flex-1 flex overflow-y-auto p-8">
+                <div className="relative flex min-h-0 flex-1 overflow-y-auto p-8 [scrollbar-gutter:stable]">
                     {exercise}
                     <StatsSidebar
                         isOpen={uiState.showStatsSidebar}

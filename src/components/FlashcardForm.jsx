@@ -268,7 +268,13 @@ const FlashcardForm = ({
             return;
         }
 
-        if (findDuplicateFlashcard(formData.text, existingFlashcards, null)) {
+        if (
+            findDuplicateFlashcard(
+                formData.text,
+                existingFlashcards,
+                editingCard?._id
+            )
+        ) {
             return;
         }
 
