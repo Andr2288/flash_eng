@@ -8,6 +8,7 @@ import {
 import { useCategoryStore } from "../store/useCategoryStore.js";
 import { useUserSettingsStore } from "../store/useUserSettingsStore.js";
 import { generateCompleteFlashcard } from "../store/features/vocabularyWords/vocabularyWordsApi.js";
+import { fetchUnsplashImageUrls } from "../store/features/homepage/unsplashApi.js";
 import toast from "react-hot-toast";
 
 /** Нормалізація для порівняння з існуючими картками (як у словнику вправ) */
@@ -56,8 +57,8 @@ const FlashcardForm = ({
         shortDescription: "",
         explanation: "",
         examples: ["", "", ""],
+        imageUrls: [],
         notes: "",
-        isAIGenerated: false,
         categoryId: "",
     });
 
@@ -120,8 +121,10 @@ const FlashcardForm = ({
                 shortDescription: editingCard.shortDescription || "",
                 explanation: editingCard.explanation || "",
                 examples: examples,
+                imageUrls: Array.isArray(editingCard.imageUrls)
+                    ? editingCard.imageUrls
+                    : [],
                 notes: editingCard.notes || "",
-                isAIGenerated: editingCard.isAIGenerated || false,
                 categoryId: editingCard.categoryId?._id || "",
             });
         } else {
@@ -132,8 +135,8 @@ const FlashcardForm = ({
                 shortDescription: "",
                 explanation: "",
                 examples: ["", "", ""],
+                imageUrls: [],
                 notes: "",
-                isAIGenerated: false,
                 categoryId: preselectedCategoryId || "",
             });
         }
@@ -175,11 +178,22 @@ const FlashcardForm = ({
             return;
         }
 
+        const existingImageUrls = Array.isArray(formData.imageUrls)
+            ? formData.imageUrls
+            : [];
+        let imageUrls = existingImageUrls;
+        const sourceText = normalizeFlashcardWordText(formData.text);
+        const originalText = normalizeFlashcardWordText(editingCard?.text);
+        if (sourceText && (sourceText !== originalText || imageUrls.length === 0)) {
+            imageUrls = await fetchUnsplashImageUrls(formData.text, { count: 6 });
+        }
+
         try {
             const submitData = {
                 ...formData,
                 categoryId: formData.categoryId || null,
                 examples: formData.examples.filter((ex) => ex.trim()),
+                imageUrls,
             };
 
             await onSubmit(submitData);
@@ -323,8 +337,10 @@ const FlashcardForm = ({
                 shortDescription: aiContent.shortDescription || "",
                 explanation: aiContent.explanation || "",
                 examples: examples,
+                imageUrls: await fetchUnsplashImageUrls(formData.text, {
+                    count: 6,
+                }),
                 notes: notesForSubmit,
-                isAIGenerated: true,
                 categoryId: formData.categoryId || null,
             };
 

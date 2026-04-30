@@ -11,7 +11,6 @@ import {
     Eye,
     Folder,
     ArrowLeft,
-    Sparkles,
     Search,
     X,
     Loader,
@@ -694,6 +693,7 @@ const HomePage = () => {
                                         onEdit={handleEdit}
                                         onDelete={handleDeleteClick}
                                         initialCardIndex={currentCardIndex}
+                                        onCardIndexChange={setCurrentCardIndex}
                                     />
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -735,14 +735,6 @@ const HomePage = () => {
                                                                     card.text
                                                                 )}
                                                             </h3>
-                                                            {card.isAIGenerated && (
-                                                                <div className="ml-auto">
-                                                                    <Sparkles
-                                                                        className="w-4 h-4 text-purple-500"
-                                                                        title="Згенеровано ШІ"
-                                                                    />
-                                                                </div>
-                                                            )}
                                                         </div>
 
                                                         {card.transcription && (

@@ -25,7 +25,7 @@ function mapWordRowToFlashcard(row) {
         explanation: row.explanation || "",
         notes: row.notes || "",
         examples: Array.isArray(row.examples) ? row.examples : [],
-        isAIGenerated: !!row.is_ai_generated,
+        imageUrls: Array.isArray(row.image_urls) ? row.image_urls : [],
         createdAt: row.created_at || new Date().toISOString(),
         categoryId: row.flashcard_categories
             ? {
@@ -42,7 +42,7 @@ async function fetchFlashcards(categoryId = null) {
     let query = supabase
         .from("vocabulary_words")
         .select(
-            "id, text, transcription, translation, short_description, explanation, notes, examples, is_ai_generated, created_at, category_id, flashcard_categories(id, name, color)"
+            "id, text, transcription, translation, short_description, explanation, notes, examples, image_urls, created_at, category_id, flashcard_categories(id, name, color)"
         )
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
@@ -69,7 +69,7 @@ async function createFlashcard(payload) {
         explanation: payload?.explanation || "",
         notes: payload?.notes || "",
         examples: payload?.examples || [],
-        is_ai_generated: !!payload?.isAIGenerated,
+        image_urls: payload?.imageUrls || [],
         category_id: payload?.categoryId || null,
     };
 
@@ -77,7 +77,7 @@ async function createFlashcard(payload) {
         .from("vocabulary_words")
         .insert([insertPayload])
         .select(
-            "id, text, transcription, translation, short_description, explanation, notes, examples, is_ai_generated, created_at, category_id, flashcard_categories(id, name, color)"
+            "id, text, transcription, translation, short_description, explanation, notes, examples, image_urls, created_at, category_id, flashcard_categories(id, name, color)"
         )
         .single();
 
@@ -94,7 +94,7 @@ async function updateFlashcard(id, payload) {
         explanation: payload?.explanation,
         notes: payload?.notes,
         examples: payload?.examples,
-        is_ai_generated: payload?.isAIGenerated,
+        image_urls: payload?.imageUrls,
         category_id: payload?.categoryId ?? null,
         updated_at: new Date().toISOString(),
     };
@@ -108,7 +108,7 @@ async function updateFlashcard(id, payload) {
         .update(updatePayload)
         .eq("id", id)
         .select(
-            "id, text, transcription, translation, short_description, explanation, notes, examples, is_ai_generated, created_at, category_id, flashcard_categories(id, name, color)"
+            "id, text, transcription, translation, short_description, explanation, notes, examples, image_urls, created_at, category_id, flashcard_categories(id, name, color)"
         )
         .single();
 

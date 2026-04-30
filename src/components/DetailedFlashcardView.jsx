@@ -1,12 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import {
-    ChevronLeft,
-    ChevronRight,
-    Edit,
-    Trash2,
-    Volume2,
-    Sparkles,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Edit, Trash2, Volume2 } from "lucide-react";
 import { useFlashcardStore } from "../store/useFlashcardStore.js";
 import { useUserSettingsStore } from "../store/useUserSettingsStore.js";
 import { generateSpeech } from "../store/features/vocabularyWords/vocabularyWordsApi.js";
@@ -18,6 +11,7 @@ const DetailedFlashcardView = ({
     flashcards,
     onEdit,
     initialCardIndex = 0,
+    onCardIndexChange,
 }) => {
     const { deleteFlashcard, updateFlashcard } = useFlashcardStore();
     const {
@@ -72,6 +66,12 @@ const DetailedFlashcardView = ({
         setUpdatedFlashcards(flashcards);
     }, [flashcards]);
 
+    useEffect(() => {
+        if (typeof onCardIndexChange === "function") {
+            onCardIndexChange(currentIndex);
+        }
+    }, [currentIndex, onCardIndexChange]);
+
     const processTextContent = (text) => {
         if (!text) return "";
 
@@ -105,6 +105,14 @@ const DetailedFlashcardView = ({
             setIsFlipped(!isFlipped);
         }
     }, [isChanging, isFlipped]);
+
+    const handleCardContextMenu = useCallback(
+        (event) => {
+            event.preventDefault();
+            handleFlip();
+        },
+        [handleFlip]
+    );
 
     const nextCard = useCallback(() => {
         if (currentIndex < updatedFlashcards.length - 1 && !isChanging) {
@@ -433,7 +441,10 @@ const DetailedFlashcardView = ({
                 )}
 
                 {/* Card Content */}
-                <div className="bg-white rounded-2xl shadow-md overflow-hidden h-[380px] md:h-[458px] relative">
+                <div
+                    className="bg-white rounded-2xl shadow-md overflow-hidden h-[400px] md:h-[490px] relative"
+                    onContextMenu={handleCardContextMenu}
+                >
                     {/* Front Side */}
                     {!isFlipped && (
                         <div
@@ -444,13 +455,6 @@ const DetailedFlashcardView = ({
                         >
                             <div className="bg-white h-full flex flex-col justify-center items-center p-8">
                                 <div className="text-center space-y-3 w-full">
-                                    {currentCard.isAIGenerated && (
-                                        <div className="inline-flex items-center space-x-1 text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
-                                            <Sparkles className="w-3 h-3" />
-                                            <span>ШІ-генерація</span>
-                                        </div>
-                                    )}
-
                                     <h2 className="text-3xl font-bold text-gray-900 mb-2 break-words max-w-md mx-auto">
                                         {currentCard.text}
                                     </h2>
@@ -498,25 +502,9 @@ const DetailedFlashcardView = ({
                                     </div>
 
                                     <p className="text-gray-500 text-base">
-                                        Натисніть Пробіл / Enter, щоб побачити
-                                        переклад
+                                        Натисніть Пробіл / Enter / ПКМ, щоб
+                                        побачити переклад
                                     </p>
-
-                                    <div className="flex items-center justify-center space-x-4 text-xs text-gray-500 mt-2">
-                                        <div className="flex items-center space-x-1">
-                                            <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">
-                                                E
-                                            </kbd>
-                                            <span>редагувати</span>
-                                        </div>
-                                        <span>•</span>
-                                        <div className="flex items-center space-x-1">
-                                            <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">
-                                                Del
-                                            </kbd>
-                                            <span>видалити</span>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

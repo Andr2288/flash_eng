@@ -3,7 +3,6 @@ import { generateSpeech } from "../store/features/vocabularyWords/vocabularyWord
 import {
     Volume2,
     StickyNote,
-    Sparkles,
     ChevronDown,
     ChevronUp,
     BookOpen,
@@ -26,6 +25,8 @@ const DetailedCardInfo = ({
         if (defaultExpanded !== null) return defaultExpanded;
         return isCorrect === false || isCorrect === null;
     });
+    const [activeImageIndex, setActiveImageIndex] = useState(0);
+    const [isImageChanging, setIsImageChanging] = useState(false);
 
     const currentAudioRef = useRef(null);
 
@@ -134,9 +135,30 @@ const DetailedCardInfo = ({
     }
 
     const examples = getExamples(displayCard);
+    const imageUrls = Array.isArray(displayCard?.imageUrls)
+        ? displayCard.imageUrls.filter((u) => u && String(u).trim())
+        : [];
+    const hasImages = imageUrls.length > 0;
+    const activeImageUrl = hasImages
+        ? imageUrls[activeImageIndex % imageUrls.length]
+        : "";
     const notesText =
         displayCard?.notes != null ? String(displayCard.notes).trim() : "";
     const hasNotes = notesText.length > 0;
+
+    useEffect(() => {
+        setActiveImageIndex(0);
+    }, [displayCard?._id]);
+
+    useEffect(() => {
+        if (!isImageChanging) {
+            return;
+        }
+        const timeoutId = setTimeout(() => {
+            setIsImageChanging(false);
+        }, 220);
+        return () => clearTimeout(timeoutId);
+    }, [isImageChanging]);
 
     return (
         <div className={`bg-white overflow-hidden ${className}`}>
@@ -167,52 +189,76 @@ const DetailedCardInfo = ({
             )}
 
             {isExpanded && (
-                <div className="p-8 pb-10">
+                <div className="p-10 pb-10">
                     {showTopSection && (
                         <div className="text-center pb-4 space-y-4">
-                        {displayCard.isAIGenerated && (
-                            <div className="flex justify-center">
-                                <div className="inline-flex items-center space-x-1 text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
-                                    <Sparkles className="w-3 h-3" />
-                                    <span>ШІ-генерація</span>
-                                </div>
+                            <h3 className="text-3xl font-bold text-gray-900">
+                                {displayCard.text}
+                            </h3>
+
+                            {displayCard.transcription && (
+                                <p className="text-lg text-gray-600 font-mono">
+                                    {displayCard.transcription}
+                                </p>
+                            )}
+
+                            <div className="pt-2">
+                                <button
+                                    onClick={() => speakText(displayCard.text)}
+                                    disabled={isPlayingAudio}
+                                    className={`px-6 py-3 rounded-lg transition-all shadow-md ${
+                                        isPlayingAudio
+                                            ? "bg-green-500 hover:bg-green-600 animate-pulse scale-105"
+                                            : "bg-purple-500 hover:bg-purple-600 hover:scale-105"
+                                    } disabled:bg-gray-300 disabled:scale-100 text-white flex items-center space-x-2 mx-auto`}
+                                >
+                                    <Volume2 className="w-5 h-5" />
+                                    <span>
+                                        {isPlayingAudio
+                                            ? "Відтворення..."
+                                            : "Озвучити"}
+                                    </span>
+                                </button>
                             </div>
-                        )}
-
-                        <h3 className="text-3xl font-bold text-gray-900">
-                            {displayCard.text}
-                        </h3>
-
-                        {displayCard.transcription && (
-                            <p className="text-lg text-gray-600 font-mono">
-                                {displayCard.transcription}
-                            </p>
-                        )}
-
-                        <div className="pt-2">
-                            <button
-                                onClick={() => speakText(displayCard.text)}
-                                disabled={isPlayingAudio}
-                                className={`px-6 py-3 rounded-lg transition-all shadow-md ${
-                                    isPlayingAudio
-                                        ? "bg-green-500 hover:bg-green-600 animate-pulse scale-105"
-                                        : "bg-purple-500 hover:bg-purple-600 hover:scale-105"
-                                } disabled:bg-gray-300 disabled:scale-100 text-white flex items-center space-x-2 mx-auto`}
-                            >
-                                <Volume2 className="w-5 h-5" />
-                                <span>
-                                    {isPlayingAudio
-                                        ? "Відтворення..."
-                                        : "Озвучити"}
-                                </span>
-                            </button>
-                        </div>
                         </div>
                     )}
 
                     <div className="space-y-6">
+                        {hasImages ? (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsImageChanging(true);
+                                    setActiveImageIndex(
+                                        (i) => (i + 1) % imageUrls.length
+                                    );
+                                }}
+                                className="group relative block w-full overflow-hidden rounded-2xl shadow-md"
+                                title="Натисніть, щоб показати наступне фото"
+                            >
+                                <img
+                                    src={activeImageUrl}
+                                    alt={
+                                        displayCard.text || "Картинка до картки"
+                                    }
+                                    className={`h-90 w-full object-cover transition-all duration-300 group-hover:scale-[1.02] ${
+                                        isImageChanging
+                                            ? "scale-[1.015] opacity-80"
+                                            : "scale-100 opacity-100"
+                                    }`}
+                                    loading="lazy"
+                                />
+                                {imageUrls.length > 1 ? (
+                                    <div className="absolute bottom-3 right-3 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white">
+                                        {activeImageIndex + 1}/
+                                        {imageUrls.length}
+                                    </div>
+                                ) : null}
+                            </button>
+                        ) : null}
+
                         {displayCard.translation && (
-                            <div className="text-center py-4">
+                            <div className="text-center">
                                 <p className="text-2xl font-bold text-gray-900 leading-relaxed mb-2">
                                     {displayCard.translation
                                         .charAt(0)
