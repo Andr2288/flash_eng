@@ -278,7 +278,7 @@ const ProfilePage = () => {
                                     setShowEditModal(true);
                                 }}
                                 disabled={isUpdatingProfile}
-                                className="shrink-0 bg-linear-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-70 text-white px-6 py-3 rounded-xl text-sm flex items-center gap-2 transition-all shadow-md hover:shadow-lg disabled:cursor-not-allowed"
+                                className="cursor-pointer shrink-0 bg-linear-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-70 text-white px-6 py-3 rounded-xl text-sm flex items-center gap-2 transition-all shadow-md hover:shadow-lg disabled:cursor-not-allowed"
                             >
                                 <Edit3 className="w-4 h-4" />
                                 <span>

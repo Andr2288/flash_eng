@@ -200,34 +200,34 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
                 </div>
 
                 {/* Fixed Footer */}
-                <div className="sticky bottom-0 bg-white p-8 border-t border-gray-100 rounded-b-2xl flex-shrink-0">
-                    <div className="flex space-x-3">
-                        <button
-                            type="submit"
-                            onClick={handleSubmit}
-                            disabled={isLoading || !formData.name.trim()}
-                            className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-blue-300 disabled:to-blue-400 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none disabled:cursor-default disabled:hover:scale-100 cursor-pointer"
-                        >
-                            {isLoading ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                            ) : (
-                                <>
-                                    <Save className="w-5 h-5" />
-                                    <span>
-                                        {editingCategory
-                                            ? "Зберегти зміни"
-                                            : "Створити папку"}
-                                    </span>
-                                </>
-                            )}
-                        </button>
+                <div className="sticky bottom-0 flex-shrink-0 rounded-b-2xl border-t border-gray-100 bg-white p-8">
+                    <div className="flex w-full flex-col-reverse gap-3 sm:flex-row">
                         <button
                             type="button"
                             onClick={onClose}
                             disabled={isLoading}
-                            className="px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 disabled:from-gray-100 disabled:to-gray-100 text-gray-700 rounded-xl font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 disabled:transform-none border border-gray-200 cursor-pointer"
+                            className="min-w-0 w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1"
                         >
                             Скасувати
+                        </button>
+                        <button
+                            type="submit"
+                            onClick={handleSubmit}
+                            disabled={isLoading || !formData.name.trim()}
+                            className="inline-flex min-w-0 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-600 hover:to-blue-700 hover:shadow-xl disabled:cursor-default disabled:from-blue-300 disabled:to-blue-400 sm:flex-1"
+                        >
+                            {isLoading ? (
+                                <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
+                            ) : (
+                                <>
+                                    <Save className="h-5 w-5" />
+                                    <span>
+                                        {editingCategory
+                                            ? "Зберегти зміни"
+                                            : "Створити"}
+                                    </span>
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>

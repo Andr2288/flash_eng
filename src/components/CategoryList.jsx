@@ -456,7 +456,7 @@ const CategoryList = ({
 
                             <button
                                 onClick={() => setShowForm(true)}
-                                className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+                                className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg"
                                 title="Створити нову папку (Ctrl + Space)"
                             >
                                 <Plus className="w-5 h-5" />

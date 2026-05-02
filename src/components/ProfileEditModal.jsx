@@ -177,7 +177,7 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-gray-600/80 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-gray-900/60 via-blue-900/40 to-indigo-900/60 p-4"
             role="presentation"
             onClick={(e) => {
                 if (e.target === e.currentTarget && !isLoading) {
@@ -192,29 +192,37 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
                 className="flex max-h-[min(92vh,720px)] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-2xl shadow-gray-900/10"
                 onClick={(e) => e.stopPropagation()}
             >
-                <header className="shrink-0 border-b border-gray-100 bg-linear-to-br from-slate-50 to-white px-6 py-5 sm:px-8 sm:py-6">
-                    <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0">
-                            <h2
-                                id="profile-edit-title"
-                                className="text-lg font-semibold tracking-tight text-gray-900 sm:text-xl"
-                            >
-                                Редагувати профіль
-                            </h2>
-                            <p className="mt-1.5 text-sm leading-relaxed text-gray-600">
-                                Оновіть ім&apos;я та фото. Після збереження
-                                зміни з&apos;являться на сторінці профілю.
-                            </p>
+                <header className="shrink-0 border-b border-blue-100 bg-white p-8">
+                    <div className="flex items-center justify-between">
+                        <div className="flex min-w-0 items-center space-x-4">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-linear-to-r from-orange-500 to-red-500">
+                                <User
+                                    className="h-6 w-6 text-white"
+                                    strokeWidth={2}
+                                />
+                            </div>
+                            <div className="min-w-0">
+                                <h2
+                                    id="profile-edit-title"
+                                    className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-xl font-bold text-transparent"
+                                >
+                                    Редагувати профіль
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-600">
+                                    Оновіть ім&apos;я та фото. Після збереження
+                                    зміни з&apos;являться на сторінці профілю.
+                                </p>
+                            </div>
                         </div>
                         <button
                             type="button"
                             onClick={handleCancel}
                             disabled={isLoading}
-                            className="shrink-0 rounded-xl p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="cursor-pointer shrink-0 rounded-xl p-2 text-gray-400 transition-all duration-200 hover:scale-110 hover:bg-white/80 hover:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
                             title="Закрити"
                             aria-label="Закрити вікно"
                         >
-                            <X className="h-5 w-5" strokeWidth={2} />
+                            <X className="h-6 w-6" strokeWidth={2} />
                         </button>
                     </div>
                 </header>
@@ -293,7 +301,7 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
                                             type="button"
                                             onClick={removeProfilePic}
                                             disabled={isLoading}
-                                            className="text-xs font-medium text-red-600 underline-offset-2 hover:text-red-800 hover:underline disabled:opacity-50"
+                                            className="cursor-pointer text-xs font-medium text-red-600 underline-offset-2 hover:text-red-800 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
                                         >
                                             Прибрати фото
                                         </button>
@@ -349,19 +357,19 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
                     </div>
 
                     <footer className="shrink-0 border-t border-gray-100 bg-gray-50/50 px-6 py-4 sm:px-8">
-                        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                        <div className="flex w-full flex-col-reverse gap-3 sm:flex-row">
                             <button
                                 type="button"
                                 onClick={handleCancel}
                                 disabled={isLoading}
-                                className="rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="min-w-0 w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1"
                             >
                                 Скасувати
                             </button>
                             <button
                                 type="submit"
                                 disabled={!canSave}
-                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-orange-500 to-red-500 px-5 py-3 text-sm font-semibold text-white shadow-md transition-all hover:from-orange-600 hover:to-red-600 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+                                className="inline-flex min-w-0 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-linear-to-r from-orange-500 to-red-500 px-5 py-3 text-sm font-semibold text-white shadow-md transition-all hover:from-orange-600 hover:to-red-600 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none sm:flex-1"
                             >
                                 {isLoading ? (
                                     <Loader

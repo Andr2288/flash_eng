@@ -22,11 +22,8 @@ function FolderDeleteCardsInFolderWarning({ count }) {
     if (isOneForm) {
         return (
             <p>
-                Разом з папкою буде видалена{" "}
-                <strong>
-                    {n} картка
-                </strong>
-                , яка знаходиться в ній.
+                Разом з папкою буде видалена <strong>{n} картка</strong>, яка
+                знаходиться в ній.
             </p>
         );
     }
@@ -34,22 +31,16 @@ function FolderDeleteCardsInFolderWarning({ count }) {
     if (isFewForm) {
         return (
             <p>
-                Разом з папкою буде видалено{" "}
-                <strong>
-                    {n} картки
-                </strong>
-                , які знаходяться в ній.
+                Разом з папкою буде видалено <strong>{n} картки</strong>, які
+                знаходяться в ній.
             </p>
         );
     }
 
     return (
         <p>
-            Разом з папкою буде видалено всі{" "}
-            <strong>
-                {n} карток
-            </strong>
-            , що знаходяться в ній.
+            Разом з папкою буде видалено всі <strong>{n} карток</strong>, що
+            знаходяться в ній.
         </p>
     );
 }
@@ -113,7 +104,7 @@ const ConfirmDeleteCategoryModal = ({
                             <AlertTriangle className="w-6 h-6 text-red-600" />
                         </div>
                         <h2 className="text-xl font-bold text-gray-900">
-                            Підтвердження видалення папки
+                            Підтвердіть видалення папки
                         </h2>
                         <button
                             onClick={onClose}
