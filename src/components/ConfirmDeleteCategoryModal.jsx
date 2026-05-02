@@ -3,6 +3,57 @@
 import { useEffect } from "react";
 import { AlertTriangle, X, Folder, Trash2 } from "lucide-react";
 
+/**
+ * Форми речення для N карток у папці:
+ * — остання цифра 1, але не 11: «буде видалена … картка, яка…»
+ * — остання 2–4 і не десятки 12–14 (112 → «карток»), окремо 12–14: «… картки, які…»
+ * — інакше (11, 5–10, 15–20, 112…): «буде видалено всі … карток, що…»
+ */
+function FolderDeleteCardsInFolderWarning({ count }) {
+    const n = count;
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    const isOneForm = mod10 === 1 && mod100 !== 11;
+    const isFewForm =
+        mod10 >= 2 &&
+        mod10 <= 4 &&
+        (mod100 < 12 || mod100 > 14 || (n >= 12 && n <= 14));
+
+    if (isOneForm) {
+        return (
+            <p>
+                Разом з папкою буде видалена{" "}
+                <strong>
+                    {n} картка
+                </strong>
+                , яка знаходиться в ній.
+            </p>
+        );
+    }
+
+    if (isFewForm) {
+        return (
+            <p>
+                Разом з папкою буде видалено{" "}
+                <strong>
+                    {n} картки
+                </strong>
+                , які знаходяться в ній.
+            </p>
+        );
+    }
+
+    return (
+        <p>
+            Разом з папкою буде видалено всі{" "}
+            <strong>
+                {n} карток
+            </strong>
+            , що знаходяться в ній.
+        </p>
+    );
+}
+
 const ConfirmDeleteCategoryModal = ({
     isOpen,
     onClose,
@@ -50,6 +101,7 @@ const ConfirmDeleteCategoryModal = ({
     };
 
     const flashcardsCount = category.flashcardsCount || 0;
+    const folderAccentColor = category.color || "#3B82F6";
 
     return (
         <div className="fixed inset-0 bg-gradient-to-br from-gray-900/60 via-blue-900/40 to-indigo-900/60 flex items-center justify-center p-4 z-50">
@@ -81,11 +133,14 @@ const ConfirmDeleteCategoryModal = ({
                     </p>
 
                     {/* Category Info */}
-                    <div className="bg-white rounded-lg p-4 border border-l-4 border-red-500">
+                    <div
+                        className="bg-white rounded-lg p-4 border border-l-4"
+                        style={{ borderColor: folderAccentColor }}
+                    >
                         <div className="flex items-center space-x-3">
                             <div
                                 className="w-8 h-8 rounded-lg flex items-center justify-center"
-                                style={{ backgroundColor: category.color }}
+                                style={{ backgroundColor: folderAccentColor }}
                             >
                                 <Folder className="w-5 h-5 text-white" />
                             </div>
@@ -112,16 +167,9 @@ const ConfirmDeleteCategoryModal = ({
                                 </h4>
                                 <div className="text-red-700 text-sm mt-1">
                                     {flashcardsCount > 0 ? (
-                                        <>
-                                            <p>
-                                                Разом з папкою будуть{" "}
-                                                <strong>
-                                                    безповоротно видалені всі{" "}
-                                                    {flashcardsCount} картки
-                                                </strong>
-                                                , що знаходяться в ній.
-                                            </p>
-                                        </>
+                                        <FolderDeleteCardsInFolderWarning
+                                            count={flashcardsCount}
+                                        />
                                     ) : (
                                         <p>
                                             Папка порожня, але її видалення{" "}
@@ -141,7 +189,7 @@ const ConfirmDeleteCategoryModal = ({
                         type="button"
                         onClick={onClose}
                         disabled={isDeleting}
-                        className="flex-1 px-4 py-3 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
+                        className="cursor-pointer flex-1 px-4 py-3 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
                         title="Скасувати (Esc)"
                     >
                         Скасувати
@@ -150,7 +198,7 @@ const ConfirmDeleteCategoryModal = ({
                         type="button"
                         onClick={handleConfirm}
                         disabled={isDeleting}
-                        className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 disabled:cursor-not-allowed"
+                        className="cursor-pointer flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 disabled:cursor-not-allowed"
                         title="Підтвердити видалення (Enter)"
                     >
                         {isDeleting ? (

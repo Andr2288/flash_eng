@@ -367,9 +367,9 @@ const PracticePage = () => {
             {/* Scrollable Content */}
             {!uiState.showExercise && (
                 <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
-                    <div className="mx-auto w-full max-w-7xl">
+                    <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col">
                         {showVocabularyLoader ? (
-                            <div className="flex flex-1 flex-col items-center justify-center gap-4">
+                            <div className="flex min-h-[45vh] flex-1 flex-col items-center justify-center gap-4">
                                 <Loader className="w-10 h-10 animate-spin text-blue-600" />
                                 <p className="text-sm text-gray-600">
                                     Зачекайте, будь ласка

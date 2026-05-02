@@ -348,7 +348,7 @@ const CategoryList = ({
                                 <div className="flex space-x-1">
                                     <button
                                         onClick={(e) => onEdit(categoryData, e)}
-                                        className="p-2 bg-white hover:bg-blue-50 text-blue-600 rounded-lg shadow-sm border border-gray-200 transition-colors"
+                                        className="cursor-pointer p-2 bg-white hover:bg-blue-50 text-blue-600 rounded-lg shadow-sm border border-gray-200 transition-colors"
                                         title="Редагувати"
                                     >
                                         <Edit className="w-4 h-4" />
@@ -357,7 +357,7 @@ const CategoryList = ({
                                         onClick={(e) =>
                                             onDelete(categoryData, e)
                                         }
-                                        className="p-2 bg-white hover:bg-red-50 text-red-600 rounded-lg shadow-sm border border-gray-200 transition-colors"
+                                        className="cursor-pointer p-2 bg-white hover:bg-red-50 text-red-600 rounded-lg shadow-sm border border-gray-200 transition-colors"
                                         title="Видалити"
                                     >
                                         <Trash2 className="w-4 h-4" />
@@ -416,10 +416,10 @@ const CategoryList = ({
                                 <span className="text-sm text-gray-600">
                                     Сортувати:
                                 </span>
-                                <div className="flex bg-gray-100 rounded-lg p-1">
+                                <div className="flex items-center gap-0.5 rounded-lg bg-gray-100 py-0">
                                     <button
                                         onClick={() => handleSortChange("date")}
-                                        className={`flex items-center space-x-1 px-3 py-1 rounded-md text-sm transition-colors ${
+                                        className={`cursor-pointer flex items-center space-x-1 rounded-md px-3 py-3 text-sm transition-colors ${
                                             sortBy === "date"
                                                 ? "bg-white text-blue-600 shadow-sm"
                                                 : "text-gray-600 hover:text-gray-900"
@@ -437,7 +437,7 @@ const CategoryList = ({
                                         onClick={() =>
                                             handleSortChange("alphabet")
                                         }
-                                        className={`flex items-center space-x-1 px-3 py-1 rounded-md text-sm transition-colors ${
+                                        className={`cursor-pointer flex items-center space-x-1 rounded-md px-3 py-3 text-sm transition-colors ${
                                             sortBy === "alphabet"
                                                 ? "bg-white text-blue-600 shadow-sm"
                                                 : "text-gray-600 hover:text-gray-900"
@@ -456,7 +456,7 @@ const CategoryList = ({
 
                             <button
                                 onClick={() => setShowForm(true)}
-                                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+                                className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
                                 title="Створити нову папку (Ctrl + Space)"
                             >
                                 <Plus className="w-5 h-5" />
