@@ -456,7 +456,7 @@ const FlashcardForm = ({
                         </div>
                         <button
                             onClick={handleClose}
-                            className="text-gray-400 hover:text-gray-600 hover:bg-white/80 p-2 rounded-xl transition-all duration-200 hover:scale-110 cursor-pointer"
+                            className="text-gray-400 hover:text-gray-600 hover:bg-white/80 p-2 rounded-xl transition-all duration-200 cursor-pointer"
                             title="Закрити (Esc)"
                         >
                             <X className="w-6 h-6" />
@@ -587,8 +587,17 @@ const FlashcardForm = ({
                 </div>
 
                 {/* Fixed Footer */}
-                <div className="sticky bottom-0 bg-white p-8 border-t border-gray-200 rounded-b-2xl flex-shrink-0">
-                    <div className="flex space-x-4">
+                <div className="sticky bottom-0 shrink-0 rounded-b-2xl border-t border-gray-100 bg-gray-50/50 px-6 py-4 sm:px-8">
+                    <div className="flex w-full flex-col-reverse gap-3 sm:flex-row">
+                        <button
+                            type="button"
+                            onClick={handleClose}
+                            disabled={isQuickCreating}
+                            className="min-w-0 w-full rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition-colors enabled:cursor-pointer enabled:hover:bg-gray-50 disabled:cursor-default disabled:opacity-50 sm:flex-1"
+                            title="Скасувати (Esc)"
+                        >
+                            Скасувати
+                        </button>
                         <button
                             type="submit"
                             form="flashcard-form"
@@ -598,7 +607,7 @@ const FlashcardForm = ({
                                 isQuickCreating ||
                                 !!wordDuplicateError
                             }
-                            className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-blue-400 disabled:to-blue-500 disabled:cursor-default text-white px-6 py-3 rounded-md font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none disabled:hover:scale-100 cursor-pointer"
+                            className="inline-flex min-w-0 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md transition-all enabled:cursor-pointer enabled:hover:from-blue-600 enabled:hover:to-blue-700 enabled:hover:shadow-lg disabled:cursor-default disabled:opacity-60 disabled:shadow-none sm:flex-1"
                         >
                             {isLoading || isQuickCreating ? (
                                 <>
@@ -611,7 +620,7 @@ const FlashcardForm = ({
                                 </>
                             ) : (
                                 <>
-                                    <Save className="w-5 h-5" />
+                                    <Save className="h-5 w-5" strokeWidth={2} />
                                     <span>
                                         {editingCard
                                             ? "Зберегти зміни"
@@ -619,14 +628,6 @@ const FlashcardForm = ({
                                     </span>
                                 </>
                             )}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={handleClose}
-                            disabled={isQuickCreating}
-                            className="px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 disabled:from-gray-100 disabled:to-gray-100 text-gray-700 rounded-md font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 disabled:transform-none border border-gray-200"
-                        >
-                            Скасувати
                         </button>
                     </div>
                 </div>

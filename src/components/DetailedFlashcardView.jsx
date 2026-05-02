@@ -444,7 +444,7 @@ const DetailedFlashcardView = ({
 
                 {/* Card Content */}
                 <div
-                    className="bg-white rounded-2xl shadow-md overflow-hidden h-[400px] md:h-[490px] relative"
+                    className="bg-white rounded-2xl shadow-md overflow-hidden h-[400px] md:h-[458px] relative"
                     onContextMenu={handleCardContextMenu}
                 >
                     {/* Front Side */}
