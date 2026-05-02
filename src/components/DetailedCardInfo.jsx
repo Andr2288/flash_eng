@@ -241,7 +241,7 @@ const DetailedCardInfo = ({
                                     alt={
                                         displayCard.text || "Картинка до картки"
                                     }
-                                    className={`h-90 w-full object-cover transition-all duration-300 group-hover:scale-[1.02] ${
+                                    className={`h-82 w-full object-cover transition-all duration-300 group-hover:scale-[1.02] ${
                                         isImageChanging
                                             ? "scale-[1.015] opacity-80"
                                             : "scale-100 opacity-100"

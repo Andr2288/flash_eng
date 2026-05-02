@@ -64,7 +64,7 @@ const Navbar = () => {
                     </div>
                     <div>
                         <h1 className="text-gray-900 text-xl font-bold">
-                            FlashCard
+                            FlashEng
                         </h1>
                         <p className="text-gray-500 text-md">
                             Вивчай ефективно

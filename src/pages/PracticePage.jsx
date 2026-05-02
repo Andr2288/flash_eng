@@ -272,7 +272,11 @@ const PracticePage = () => {
             difficulty: "Складно",
             difficultyColor: "text-purple-600",
             difficultyBg: "bg-purple-600",
-            features: ["Словниковий запас", "Навички перекладу", ""],
+            features: [
+                "Активний словниковий запас",
+                "Навички перекладу",
+                "Розуміння контексту",
+            ],
         },
         {
             id: "fill_the_gap_exercise",
@@ -285,9 +289,9 @@ const PracticePage = () => {
             difficultyColor: "text-blue-600",
             difficultyBg: "bg-blue-600",
             features: [
-                "Граматичний контекст",
-                "Розуміння структури",
-                "Швидке мислення",
+                "Пасивний словниковий запас",
+                "Навички читання",
+                "Розуміння контексту",
             ],
         },
         {
@@ -300,7 +304,11 @@ const PracticePage = () => {
             difficulty: "Складно",
             difficultyColor: "text-purple-600",
             difficultyBg: "bg-purple-600",
-            features: ["Розвиток слуху", "Правопис", "Вимова"],
+            features: [
+                "Розпізнавання слів",
+                "Навички слухання",
+                "Навички вимови",
+            ],
         },
     ];
 

@@ -162,6 +162,7 @@ const HomePage = () => {
         setCategoryFilter(null);
         setCurrentCardIndex(0);
         setSearchQuery("");
+        setFlashcardViewMode("grid");
         void refreshCategoriesScreenData();
     }, [homeNavReselect, refreshCategoriesScreenData, setCategoryFilter]);
 
@@ -225,6 +226,7 @@ const HomePage = () => {
         setCategoryFilter(null);
         setCurrentCardIndex(0);
         setSearchQuery("");
+        setFlashcardViewMode("grid");
         void refreshCategoriesScreenData();
     }, [setCategoryFilter, refreshCategoriesScreenData]);
 
@@ -586,7 +588,7 @@ const HomePage = () => {
                                     <div className="flex items-center">
                                         <button
                                             onClick={() => setShowForm(true)}
-                                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg transform hover:scale-105"
+                                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg"
                                             title="Створити нову картку (Ctrl + Space)"
                                         >
                                             <Plus className="w-5 h-5" />
@@ -693,7 +695,7 @@ const HomePage = () => {
 
                                 <button
                                     onClick={() => setShowForm(true)}
-                                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg inline-flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+                                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg inline-flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg"
                                 >
                                     <Plus className="w-5 h-5" />
                                     <span>

@@ -64,7 +64,7 @@ const ConfirmDeleteModal = ({
                         <button
                             onClick={onClose}
                             disabled={isDeleting}
-                            className="text-gray-400 hover:text-gray-600 p-2 disabled:cursor-not-allowed"
+                            className="cursor-pointer p-2 text-gray-400 hover:text-gray-600 disabled:cursor-not-allowed"
                             title="Скасувати (Esc)"
                         >
                             <X className="w-5 h-5" />
@@ -100,7 +100,7 @@ const ConfirmDeleteModal = ({
                         type="button"
                         onClick={onClose}
                         disabled={isDeleting}
-                        className="flex-1 px-4 py-3 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors disabled:cursor-not-allowed"
+                        className="min-w-0 flex-1 cursor-pointer rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                         title="Скасувати (Esc)"
                     >
                         Скасувати
@@ -109,7 +109,7 @@ const ConfirmDeleteModal = ({
                         type="button"
                         onClick={handleConfirm}
                         disabled={isDeleting}
-                        className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 disabled:cursor-not-allowed"
+                        className="flex flex-1 cursor-pointer items-center justify-center space-x-2 rounded-lg bg-red-600 px-4 py-3 font-medium text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400"
                         title="Підтвердити видалення (Enter)"
                     >
                         {isDeleting ? (
