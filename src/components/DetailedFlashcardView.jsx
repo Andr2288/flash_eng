@@ -414,28 +414,30 @@ const DetailedFlashcardView = ({
             <div className="relative">
                 {/* Card Actions — лише на лицьовому боку */}
                 {!isFlipped && (
-                    <div className="absolute top-6 right-6 z-20 flex space-x-2">
+                    <div className="absolute top-6 right-6 z-20 flex space-x-1">
                         <button
+                            type="button"
                             onClick={() => {
                                 if (!isChanging) onEdit(currentCard);
                             }}
                             disabled={isChanging}
-                            className="bg-white/90 p-2 text-blue-600 shadow-sm transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 rounded-full"
+                            className="cursor-pointer p-2 bg-white hover:bg-blue-50 text-blue-600 rounded-lg shadow-sm border border-gray-200 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                             title="Редагувати (E)"
                         >
-                            <Edit className="h-5 w-5" />
+                            <Edit className="w-4 h-4" />
                         </button>
                         <button
+                            type="button"
                             onClick={() => {
                                 if (!isChanging) {
                                     handleDeleteClick(currentCard);
                                 }
                             }}
                             disabled={isChanging}
-                            className="bg-white/90 p-2 text-red-600 shadow-sm transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 rounded-full"
+                            className="cursor-pointer p-2 bg-white hover:bg-red-50 text-red-600 rounded-lg shadow-sm border border-gray-200 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                             title="Видалити (Del)"
                         >
-                            <Trash2 className="h-5 w-5" />
+                            <Trash2 className="w-4 h-4" />
                         </button>
                     </div>
                 )}
@@ -477,11 +479,11 @@ const DetailedFlashcardView = ({
                                                 isChanging ||
                                                 !settingsLoaded
                                             }
-                                            className={`px-6 py-3 rounded-lg transition-all shadow-md ${
+                                            className={`cursor-pointer disabled:cursor-default px-6 py-3 rounded-lg transition-colors shadow-md ${
                                                 isPlayingAudio
-                                                    ? "bg-green-500 hover:bg-green-600 animate-pulse scale-105"
-                                                    : "bg-purple-500 hover:bg-purple-600 hover:scale-105"
-                                            } disabled:bg-gray-300 disabled:scale-100 text-white flex items-center space-x-2 mx-auto`}
+                                                    ? "bg-green-500 hover:bg-green-600 animate-pulse"
+                                                    : "bg-purple-500 hover:bg-purple-600"
+                                            } disabled:bg-gray-300 text-white flex items-center space-x-2 mx-auto`}
                                             title={
                                                 !settingsLoaded
                                                     ? "Завантаження налаштувань..."

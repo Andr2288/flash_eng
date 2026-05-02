@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useFlashcardStore } from "../store/useFlashcardStore.js";
 import { useCategoryStore } from "../store/useCategoryStore.js";
 import { useUserSettingsStore } from "../store/useUserSettingsStore.js";
@@ -68,9 +68,25 @@ const HomePage = () => {
 
     const [isAppInitialized, setIsAppInitialized] = useState(false);
     const [initializationStarted, setInitializationStarted] = useState(false);
+    const [isNavRefreshLoading, setIsNavRefreshLoading] = useState(false);
 
     const homeNavReselect = useNavReselectStore((s) => s.bumps["/"] ?? 0);
     const lastHomeNavReselectRef = useRef(null);
+
+    const refreshCategoriesScreenData = useCallback(async () => {
+        setIsNavRefreshLoading(true);
+        try {
+            await getCategories();
+            await getFlashcards();
+        } catch (error) {
+            console.error(
+                "❌ HomePage: categories screen refresh failed:",
+                error
+            );
+        } finally {
+            setIsNavRefreshLoading(false);
+        }
+    }, [getCategories, getFlashcards]);
 
     const filteredFlashcards = useMemo(() => {
         if (!searchQuery.trim()) {
@@ -146,15 +162,8 @@ const HomePage = () => {
         setCategoryFilter(null);
         setCurrentCardIndex(0);
         setSearchQuery("");
-        void (async () => {
-            try {
-                await getCategories();
-                await getFlashcards();
-            } catch (error) {
-                console.error("❌ HomePage: nav refresh failed:", error);
-            }
-        })();
-    }, [homeNavReselect, getCategories, getFlashcards, setCategoryFilter]);
+        void refreshCategoriesScreenData();
+    }, [homeNavReselect, refreshCategoriesScreenData, setCategoryFilter]);
 
     useEffect(() => {
         return () => {
@@ -209,6 +218,15 @@ const HomePage = () => {
     const clearSearch = () => {
         setSearchQuery("");
     };
+
+    const handleBackToCategories = useCallback(() => {
+        setCurrentView("categories");
+        setSelectedCategoryData(null);
+        setCategoryFilter(null);
+        setCurrentCardIndex(0);
+        setSearchQuery("");
+        void refreshCategoriesScreenData();
+    }, [setCategoryFilter, refreshCategoriesScreenData]);
 
     useEffect(() => {
         const handleKeyPress = (event) => {
@@ -275,7 +293,13 @@ const HomePage = () => {
 
         window.addEventListener("keydown", handleKeyPress);
         return () => window.removeEventListener("keydown", handleKeyPress);
-    }, [currentView, flashcards, flashcardViewMode, searchQuery]);
+    }, [
+        currentView,
+        flashcards,
+        flashcardViewMode,
+        searchQuery,
+        handleBackToCategories,
+    ]);
 
     const handleCategorySelect = (category) => {
         setSelectedCategoryData(category);
@@ -295,14 +319,6 @@ const HomePage = () => {
             getFlashcards();
             setCategoryFilter(null);
         }
-    };
-
-    const handleBackToCategories = () => {
-        setCurrentView("categories");
-        setSelectedCategoryData(null);
-        setCategoryFilter(null);
-        setCurrentCardIndex(0);
-        setSearchQuery("");
     };
 
     const handleCreateSubmit = async (formData) => {
@@ -431,7 +447,9 @@ const HomePage = () => {
                     <CategoryList
                         onCategorySelect={handleCategorySelect}
                         selectedCategoryId={selectedCategoryData?._id}
-                        isBootstrapping={!isAppInitialized}
+                        isBootstrapping={
+                            !isAppInitialized || isNavRefreshLoading
+                        }
                     />
                 </div>
             ) : (
@@ -442,7 +460,7 @@ const HomePage = () => {
                                 <div className="flex items-center space-x-2">
                                     <button
                                         onClick={handleBackToCategories}
-                                        className="hover:bg-blue-50 p-2 rounded-xl transition-colors"
+                                        className="cursor-pointer hover:bg-blue-50 p-2 rounded-xl transition-colors"
                                         title="Повернутися до папок (Esc)"
                                     >
                                         <ArrowLeft className="w-6 h-6 text-blue-600" />
