@@ -21,6 +21,21 @@ import CategoryList from "../components/CategoryList.jsx";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal.jsx";
 import { useNavReselectStore } from "../store/useNavReselectStore.js";
 
+const LEVEL_BADGE_STYLES = {
+    A0: "bg-blue-100 text-blue-800 border-blue-200",
+    A1: "bg-green-100 text-green-800 border-green-200",
+    A2: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    B1: "bg-purple-100 text-purple-800 border-purple-200",
+    B2: "bg-pink-100 text-pink-800 border-pink-200",
+    C1: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    C2: "bg-slate-100 text-slate-800 border-slate-200",
+};
+
+function getNormalizedEnglishLevel(level) {
+    const normalized = String(level || "A0").toUpperCase();
+    return LEVEL_BADGE_STYLES[normalized] ? normalized : "A0";
+}
+
 const HomePage = () => {
     const {
         flashcards,
@@ -755,6 +770,13 @@ const HomePage = () => {
                                                                     card.text
                                                                 )}
                                                             </h3>
+                                                            <span
+                                                                className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${LEVEL_BADGE_STYLES[getNormalizedEnglishLevel(card.englishLevel)]}`}
+                                                            >
+                                                                {getNormalizedEnglishLevel(
+                                                                    card.englishLevel
+                                                                )}
+                                                            </span>
                                                         </div>
 
                                                         {card.transcription && (

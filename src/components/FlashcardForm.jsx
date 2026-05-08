@@ -4,6 +4,7 @@ import {
     X,
     Folder,
     BookOpen,
+    Languages,
 } from "lucide-react";
 import { useCategoryStore } from "../store/useCategoryStore.js";
 import { useUserSettingsStore } from "../store/useUserSettingsStore.js";
@@ -30,6 +31,17 @@ function findDuplicateFlashcard(text, existingFlashcards, excludeId) {
         }
         return normalizeFlashcardWordText(card?.text) === n;
     });
+}
+
+const ENGLISH_LEVEL_OPTIONS = ["A1", "A2", "B1", "B2", "C1", "C2"];
+const AUTO_ENGLISH_LEVEL = "AUTO";
+
+function normalizeEnglishLevel(level, fallback = "B1") {
+    const candidate = String(level || "").toUpperCase();
+    if (candidate === AUTO_ENGLISH_LEVEL) {
+        return AUTO_ENGLISH_LEVEL;
+    }
+    return ENGLISH_LEVEL_OPTIONS.includes(candidate) ? candidate : fallback;
 }
 
 const FlashcardForm = ({
@@ -64,7 +76,7 @@ const FlashcardForm = ({
 
     const [settingsLoaded, setSettingsLoaded] = useState(false);
 
-    const [englishLevel, setEnglishLevel] = useState(null);
+    const [englishLevel, setEnglishLevel] = useState(AUTO_ENGLISH_LEVEL);
 
     // Auto-save state for quick creation
     const [isQuickCreating, setIsQuickCreating] = useState(false);
@@ -93,7 +105,9 @@ const FlashcardForm = ({
         try {
             await loadSettings();
             setSettingsLoaded(true);
-            setEnglishLevel(getDefaultEnglishLevel());
+            setEnglishLevel(
+                normalizeEnglishLevel(getDefaultEnglishLevel(), "B1")
+            );
         } catch (error) {
             console.error("Failed to load settings:", error);
             setSettingsLoaded(true);
@@ -127,6 +141,7 @@ const FlashcardForm = ({
                 notes: editingCard.notes || "",
                 categoryId: editingCard.categoryId?._id || "",
             });
+            setEnglishLevel(normalizeEnglishLevel(editingCard.englishLevel, "B1"));
         } else {
             setFormData({
                 text: initialText || "",
@@ -139,8 +154,20 @@ const FlashcardForm = ({
                 notes: "",
                 categoryId: preselectedCategoryId || "",
             });
+            if (settingsLoaded) {
+                setEnglishLevel(
+                    normalizeEnglishLevel(getDefaultEnglishLevel(), "B1")
+                );
+            }
         }
-    }, [editingCard, isOpen, preselectedCategoryId, initialText]);
+    }, [
+        editingCard,
+        isOpen,
+        preselectedCategoryId,
+        initialText,
+        settingsLoaded,
+        getDefaultEnglishLevel,
+    ]);
 
     useEffect(() => {
         if (!isOpen) {
@@ -192,6 +219,7 @@ const FlashcardForm = ({
             const submitData = {
                 ...formData,
                 categoryId: formData.categoryId || null,
+                englishLevel: normalizeEnglishLevel(englishLevel, "B1"),
                 examples: formData.examples.filter((ex) => ex.trim()),
                 imageUrls,
             };
@@ -292,17 +320,13 @@ const FlashcardForm = ({
             return;
         }
 
-        if (!englishLevel) {
-            setEnglishLevel("B1");
-        }
-
         setIsQuickCreating(true);
 
         try {
             const categoryContext = getCategoryContextInfo();
             const aiContent = await generateCompleteFlashcard({
                 text: formData.text.trim(),
-                englishLevel: englishLevel || "B1",
+                englishLevel: normalizeEnglishLevel(englishLevel, "B1"),
                 categoryContext: buildCategoryPromptContext(),
                 model: getChatGPTModel() || "gpt-4o-mini",
             });
@@ -331,6 +355,11 @@ const FlashcardForm = ({
                 : aiNotes;
 
             const submitData = {
+                englishLevel:
+                    normalizeEnglishLevel(englishLevel, "B1") ===
+                    AUTO_ENGLISH_LEVEL
+                        ? normalizeEnglishLevel(aiContent.englishLevel, "B1")
+                        : normalizeEnglishLevel(englishLevel, "B1"),
                 text: formData.text.trim(),
                 transcription: aiContent.transcription || "",
                 translation: aiContent.translation || "",
@@ -445,9 +474,17 @@ const FlashcardForm = ({
                                 <div className="flex items-center space-x-4 mt-1">
                                     {settingsLoaded && (
                                         <p className="text-sm text-gray-600">
-                                            Рівень англійської:{" "}
+                                            Рівень для картки:{" "}
                                             <span className="font-semibold text-blue-600">
-                                                {englishLevel}
+                                                {normalizeEnglishLevel(
+                                                    englishLevel,
+                                                    "B1"
+                                                ) === AUTO_ENGLISH_LEVEL
+                                                    ? "Автоматично"
+                                                    : normalizeEnglishLevel(
+                                                          englishLevel,
+                                                          "B1"
+                                                      )}
                                             </span>
                                         </p>
                                     )}
@@ -565,6 +602,40 @@ const FlashcardForm = ({
                                         }
                                     </p>
                                 )}
+                        </div>
+
+                        {/* English Level Selection */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">
+                                Рівень англійської для цієї картки
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <Languages className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <select
+                                    value={englishLevel}
+                                    onChange={(e) =>
+                                        setEnglishLevel(
+                                            normalizeEnglishLevel(
+                                                e.target.value,
+                                                "B1"
+                                            )
+                                        )
+                                    }
+                                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white transition-all duration-200 hover:border-gray-300 text-gray-900"
+                                    disabled={isQuickCreating}
+                                >
+                                    <option value={AUTO_ENGLISH_LEVEL}>
+                                        Визначити автоматично
+                                    </option>
+                                    {ENGLISH_LEVEL_OPTIONS.map((level) => (
+                                        <option key={level} value={level}>
+                                            {level}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
 
                         {/* Notes */}

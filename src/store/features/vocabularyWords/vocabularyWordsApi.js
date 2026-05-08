@@ -467,16 +467,23 @@ Bad example:
 
 async function generateCompleteFlashcard({
     text,
-    englishLevel = "B1",
+    englishLevel = "AUTO",
     categoryContext = "",
     model = GPTModel.GPT5Mini,
 }) {
+    const normalizedLevel = String(englishLevel || "AUTO").toUpperCase();
+    const isAutoLevel = normalizedLevel === "AUTO";
+    const levelInstruction = isAutoLevel
+        ? "Determine the most suitable CEFR level for this specific word/phrase automatically and keep all generated content at that detected level."
+        : `The output must be in English level: ${normalizedLevel}.`;
+    const expectedOutputLevel = isAutoLevel ? "detected level" : normalizedLevel;
     const input = `Create a comprehensive flashcard for an English vocabulary word/phrase. Word: "${text}".
-The output must be in English level: ${englishLevel}.
+${levelInstruction}
 
 Return JSON format:
 {
   "text": "${text}",
+  "englishLevel": "CEFR level for this flashcard: one of A1, A2, B1, B2, C1, C2",
   "transcription": "Resources: Oxford Learner's Dictionaries. Must use \\n\\n between each variant. Format for output: UK: [ˌjuːnɪˈvɜːsəti] US: [ˌjuːnɪˈvɜːrsəti];",
   "translation": "Several possible Ukrainian translation variants (1-2 or more) for: "${text}". Output only in the format like: "Виглядати; дивитися; вигляд; зовнішність". No extra text. Only the string.",
   "shortDescription": "A very short description (1-2 sentences max, under 100 characters). The description should be concise and clear",
@@ -487,7 +494,7 @@ Return JSON format:
 3. REAL-WORLD APPLICATION: Describe practical situations where this word is used and explain the meaning (for example you can use synonims)
 4. SOME INTERESTING FACTS: some facts form life or specific examples 
 
-Your explanation must be written in an engaging, educational article style appropriate for ${englishLevel} level learners (must use \\n\\n between paragraphs). Think of it as a mini-encyclopedia entry that thoroughly covers the topic. Use simple language but provide comprehensive information.
+Your explanation must be written in an engaging, educational article style appropriate for ${expectedOutputLevel} level learners (must use \\n\\n between paragraphs). Think of it as a mini-encyclopedia entry that thoroughly covers the topic. Use simple language but provide comprehensive information.
 
 Examples structure:
   "examples": ["Example sentence 1 using the word", "Example sentence 2 showing different context", "Example sentence 3 with another usage"],
@@ -495,7 +502,8 @@ Examples structure:
 }
 
 Requirements:
-- Ensure all content is in ${englishLevel} English level
+- Set "englishLevel" to one of: A1, A2, B1, B2, C1, C2
+- Ensure all content is in the same "englishLevel"
 - Don't use conclusion at the end of explanation like "In conclusion" or "Overall, ...", only the main information without unnecessary text
 - The "explanation" property text must be 3-4 paragraphs max
 
@@ -503,6 +511,7 @@ Example for word "opportunity":
 
 {
   "text": "opportunity",
+  "englishLevel": "B1",
   "transcription": "UK: [ˌɒpəˈtjuːnəti]\\\\n\\\\nUS: [ˌɑːpərˈtuːnəti]",
   "translation": "можливість; нагода; шанс; перспектива",
   "shortDescription": "A chance to do something good or important that can help you succeed.",
@@ -519,6 +528,7 @@ Example for word "valley":
 
 {
   "text": "valley",
+  "englishLevel": "A2",
   "transcription": "UK: [ˈvæli]\\n\\nUS: [ˈvæli]",
   "translation": "долина",
   "shortDescription": "A low area of land between hills or mountains, often with a river or stream.",

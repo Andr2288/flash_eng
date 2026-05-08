@@ -19,6 +19,7 @@ function mapWordRowToFlashcard(row) {
     return {
         _id: row.id,
         text: row.text || "",
+        englishLevel: row.english_level || "B1",
         transcription: row.transcription || "",
         translation: row.translation || "",
         shortDescription: row.short_description || "",
@@ -42,7 +43,7 @@ async function fetchFlashcards(categoryId = null) {
     let query = supabase
         .from("vocabulary_words")
         .select(
-            "id, text, transcription, translation, short_description, explanation, notes, examples, image_urls, created_at, category_id, flashcard_categories(id, name, color)"
+            "id, text, english_level, transcription, translation, short_description, explanation, notes, examples, image_urls, created_at, category_id, flashcard_categories(id, name, color)"
         )
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
@@ -63,6 +64,7 @@ async function createFlashcard(payload) {
     const insertPayload = {
         user_id: userId,
         text: payload?.text?.trim() || "",
+        english_level: payload?.englishLevel || "B1",
         transcription: payload?.transcription || "",
         translation: payload?.translation || "",
         short_description: payload?.shortDescription || "",
@@ -77,7 +79,7 @@ async function createFlashcard(payload) {
         .from("vocabulary_words")
         .insert([insertPayload])
         .select(
-            "id, text, transcription, translation, short_description, explanation, notes, examples, image_urls, created_at, category_id, flashcard_categories(id, name, color)"
+            "id, text, english_level, transcription, translation, short_description, explanation, notes, examples, image_urls, created_at, category_id, flashcard_categories(id, name, color)"
         )
         .single();
 
@@ -88,6 +90,7 @@ async function createFlashcard(payload) {
 async function updateFlashcard(id, payload) {
     const updatePayload = {
         text: payload?.text,
+        english_level: payload?.englishLevel,
         transcription: payload?.transcription,
         translation: payload?.translation,
         short_description: payload?.shortDescription,
@@ -108,7 +111,7 @@ async function updateFlashcard(id, payload) {
         .update(updatePayload)
         .eq("id", id)
         .select(
-            "id, text, transcription, translation, short_description, explanation, notes, examples, image_urls, created_at, category_id, flashcard_categories(id, name, color)"
+            "id, text, english_level, transcription, translation, short_description, explanation, notes, examples, image_urls, created_at, category_id, flashcard_categories(id, name, color)"
         )
         .single();
 

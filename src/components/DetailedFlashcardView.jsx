@@ -7,6 +7,21 @@ import toast from "react-hot-toast";
 import ConfirmDeleteModal from "./ConfirmDeleteModal.jsx";
 import DetailedCardInfo from "./DetailedCardInfo.jsx";
 
+const LEVEL_BADGE_STYLES = {
+    A0: "bg-blue-100 text-blue-800 border-blue-200",
+    A1: "bg-green-100 text-green-800 border-green-200",
+    A2: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    B1: "bg-purple-100 text-purple-800 border-purple-200",
+    B2: "bg-pink-100 text-pink-800 border-pink-200",
+    C1: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    C2: "bg-slate-100 text-slate-800 border-slate-200",
+};
+
+function getNormalizedEnglishLevel(level) {
+    const normalized = String(level || "A0").toUpperCase();
+    return LEVEL_BADGE_STYLES[normalized] ? normalized : "A0";
+}
+
 const DetailedFlashcardView = ({
     flashcards,
     onEdit,
@@ -439,6 +454,17 @@ const DetailedFlashcardView = ({
                         >
                             <Trash2 className="w-4 h-4" />
                         </button>
+                    </div>
+                )}
+
+                {!isFlipped && (
+                    <div className="absolute top-6 left-6 z-20">
+                        <span
+                            className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${LEVEL_BADGE_STYLES[getNormalizedEnglishLevel(currentCard.englishLevel)]}`}
+                        >
+                            Рівень:{" "}
+                            {getNormalizedEnglishLevel(currentCard.englishLevel)}
+                        </span>
                     </div>
                 )}
 
