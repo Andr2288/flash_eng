@@ -192,30 +192,6 @@ async function deleteCategory(id) {
     if (error) throw new Error(error.message);
 }
 
-async function fetchUserSettings(defaultSettings) {
-    const userId = await requireUserId();
-    const { data, error } = await supabase
-        .from("user_settings")
-        .select("settings")
-        .eq("user_id", userId)
-        .maybeSingle();
-    if (error) throw new Error(error.message);
-    return data?.settings || defaultSettings;
-}
-
-async function upsertUserSettings(settings) {
-    const userId = await requireUserId();
-    const { error } = await supabase.from("user_settings").upsert(
-        {
-            user_id: userId,
-            settings,
-            updated_at: new Date().toISOString(),
-        },
-        { onConflict: "user_id" }
-    );
-    if (error) throw new Error(error.message);
-}
-
 export {
     fetchFlashcards,
     createFlashcard,
@@ -225,6 +201,4 @@ export {
     createCategory,
     updateCategory,
     deleteCategory,
-    fetchUserSettings,
-    upsertUserSettings,
 };

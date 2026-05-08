@@ -5,7 +5,6 @@ import { ResetPasswordPage } from "./ResetPasswordPage.jsx";
 import { HomePage } from "./HomePage.jsx";
 import { PracticePage } from "./PracticePage.jsx";
 import { ProfilePage } from "./ProfilePage.jsx";
-import { SettingsPage } from "./SettingsPage.jsx";
 
 export {
     LoginPage,
@@ -15,5 +14,4 @@ export {
     HomePage,
     PracticePage,
     ProfilePage,
-    SettingsPage,
 };

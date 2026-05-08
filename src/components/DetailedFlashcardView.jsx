@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ChevronLeft, ChevronRight, Edit, Trash2, Volume2 } from "lucide-react";
 import { useFlashcardStore } from "../store/useFlashcardStore.js";
-import { useUserSettingsStore } from "../store/useUserSettingsStore.js";
 import { generateSpeech } from "../store/features/vocabularyWords/vocabularyWordsApi.js";
 import toast from "react-hot-toast";
 import ConfirmDeleteModal from "./ConfirmDeleteModal.jsx";
@@ -29,25 +28,15 @@ const DetailedFlashcardView = ({
     onCardIndexChange,
 }) => {
     const { deleteFlashcard, updateFlashcard } = useFlashcardStore();
-    const {
-        settings: userSettings,
-        hasApiKey,
-        loadSettings,
-        getTTSSettings,
-    } = useUserSettingsStore();
 
     const [currentIndex, setCurrentIndex] = useState(initialCardIndex);
     const [isFlipped, setIsFlipped] = useState(false);
     const [isChanging, setIsChanging] = useState(false);
     const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
-    // Delete confirmation modal states
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [cardToDelete, setCardToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
-
-    // Settings state
-    const [settingsLoaded, setSettingsLoaded] = useState(false);
 
     const [updatedFlashcards, setUpdatedFlashcards] = useState(flashcards);
 
@@ -57,26 +46,10 @@ const DetailedFlashcardView = ({
     useEffect(() => {
         if (initialCardIndex !== currentIndex) {
             setCurrentIndex(initialCardIndex);
-            setIsFlipped(false); // Скидаємо стан перевороту при зміні картки
+            setIsFlipped(false);
         }
     }, [initialCardIndex]);
 
-    // Load user settings on component mount
-    useEffect(() => {
-        const initializeSettings = async () => {
-            try {
-                await loadSettings();
-                setSettingsLoaded(true);
-            } catch (error) {
-                console.error("Failed to load settings:", error);
-                setSettingsLoaded(true); // Continue with defaults
-            }
-        };
-
-        initializeSettings();
-    }, [loadSettings]);
-
-    // Синхронізуємо updatedFlashcards з пропсами
     useEffect(() => {
         setUpdatedFlashcards(flashcards);
     }, [flashcards]);
@@ -179,13 +152,6 @@ const DetailedFlashcardView = ({
                 return;
             }
 
-            if (!settingsLoaded) {
-                if (!isAutoPlay) {
-                    toast.error("Налаштування ще завантажуються...");
-                }
-                return;
-            }
-
             try {
                 stopCurrentAudio();
 
@@ -242,17 +208,7 @@ const DetailedFlashcardView = ({
 
                 if (!isAutoPlay) {
                     if (error.response?.status === 401) {
-                        toast.error(
-                            "API ключ недійсний. Перевірте налаштування",
-                            {
-                                duration: 4000,
-                                action: {
-                                    label: "Налаштування",
-                                    onClick: () =>
-                                        (window.location.href = "/settings"),
-                                },
-                            }
-                        );
+                        toast.error("API ключ недійсний");
                     } else if (error.response?.status === 402) {
                         toast.error(
                             "Недостатньо кредитів OpenAI. Поповніть баланс"
@@ -264,9 +220,7 @@ const DetailedFlashcardView = ({
                     } else if (error.response?.status === 503) {
                         toast.error("Проблеми з підключенням до OpenAI API");
                     } else if (error.response?.status === 500) {
-                        toast.error(
-                            "OpenAI API не налаштований. Встановіть ключ в налаштуваннях"
-                        );
+                        toast.error("OpenAI API не налаштований");
                     } else if (error.code === "ECONNABORTED") {
                         toast.error("Тайм-аут запиту. Спробуйте ще раз");
                     } else {
@@ -275,7 +229,7 @@ const DetailedFlashcardView = ({
                 }
             }
         },
-        [isChanging, settingsLoaded, stopCurrentAudio]
+        [isChanging, stopCurrentAudio]
     );
 
     const handleDeleteClick = (card) => {
@@ -502,8 +456,7 @@ const DetailedFlashcardView = ({
                                             disabled={
                                                 !currentCard.text ||
                                                 isPlayingAudio ||
-                                                isChanging ||
-                                                !settingsLoaded
+                                                isChanging
                                             }
                                             className={`cursor-pointer disabled:cursor-default px-6 py-3 rounded-lg transition-colors shadow-md ${
                                                 isPlayingAudio
@@ -511,20 +464,16 @@ const DetailedFlashcardView = ({
                                                     : "bg-purple-500 hover:bg-purple-600"
                                             } disabled:bg-gray-300 text-white flex items-center space-x-2 mx-auto`}
                                             title={
-                                                !settingsLoaded
-                                                    ? "Завантаження налаштувань..."
-                                                    : isPlayingAudio
-                                                      ? "Відтворення... (натисніть V щоб зупинити)"
-                                                      : "Прослухати (або натисніть V)"
+                                                isPlayingAudio
+                                                    ? "Відтворення... (натисніть V щоб зупинити)"
+                                                    : "Прослухати (або натисніть V)"
                                             }
                                         >
                                             <Volume2 className="w-5 h-5" />
                                             <span>
-                                                {!settingsLoaded
-                                                    ? "Завантаження..."
-                                                    : isPlayingAudio
-                                                      ? "Відтворення..."
-                                                      : "Озвучити"}
+                                                {isPlayingAudio
+                                                    ? "Відтворення..."
+                                                    : "Озвучити"}
                                             </span>
                                         </button>
                                     </div>

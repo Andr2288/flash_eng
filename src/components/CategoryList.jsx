@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useCategoryStore } from "../store/useCategoryStore.js";
 import { useFlashcardStore } from "../store/useFlashcardStore.js";
-import { useUserSettingsStore } from "../store/useUserSettingsStore.js";
+import { useCategorySortStore } from "../store/useCategorySortStore.js";
 import CategoryForm from "./CategoryForm.jsx";
 import ConfirmDeleteCategoryModal from "./ConfirmDeleteCategoryModal.jsx";
 
@@ -23,19 +23,13 @@ const CategoryList = ({
 }) => {
     const { categories, deleteCategory } = useCategoryStore();
     const { flashcards, getFlashcards } = useFlashcardStore();
-    const { updateSetting, getGeneralSettings } = useUserSettingsStore();
+    const sortBy = useCategorySortStore((s) => s.sortBy);
+    const sortOrder = useCategorySortStore((s) => s.sortOrder);
+    const setSort = useCategorySortStore((s) => s.setSort);
 
     const [showForm, setShowForm] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const generalSettings = getGeneralSettings();
-    const [sortBy, setSortBy] = useState(
-        generalSettings.categorySortBy || "date"
-    );
-    const [sortOrder, setSortOrder] = useState(
-        generalSettings.categorySortOrder || "desc"
-    );
 
     // Delete confirmation modal states
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -154,15 +148,10 @@ const CategoryList = ({
         if (sortBy === newSortBy) {
             newSortOrder = sortOrder === "asc" ? "desc" : "asc";
         } else {
-            setSortBy(newSortBy);
             newSortOrder = newSortBy === "alphabet" ? "asc" : "desc";
         }
 
-        setSortBy(newSortBy);
-        setSortOrder(newSortOrder);
-
-        updateSetting("generalSettings.categorySortBy", newSortBy);
-        updateSetting("generalSettings.categorySortOrder", newSortOrder);
+        setSort(newSortBy, newSortOrder);
     };
 
     const getSortedCategories = () => {

@@ -1,6 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-    Settings,
     User,
     BookOpen,
     Target,
@@ -45,12 +44,6 @@ const Navbar = () => {
             icon: User,
             label: "Профіль",
             gradient: "from-orange-500 to-red-500",
-        },
-        {
-            path: "/settings",
-            icon: Settings,
-            label: "Налаштування",
-            gradient: "from-gray-500 to-slate-500",
         },
     ];
 

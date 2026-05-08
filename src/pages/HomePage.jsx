@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useFlashcardStore } from "../store/useFlashcardStore.js";
 import { useCategoryStore } from "../store/useCategoryStore.js";
-import { useUserSettingsStore } from "../store/useUserSettingsStore.js";
 import {
     Plus,
     Edit,
@@ -62,8 +61,6 @@ const HomePage = () => {
     }, [storeAllFlashcards, flashcards]);
 
     const { getCategories } = useCategoryStore();
-
-    const { loadSettings, areSettingsLoaded } = useUserSettingsStore();
 
     const [currentView, setCurrentView] = useState("categories");
     const [flashcardViewMode, setFlashcardViewMode] = useState("grid");
@@ -133,17 +130,6 @@ const HomePage = () => {
             setInitializationStarted(true);
 
             try {
-                if (!areSettingsLoaded()) {
-                    try {
-                        await loadSettings();
-                    } catch (settingsError) {
-                        console.warn(
-                            "⚠️ HomePage: Settings loading failed, will use defaults:",
-                            settingsError
-                        );
-                    }
-                }
-
                 await getCategories();
 
                 if (currentView === "categories") {

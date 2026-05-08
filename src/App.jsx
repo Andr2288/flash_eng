@@ -11,7 +11,6 @@ import {
     HomePage,
     PracticePage,
     ProfilePage,
-    SettingsPage,
 } from "./pages/index.js";
 
 import {
@@ -77,16 +76,6 @@ function App() {
                     element={<ForgotPasswordPage />}
                 />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
-                <Route
-                    path="/settings"
-                    element={
-                        user ? (
-                            <SettingsPage />
-                        ) : (
-                            <Navigate to="/login" replace />
-                        )
-                    }
-                />
                 <Route
                     path="/profile"
                     element={
