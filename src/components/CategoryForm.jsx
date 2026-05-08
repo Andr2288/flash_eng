@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Save, X, Folder } from "lucide-react";
+import toast from "react-hot-toast";
+import { GENERIC_ERROR_TOAST } from "../constants/toastMessages.js";
 import { useCategoryStore } from "../store/useCategoryStore.js";
 
 const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
@@ -45,6 +47,9 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
             onClose();
         } catch (error) {
             console.error("Error submitting category form:", error);
+            if (!editingCategory) {
+                toast.error(GENERIC_ERROR_TOAST);
+            }
         }
     };
 

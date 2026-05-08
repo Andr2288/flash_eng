@@ -6,6 +6,7 @@ export function useThunk(asyncFn) {
 
     const runThunk = useCallback(
         (arg) => {
+            setError(null);
             setIsLoading(true);
             return Promise.resolve(asyncFn(arg))
                 .catch((err) => {

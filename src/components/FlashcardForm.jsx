@@ -14,6 +14,7 @@ import {
     DEFAULT_CHATGPT_MODEL,
 } from "../config/app.js";
 import toast from "react-hot-toast";
+import { GENERIC_ERROR_TOAST } from "../constants/toastMessages.js";
 
 /** Нормалізація для порівняння з існуючими картками (як у словнику вправ) */
 function normalizeFlashcardWordText(str) {
@@ -182,17 +183,22 @@ const FlashcardForm = ({
             return;
         }
 
-        const existingImageUrls = Array.isArray(formData.imageUrls)
-            ? formData.imageUrls
-            : [];
-        let imageUrls = existingImageUrls;
-        const sourceText = normalizeFlashcardWordText(formData.text);
-        const originalText = normalizeFlashcardWordText(editingCard?.text);
-        if (sourceText && (sourceText !== originalText || imageUrls.length === 0)) {
-            imageUrls = await fetchUnsplashImageUrls(formData.text, { count: 6 });
-        }
-
         try {
+            const existingImageUrls = Array.isArray(formData.imageUrls)
+                ? formData.imageUrls
+                : [];
+            let imageUrls = existingImageUrls;
+            const sourceText = normalizeFlashcardWordText(formData.text);
+            const originalText = normalizeFlashcardWordText(editingCard?.text);
+            if (
+                sourceText &&
+                (sourceText !== originalText || imageUrls.length === 0)
+            ) {
+                imageUrls = await fetchUnsplashImageUrls(formData.text, {
+                    count: 6,
+                });
+            }
+
             const submitData = {
                 ...formData,
                 categoryId: formData.categoryId || null,
@@ -208,6 +214,7 @@ const FlashcardForm = ({
             onClose();
         } catch (error) {
             console.error("Error submitting form:", error);
+            toast.error(GENERIC_ERROR_TOAST);
         }
     };
 
@@ -369,24 +376,7 @@ const FlashcardForm = ({
             onClose();
         } catch (error) {
             console.error("Error in quick create:", error);
-
-            let errorMessage = "Помилка швидкого створення картки";
-
-            if (error.response?.status === 401) {
-                errorMessage = "API ключ недійсний";
-            } else if (error.response?.status === 402) {
-                errorMessage = "Недостатньо кредитів OpenAI";
-            } else if (error.response?.status === 429) {
-                errorMessage = "Перевищено ліміт запитів OpenAI";
-            } else if (error.response?.status === 500) {
-                errorMessage = "OpenAI API не налаштований";
-            } else if (
-                String(error?.message || "").includes("VITE_OPENAI_API_KEY")
-            ) {
-                errorMessage = "Додай VITE_OPENAI_API_KEY у .env";
-            }
-
-            toast.error(errorMessage);
+            toast.error(GENERIC_ERROR_TOAST);
         } finally {
             setIsQuickCreating(false);
         }

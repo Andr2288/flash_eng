@@ -18,6 +18,7 @@ import {
 } from "../store/index.js";
 import { useThunk } from "../hooks/use-thunk.js";
 import { useNavReselectStore } from "../store/useNavReselectStore.js";
+import { LoadErrorNotice } from "../components/LoadErrorNotice.jsx";
 
 const TOPIC_PALETTE = [
     "#3B82F6",
@@ -70,7 +71,7 @@ const ProfilePage = () => {
     );
 
     const [statsLoading, setStatsLoading] = useState(true);
-    const [loadError, setLoadError] = useState(null);
+    const [loadFailed, setLoadFailed] = useState(false);
     const [stats, setStats] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [profileModalKey, setProfileModalKey] = useState(0);
@@ -85,14 +86,12 @@ const ProfilePage = () => {
 
     const loadVocabulary = useCallback(async () => {
         setStatsLoading(true);
-        setLoadError(null);
+        setLoadFailed(false);
         try {
             await doFetchVocabularyWords();
         } catch (e) {
             if (e?.name !== "AbortError" && e?.name !== "CanceledError") {
-                setLoadError(
-                    e?.message || "Не вдалося завантажити словник з сервера"
-                );
+                setLoadFailed(true);
             }
         } finally {
             setStatsLoading(false);
@@ -217,13 +216,11 @@ const ProfilePage = () => {
             <div className="ml-68 flex h-[100dvh] max-h-[100dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
                 {profileHeader}
                 <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
-                    <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col">
-                        <div className="flex flex-1 flex-col items-center justify-center gap-4">
-                            <Loader className="w-10 h-10 animate-spin text-blue-600" />
-                            <p className="text-sm text-gray-600">
-                                Зачекайте, будь ласка
-                            </p>
-                        </div>
+                    <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-center gap-4 py-24 min-h-[45vh]">
+                        <Loader className="w-10 h-10 animate-spin text-blue-600" />
+                        <p className="text-sm text-gray-600">
+                            Зачекайте, будь ласка
+                        </p>
                     </div>
                 </div>
             </div>
@@ -232,15 +229,14 @@ const ProfilePage = () => {
 
     const avatar = user.user_metadata?.avatar_url || null;
     const name = resolveShownName(user);
-    const err = loadError;
 
     return (
         <div className="ml-68 flex h-[100dvh] max-h-[100dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
             {profileHeader}
 
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
-                <div className="mx-auto w-full max-w-7xl space-y-8">
-                    <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 pb-12 [scrollbar-gutter:stable]">
+                <div className="mx-auto flex w-full max-w-7xl flex-col space-y-8">
+                    <div className="shrink-0 bg-white rounded-xl shadow-md p-6">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div className="flex items-center space-x-4 flex-1 min-w-0">
                                 <div className="w-20 h-20 rounded-full bg-linear-to-r from-orange-100 to-red-100 overflow-hidden shrink-0">
@@ -290,31 +286,19 @@ const ProfilePage = () => {
                         </div>
                     </div>
 
-                    {err ? (
-                        <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center max-w-lg mx-auto">
-                            <p className="text-red-800 font-medium">
-                                Не вдалося завантажити дані
-                            </p>
-                            <p className="text-sm text-red-600/90 mt-2">
-                                {err}
-                            </p>
-                            <button
-                                type="button"
-                                onClick={() => loadVocabulary()}
-                                className="mt-4 text-sm font-medium text-red-800 underline hover:no-underline"
-                            >
-                                Спробувати ще раз
-                            </button>
-                        </div>
-                    ) : statsLoading || isFetchingWords || stats == null ? (
-                        <div className="flex flex-1 flex-col items-center justify-center gap-4">
-                            <Loader className="w-10 h-10 animate-spin text-blue-600" />
-                            <p className="text-sm text-gray-600">
-                                Зачекайте, будь ласка
-                            </p>
-                        </div>
-                    ) : (
+                    <div className="flex flex-col">
+                        {loadFailed ? (
+                            <LoadErrorNotice />
+                        ) : statsLoading || isFetchingWords || stats == null ? (
+                            <div className="flex w-full flex-col items-center justify-center gap-4 py-24 min-h-[45vh]">
+                                <Loader className="w-10 h-10 animate-spin text-blue-600" />
+                                <p className="text-sm text-gray-600">
+                                    Зачекайте, будь ласка
+                                </p>
+                            </div>
+                        ) : (
                         <>
+                            <div className="flex flex-col gap-6 lg:gap-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
                                     <div className="flex items-center justify-between">
@@ -478,8 +462,10 @@ const ProfilePage = () => {
                                     )}
                                 </div>
                             </div>
+                            </div>
                         </>
                     )}
+                    </div>
                 </div>
             </div>
 

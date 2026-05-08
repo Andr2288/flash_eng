@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useThunk } from "../../hooks/use-thunk";
 import {
@@ -10,6 +10,7 @@ import {
     updateVocabularyWord,
 } from "../../store";
 import { matchesPracticeCategory } from "../../store/features/vocabularyWords/vocabularyWordsStateLogic.js";
+import { GENERIC_ERROR_TOAST } from "../../constants/toastMessages.js";
 import { Loader, CheckCircle, XCircle } from "lucide-react";
 
 const FillTheGapExercise = () => {
@@ -47,6 +48,17 @@ const FillTheGapExercise = () => {
 
     const isLoading = isGenerating;
     const combinedProcessing = isGenerating;
+
+    const practicePool = useMemo(
+        () =>
+            data.filter((item) =>
+                matchesPracticeCategory(
+                    item,
+                    exerciseState.practiceCategoryId
+                )
+            ),
+        [data, exerciseState.practiceCategoryId]
+    );
 
     const loadExercise = async (vocabularyWordMainParameters) => {
         try {
@@ -264,14 +276,33 @@ const FillTheGapExercise = () => {
 
     return (
         <div className="w-full sm:w-2/3 min-h-160 sm:min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-12 pb-8 mx-5 sm:m-auto">
-            {isLoading ? (
+            {isLoading || exerciseState.isLoading ? (
                 <div className="flex-1 flex flex-col items-center justify-center w-full text-center py-8 sm:py-12">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
                     <p className="text-sm sm:text-base text-gray-600">
                         Зачекайте, будь ласка ...
                     </p>
                 </div>
-            ) : (
+            ) : updateVocabularyWordError ||
+              generateSentenceCompletionError ||
+              generateSpeechError ? (
+                <div className="flex-1 flex flex-col items-center justify-center w-full text-center py-8 sm:py-12 min-h-48 sm:min-h-56">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6 w-full max-w-md">
+                        <p className="text-red-600 font-medium text-sm sm:text-base text-center">
+                            {GENERIC_ERROR_TOAST}
+                        </p>
+                    </div>
+                </div>
+            ) : exerciseState.currentSelection.length > 0 &&
+              !sentenceData ? (
+                <div className="flex-1 flex flex-col items-center justify-center w-full text-center py-8 sm:py-12">
+                    <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+                    <p className="text-sm sm:text-base text-gray-600">
+                        Зачекайте, будь ласка ...
+                    </p>
+                </div>
+            ) : exerciseState.currentSelection.length > 0 &&
+              sentenceData ? (
                 <>
                     {exerciseState.currentSelection.length > 0 && (
                         <div className="mb-8 flex justify-center">
@@ -424,6 +455,18 @@ const FillTheGapExercise = () => {
                         </button>
                     </div>
                 </>
+            ) : practicePool.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 text-center py-8 sm:py-12">
+                    <p className="text-sm sm:text-base text-gray-500">
+                        Немає слів для вивчення :(
+                    </p>
+                </div>
+            ) : (
+                <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 text-center py-8 sm:py-12">
+                    <p className="text-sm sm:text-base text-gray-500">
+                        Ви вивчили обов'язковий мінімум на сьогодні :)
+                    </p>
+                </div>
             )}
         </div>
     );

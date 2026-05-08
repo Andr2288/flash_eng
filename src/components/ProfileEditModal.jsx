@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Save, X, Camera, User, Loader } from "lucide-react";
+import toast from "react-hot-toast";
+import { GENERIC_ERROR_TOAST } from "../constants/toastMessages.js";
 
 const MAX_NAME_LEN = 50;
 const AVATAR_MAX_EDGE = 512;
@@ -59,7 +61,6 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
     }));
     const [nameError, setNameError] = useState("");
     const [imageError, setImageError] = useState("");
-    const [saveError, setSaveError] = useState("");
 
     const nameInputRef = useRef(null);
     const onCloseRef = useRef(onClose);
@@ -100,7 +101,6 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
     }, []);
 
     const handleSave = async () => {
-        setSaveError("");
         const err = validateFullName(formData.fullName);
         if (err) {
             setNameError(err);
@@ -111,10 +111,8 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
         try {
             await onSave(formData);
         } catch (err) {
-            setSaveError(
-                err?.message ||
-                    "Не вдалося зберегти зміни. Спробуйте ще раз."
-            );
+            console.error("Profile save failed:", err);
+            toast.error(GENERIC_ERROR_TOAST);
         }
     };
 
@@ -127,7 +125,6 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
         }
         setNameError("");
         setImageError("");
-        setSaveError("");
         onClose();
     };
 
@@ -238,15 +235,6 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
                 >
                     <div className="min-h-0 flex-1 overflow-y-auto">
                         <div className="space-y-6 px-6 py-6 sm:px-8 sm:py-8">
-                            {saveError ? (
-                                <div
-                                    className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
-                                    role="alert"
-                                >
-                                    {saveError}
-                                </div>
-                            ) : null}
-
                             <div className="text-center">
                                 <div className="relative inline-block">
                                     <div className="mx-auto h-28 w-28 overflow-hidden rounded-full bg-linear-to-br from-orange-100 to-red-100 shadow-md ring-4 ring-white">

@@ -13,9 +13,14 @@ const useCategoryStore = create((set, get) => ({
 
     getCategories: async () => {
         set({ isLoading: true });
-        const categories = await apiFetchCategories();
-        set({ categories, isLoading: false });
-        return categories;
+        try {
+            const categories = await apiFetchCategories();
+            set({ categories, isLoading: false });
+            return categories;
+        } catch (e) {
+            set({ isLoading: false });
+            throw e;
+        }
     },
 
     setSelectedCategory: (category) => {

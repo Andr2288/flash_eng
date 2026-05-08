@@ -18,7 +18,10 @@ import DetailedFlashcardView from "../components/DetailedFlashcardView.jsx";
 import FlashcardForm from "../components/FlashcardForm.jsx";
 import CategoryList from "../components/CategoryList.jsx";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal.jsx";
+import { LoadErrorNotice } from "../components/LoadErrorNotice.jsx";
 import { useNavReselectStore } from "../store/useNavReselectStore.js";
+import toast from "react-hot-toast";
+import { GENERIC_ERROR_TOAST } from "../constants/toastMessages.js";
 
 const LEVEL_BADGE_STYLES = {
     A0: "bg-blue-100 text-blue-800 border-blue-200",
@@ -81,12 +84,15 @@ const HomePage = () => {
     const [isAppInitialized, setIsAppInitialized] = useState(false);
     const [initializationStarted, setInitializationStarted] = useState(false);
     const [isNavRefreshLoading, setIsNavRefreshLoading] = useState(false);
+    const [homeLoadError, setHomeLoadError] = useState(false);
+    const [flashcardsLoadError, setFlashcardsLoadError] = useState(false);
 
     const homeNavReselect = useNavReselectStore((s) => s.bumps["/"] ?? 0);
     const lastHomeNavReselectRef = useRef(null);
 
     const refreshCategoriesScreenData = useCallback(async () => {
         setIsNavRefreshLoading(true);
+        setHomeLoadError(false);
         try {
             await getCategories();
             await getFlashcards();
@@ -95,6 +101,7 @@ const HomePage = () => {
                 "❌ HomePage: categories screen refresh failed:",
                 error
             );
+            setHomeLoadError(true);
         } finally {
             setIsNavRefreshLoading(false);
         }
@@ -136,9 +143,11 @@ const HomePage = () => {
                     await getFlashcards();
                 }
 
+                setHomeLoadError(false);
                 setIsAppInitialized(true);
             } catch (error) {
                 console.error("❌ HomePage: App initialization failed:", error);
+                setHomeLoadError(true);
                 setIsAppInitialized(true);
             }
         };
@@ -222,6 +231,7 @@ const HomePage = () => {
     };
 
     const handleBackToCategories = useCallback(() => {
+        setFlashcardsLoadError(false);
         setCurrentView("categories");
         setSelectedCategoryData(null);
         setCategoryFilter(null);
@@ -304,23 +314,28 @@ const HomePage = () => {
         handleBackToCategories,
     ]);
 
-    const handleCategorySelect = (category) => {
+    const handleCategorySelect = async (category) => {
+        setFlashcardsLoadError(false);
         setSelectedCategoryData(category);
         setCurrentView("flashcards");
         setCurrentCardIndex(0);
         setSearchQuery("");
 
-        if (category) {
-            if (category._id === "uncategorized") {
-                getFlashcards("uncategorized");
-                setCategoryFilter("uncategorized");
+        try {
+            if (category) {
+                if (category._id === "uncategorized") {
+                    await getFlashcards("uncategorized");
+                    setCategoryFilter("uncategorized");
+                } else {
+                    await getFlashcards(category._id);
+                    setCategoryFilter(category._id);
+                }
             } else {
-                getFlashcards(category._id);
-                setCategoryFilter(category._id);
+                await getFlashcards();
+                setCategoryFilter(null);
             }
-        } else {
-            getFlashcards();
-            setCategoryFilter(null);
+        } catch {
+            setFlashcardsLoadError(true);
         }
     };
 
@@ -366,11 +381,12 @@ const HomePage = () => {
         if (!cardToDelete) return;
 
         setIsDeleting(true);
+        const idToDelete = cardToDelete._id;
         try {
-            await deleteFlashcard(cardToDelete._id);
+            await deleteFlashcard(idToDelete);
 
             const deletedIndex = flashcards.findIndex(
-                (card) => card._id === cardToDelete._id
+                (card) => card._id === idToDelete
             );
             if (deletedIndex >= 0 && currentCardIndex >= deletedIndex) {
                 const newIndex = Math.max(0, currentCardIndex - 1);
@@ -379,6 +395,9 @@ const HomePage = () => {
 
             setShowDeleteModal(false);
             setCardToDelete(null);
+        } catch (error) {
+            console.error("Error deleting flashcard:", error);
+            toast.error(GENERIC_ERROR_TOAST);
         } finally {
             setIsDeleting(false);
         }
@@ -453,6 +472,7 @@ const HomePage = () => {
                         isBootstrapping={
                             !isAppInitialized || isNavRefreshLoading
                         }
+                        loadError={homeLoadError}
                     />
                 </div>
             ) : (
@@ -670,9 +690,11 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    <div className="min-h-0 flex-1 overflow-y-auto p-8 [scrollbar-gutter:stable]">
-                        {isLoadingFlashcards ? (
-                            <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4">
+                    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
+                        {flashcardsLoadError ? (
+                            <LoadErrorNotice />
+                        ) : isLoadingFlashcards ? (
+                            <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col items-center justify-center gap-4 min-h-[45vh]">
                                 <Loader className="w-10 h-10 animate-spin text-blue-600" />
                                 <p className="text-sm text-gray-600">
                                     Зачекайте, будь ласка

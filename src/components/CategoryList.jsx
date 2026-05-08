@@ -15,11 +15,13 @@ import { useFlashcardStore } from "../store/useFlashcardStore.js";
 import { useCategorySortStore } from "../store/useCategorySortStore.js";
 import CategoryForm from "./CategoryForm.jsx";
 import ConfirmDeleteCategoryModal from "./ConfirmDeleteCategoryModal.jsx";
+import { LoadErrorNotice } from "./LoadErrorNotice.jsx";
 
 const CategoryList = ({
     onCategorySelect,
     selectedCategoryId,
     isBootstrapping = false,
+    loadError = false,
 }) => {
     const { categories, deleteCategory } = useCategoryStore();
     const { flashcards, getFlashcards } = useFlashcardStore();
@@ -301,38 +303,6 @@ const CategoryList = ({
                         </div>
 
                         <div className="flex items-center space-x-6">
-                            {progress.total > 0 && (
-                                <div className="flex items-center space-x-3">
-                                    <div className="relative w-16 h-16">
-                                        <svg
-                                            className="w-16 h-16 transform -rotate-90"
-                                            viewBox="0 0 36 36"
-                                        >
-                                            <path
-                                                className="text-gray-200"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                            />
-                                            <path
-                                                className="text-current"
-                                                fill="none"
-                                                stroke={categoryData.color}
-                                                strokeWidth="2"
-                                                strokeDasharray={`${progress.percentage}, 100`}
-                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                            />
-                                        </svg>
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className="text-sm font-bold text-gray-700">
-                                                {progress.percentage}%
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
                             {canEdit && (
                                 <div className="flex space-x-1">
                                     <button
@@ -463,6 +433,8 @@ const CategoryList = ({
                         Зачекайте, будь ласка
                     </p>
                 </div>
+            ) : loadError ? (
+                <LoadErrorNotice className="px-8" />
             ) : (
                 <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8 sm:px-12 lg:px-16 space-y-4 [scrollbar-gutter:stable]">
                     <div className="space-y-4">

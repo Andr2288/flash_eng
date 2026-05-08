@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Edit, Trash2, Volume2 } from "lucide-react";
 import { useFlashcardStore } from "../store/useFlashcardStore.js";
 import { generateSpeech } from "../store/features/vocabularyWords/vocabularyWordsApi.js";
 import toast from "react-hot-toast";
+import { GENERIC_ERROR_TOAST } from "../constants/toastMessages.js";
 import ConfirmDeleteModal from "./ConfirmDeleteModal.jsx";
 import DetailedCardInfo from "./DetailedCardInfo.jsx";
 
@@ -241,19 +242,23 @@ const DetailedFlashcardView = ({
         if (!cardToDelete) return;
 
         setIsDeleting(true);
+        const idToDelete = cardToDelete._id;
         try {
-            await deleteFlashcard(cardToDelete._id);
+            await deleteFlashcard(idToDelete);
             setShowDeleteModal(false);
             setCardToDelete(null);
 
             const newFlashcards = updatedFlashcards.filter(
-                (card) => card._id !== cardToDelete._id
+                (card) => card._id !== idToDelete
             );
             setUpdatedFlashcards(newFlashcards);
 
             if (currentIndex >= newFlashcards.length && currentIndex > 0) {
                 setCurrentIndex(currentIndex - 1);
             }
+        } catch (error) {
+            console.error("Error deleting flashcard:", error);
+            toast.error(GENERIC_ERROR_TOAST);
         } finally {
             setIsDeleting(false);
         }

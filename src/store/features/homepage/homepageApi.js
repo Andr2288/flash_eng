@@ -1,5 +1,18 @@
 import { supabase } from "../vocabularyWords/supabase.js";
 
+const DELETE_FLASHCARD_TIMEOUT_MS = 30_000;
+
+function withTimeout(promise, ms) {
+    let timeoutId;
+    const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error("REQUEST_TIMEOUT")), ms);
+    });
+    return Promise.race([
+        promise.finally(() => clearTimeout(timeoutId)),
+        timeoutPromise,
+    ]);
+}
+
 async function requireUserId() {
     const {
         data: { user },
@@ -120,7 +133,10 @@ async function updateFlashcard(id, payload) {
 }
 
 async function deleteFlashcard(id) {
-    const { error } = await supabase.from("vocabulary_words").delete().eq("id", id);
+    const { error } = await withTimeout(
+        supabase.from("vocabulary_words").delete().eq("id", id),
+        DELETE_FLASHCARD_TIMEOUT_MS
+    );
     if (error) throw new Error(error.message);
 }
 

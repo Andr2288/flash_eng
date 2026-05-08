@@ -134,47 +134,52 @@ const useVocabularyWordsStore = create(
             set((state) => {
                 state.exerciseState.isLoading = true;
             });
-            const data = await api.updateVocabularyWord(params);
-            const word = data[0];
-            console.log(data[0]);
-            set((state) => {
-                const index = state.data.findIndex((w) => w.id === word.id);
-                if (index !== -1) {
-                    state.data[index] = {
-                        id: word.id,
-                        categoryId: word.category_id ?? null,
-                        main_parameters: {
-                            text: word.text,
-                            topic: word.topic,
-                            relevant_translations: word.relevant_translations,
-                        },
-                        metodology_parameters: {
-                            status_translate_sentence_exercise:
-                                word.status_translate_sentence_exercise,
-                            status_fill_the_gap_exercise:
-                                word.status_fill_the_gap_exercise,
-                            status_listen_and_fill_the_gap_exercise:
-                                word.status_listen_and_fill_the_gap_exercise,
+            try {
+                const data = await api.updateVocabularyWord(params);
+                const word = data[0];
+                console.log(data[0]);
+                set((state) => {
+                    const index = state.data.findIndex((w) => w.id === word.id);
+                    if (index !== -1) {
+                        state.data[index] = {
+                            id: word.id,
+                            categoryId: word.category_id ?? null,
+                            main_parameters: {
+                                text: word.text,
+                                topic: word.topic,
+                                relevant_translations: word.relevant_translations,
+                            },
+                            metodology_parameters: {
+                                status_translate_sentence_exercise:
+                                    word.status_translate_sentence_exercise,
+                                status_fill_the_gap_exercise:
+                                    word.status_fill_the_gap_exercise,
+                                status_listen_and_fill_the_gap_exercise:
+                                    word.status_listen_and_fill_the_gap_exercise,
 
-                            checkpoint_translate_sentence_exercise:
-                                word.checkpoint_translate_sentence_exercise,
-                            checkpoint_fill_the_gap_exercise:
-                                word.checkpoint_fill_the_gap_exercise,
-                            checkpoint_listen_and_fill_the_gap_exercise:
-                                word.checkpoint_listen_and_fill_the_gap_exercise,
+                                checkpoint_translate_sentence_exercise:
+                                    word.checkpoint_translate_sentence_exercise,
+                                checkpoint_fill_the_gap_exercise:
+                                    word.checkpoint_fill_the_gap_exercise,
+                                checkpoint_listen_and_fill_the_gap_exercise:
+                                    word.checkpoint_listen_and_fill_the_gap_exercise,
 
-                            last_reviewed_translate_sentence_exercise:
-                                word.last_reviewed_translate_sentence_exercise,
-                            last_reviewed_fill_the_gap_exercise:
-                                word.last_reviewed_fill_the_gap_exercise,
-                            last_reviewed_listen_and_fill_the_gap_exercise:
-                                word.last_reviewed_listen_and_fill_the_gap_exercise,
-                        },
-                    };
-                }
-                state.exerciseState.isLoading = false;
-            });
-            return data;
+                                last_reviewed_translate_sentence_exercise:
+                                    word.last_reviewed_translate_sentence_exercise,
+                                last_reviewed_fill_the_gap_exercise:
+                                    word.last_reviewed_fill_the_gap_exercise,
+                                last_reviewed_listen_and_fill_the_gap_exercise:
+                                    word.last_reviewed_listen_and_fill_the_gap_exercise,
+                            },
+                        };
+                    }
+                });
+                return data;
+            } finally {
+                set((state) => {
+                    state.exerciseState.isLoading = false;
+                });
+            }
         },
 
         generateExerciseVocabularyItem: async (vocabularyWordMainParameters) => {
@@ -182,14 +187,19 @@ const useVocabularyWordsStore = create(
                 state.exerciseState.isLoading = true;
                 state.exerciseState.generateNextStage = false;
             });
-            const parsed = await api.generateExerciseVocabularyItem(
-                vocabularyWordMainParameters
-            );
-            set((state) => {
-                state.exerciseState.generatedExerciseData = parsed;
-                state.exerciseState.isLoading = false;
-            });
-            return parsed;
+            try {
+                const parsed = await api.generateExerciseVocabularyItem(
+                    vocabularyWordMainParameters
+                );
+                set((state) => {
+                    state.exerciseState.generatedExerciseData = parsed;
+                });
+                return parsed;
+            } finally {
+                set((state) => {
+                    state.exerciseState.isLoading = false;
+                });
+            }
         },
 
         generateSpeech: (text) => api.generateSpeech(text),

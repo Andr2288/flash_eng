@@ -14,6 +14,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useState, useEffect, useMemo } from "react";
 
 import { Loader, Eye, Lightbulb, Volume2 } from "lucide-react";
+import { GENERIC_ERROR_TOAST } from "../../constants/toastMessages.js";
 
 const TranslateSentenceExercise = () => {
     const [
@@ -283,16 +284,12 @@ const TranslateSentenceExercise = () => {
                         Зачекайте, будь ласка ...
                     </p>
                 </div>
-            ) : updateVocabularyWordError ? (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
-                    <p className="text-red-600 font-medium">
-                        Упс! Сталася помилка під час оновлення фрази :(
-                    </p>
-                </div>
-            ) : generateExerciseVocabularyItemError ? (
+            ) : updateVocabularyWordError ||
+              generateExerciseVocabularyItemError ||
+              generateSpeechError ? (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
                     <p className="text-red-600 font-medium text-sm sm:text-base">
-                        Упс! Сталася помилка під час генерації вправи :(
+                        {GENERIC_ERROR_TOAST}
                     </p>
                 </div>
             ) : exerciseState.currentSelection.length > 0 &&
@@ -432,13 +429,13 @@ const TranslateSentenceExercise = () => {
                     )}
                 </>
             ) : practicePool.length === 0 ? (
-                <div className="text-center py-8 sm:py-12">
+                <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 py-8 sm:py-12">
                     <p className="text-sm sm:text-base text-gray-500">
                         Немає слів для вивчення :(
                     </p>
                 </div>
             ) : (
-                <div className="text-center py-8 sm:py-12">
+                <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 py-8 sm:py-12">
                     <p className="text-sm sm:text-base text-gray-500">
                         Ви вивчили обов'язковий мінімум на сьогодні :)
                     </p>

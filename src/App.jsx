@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Loader } from "lucide-react";
+import { Toaster } from "react-hot-toast";
 
 import Navbar from "./components/common/Navbar.jsx";
 
@@ -42,6 +43,7 @@ function App() {
 
     return (
         <div>
+            <Toaster position="top-center" />
             {user && !isAuthPage ? <Navbar /> : null}
 
             <Routes>

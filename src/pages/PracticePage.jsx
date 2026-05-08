@@ -6,6 +6,7 @@ import {
     FillTheGapExercise,
     ListenAndFillTheGapExercise,
 } from "../components/exercises/index.js";
+import { LoadErrorNotice } from "../components/LoadErrorNotice.jsx";
 
 import {
     ChevronLeft,
@@ -599,17 +600,7 @@ const PracticePage = () => {
                             </p>
                         </div>
                     ) : loadingVocabularyWordsError ? (
-                        <div className="mx-auto w-full max-w-7xl">
-                            <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center max-w-lg mx-auto">
-                                <p className="text-red-800 font-medium">
-                                    Ой. Щось пішло не так :(
-                                </p>
-                                <p className="text-sm text-red-600/90 mt-2">
-                                    Спробуйте оновити сторінку або перевірте
-                                    з’єднання.
-                                </p>
-                            </div>
-                        </div>
+                        <LoadErrorNotice />
                     ) : (
                         <div className="mx-auto w-full max-w-7xl">
                                 <section className="relative z-10 mb-10 rounded-2xl border border-indigo-100/80 bg-white/90 shadow-md shadow-indigo-100/30 ring-1 ring-white/60 backdrop-blur-sm">
