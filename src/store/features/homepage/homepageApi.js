@@ -149,7 +149,7 @@ async function createCategory(payload) {
         .insert([
             {
                 user_id: userId,
-                name: payload?.name?.trim() || "Нова папка",
+                name: payload?.name?.trim() || "Нова категорія",
                 description: payload?.description || "",
                 color: payload?.color || "#3B82F6",
             },

@@ -371,8 +371,8 @@ const CategoryList = ({
 
     const uncategorizedData = {
         _id: "uncategorized",
-        name: "Без папки",
-        description: "Картки які не належать до жодної папки",
+        name: "Без категорії",
+        description: "Картки які не належать до жодної категорії",
         color: "#059669",
         flashcardsCount: flashcards.filter((card) => !card.categoryId).length,
         createdAt: new Date().toISOString(),
@@ -391,10 +391,10 @@ const CategoryList = ({
                             </div>
                             <div>
                                 <h2 className="text-xl font-bold text-gray-900">
-                                    Папки
+                                    Категорії
                                 </h2>
                                 <p className="text-gray-600">
-                                    Організуйте свої флешкартки по папках
+                                    Організуйте свої флешкартки по категоріях
                                 </p>
                             </div>
                         </div>
@@ -446,10 +446,10 @@ const CategoryList = ({
                             <button
                                 onClick={() => setShowForm(true)}
                                 className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg"
-                                title="Створити нову папку (Ctrl + Space)"
+                                title="Створити нову категорію (Ctrl + Space)"
                             >
                                 <Plus className="w-5 h-5" />
-                                <span>Нова папка</span>
+                                <span>Нова категорія</span>
                             </button>
                         </div>
                     </div>
@@ -479,7 +479,7 @@ const CategoryList = ({
                             onClick={() =>
                                 onCategorySelect({
                                     _id: "uncategorized",
-                                    name: "Без папки",
+                                    name: "Без категорії",
                                 })
                             }
                             canEdit={false}
@@ -489,7 +489,7 @@ const CategoryList = ({
                     {sortedCategories.length > 0 && (
                         <div className="pt-8">
                             <h3 className="text-sm font-medium text-gray-500 mb-3">
-                                Мої папки ({sortedCategories.length})
+                                Мої категорії ({sortedCategories.length})
                             </h3>
                         </div>
                     )}
@@ -531,10 +531,10 @@ const CategoryList = ({
                                 <Folder className="w-16 h-16 mx-auto" />
                             </div>
                             <h3 className="text-xl font-medium text-gray-900 mb-2">
-                                Немає папок
+                                Немає категорій
                             </h3>
                             <p className="text-gray-600 mb-6">
-                                Створіть свою першу папку для організації карток
+                                Створіть свою першу категорію для організації карток
                             </p>
 
                             <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 mb-6">
@@ -553,7 +553,7 @@ const CategoryList = ({
                                 className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl inline-flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
                             >
                                 <Plus className="w-5 h-5" />
-                                <span>Створити папку</span>
+                                <span>Створити категорію</span>
                             </button>
                         </div>
                     )}

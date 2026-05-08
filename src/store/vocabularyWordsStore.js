@@ -19,6 +19,7 @@ const useVocabularyWordsStore = create(
             currentVocabularyWordIndex: 0,
             isLoading: false,
             generateNextStage: true,
+            practiceCategoryId: null,
         },
         checkpoints: [
             { checkpoint: 0, threshold: 1 },
@@ -51,6 +52,7 @@ const useVocabularyWordsStore = create(
             set((state) => {
                 state.data.push({
                     id: word.id,
+                    categoryId: word.category_id ?? null,
                     main_parameters: {
                         text: word.text,
                         topic: word.topic,
@@ -93,6 +95,7 @@ const useVocabularyWordsStore = create(
             set((state) => {
                 state.data = vocabulary_words.map((word) => ({
                     id: word.id,
+                    categoryId: word.category_id ?? null,
                     main_parameters: {
                         text: word.text,
                         topic: word.topic,
@@ -139,6 +142,7 @@ const useVocabularyWordsStore = create(
                 if (index !== -1) {
                     state.data[index] = {
                         id: word.id,
+                        categoryId: word.category_id ?? null,
                         main_parameters: {
                             text: word.text,
                             topic: word.topic,

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { AlertTriangle, X, Folder, Trash2 } from "lucide-react";
 
 /**
- * Форми речення для N карток у папці:
+ * Форми речення для N карток у категорії:
  * — остання цифра 1, але не 11: «буде видалена … картка, яка…»
  * — остання 2–4 і не десятки 12–14 (112 → «карток»), окремо 12–14: «… картки, які…»
  * — інакше (11, 5–10, 15–20, 112…): «буде видалено всі … карток, що…»
@@ -22,7 +22,7 @@ function FolderDeleteCardsInFolderWarning({ count }) {
     if (isOneForm) {
         return (
             <p>
-                Разом з папкою буде видалена <strong>{n} картка</strong>, яка
+                Разом з категорією буде видалена <strong>{n} картка</strong>, яка
                 знаходиться в ній.
             </p>
         );
@@ -31,7 +31,7 @@ function FolderDeleteCardsInFolderWarning({ count }) {
     if (isFewForm) {
         return (
             <p>
-                Разом з папкою буде видалено <strong>{n} картки</strong>, які
+                Разом з категорією буде видалено <strong>{n} картки</strong>, які
                 знаходяться в ній.
             </p>
         );
@@ -39,7 +39,7 @@ function FolderDeleteCardsInFolderWarning({ count }) {
 
     return (
         <p>
-            Разом з папкою буде видалено всі <strong>{n} карток</strong>, що
+            Разом з категорією буде видалено всі <strong>{n} карток</strong>, що
             знаходяться в ній.
         </p>
     );
@@ -104,7 +104,7 @@ const ConfirmDeleteCategoryModal = ({
                             <AlertTriangle className="w-6 h-6 text-red-600" />
                         </div>
                         <h2 className="text-xl font-bold text-gray-900">
-                            Підтвердіть видалення папки
+                            Підтвердіть видалення категорії
                         </h2>
                         <button
                             onClick={onClose}
@@ -120,7 +120,7 @@ const ConfirmDeleteCategoryModal = ({
                 {/* Content */}
                 <div className="p-8 flex flex-col gap-4">
                     <p className="text-gray-700">
-                        Ви впевнені, що хочете видалити цю папку?
+                        Ви впевнені, що хочете видалити цю категорію?
                     </p>
 
                     {/* Category Info */}
@@ -163,7 +163,7 @@ const ConfirmDeleteCategoryModal = ({
                                         />
                                     ) : (
                                         <p>
-                                            Папка порожня, але її видалення{" "}
+                                            Категорія порожня, але її видалення{" "}
                                             <strong>неможливо скасувати</strong>
                                             .
                                         </p>

@@ -94,13 +94,13 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
                             <div>
                                 <h2 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                                     {editingCategory
-                                        ? "Редагувати папку"
-                                        : "Створити папку"}
+                                        ? "Редагувати категорію"
+                                        : "Створити категорію"}
                                 </h2>
                                 <p className="text-sm text-gray-600 mt-1">
                                     {editingCategory
                                         ? "Оновіть інформацію"
-                                        : "Додайте нову папку"}
+                                        : "Додайте нову категорію"}
                                 </p>
                             </div>
                         </div>
@@ -120,7 +120,7 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
                         {/* Name */}
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-3">
-                                Назва папки{" "}
+                                Назва категорії{" "}
                                 <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -129,7 +129,7 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
                                 onChange={(e) =>
                                     handleInputChange("name", e.target.value)
                                 }
-                                placeholder="Введіть назву папки..."
+                                placeholder="Введіть назву категорії..."
                                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white hover:border-gray-300 text-gray-900 placeholder-gray-500"
                                 required
                                 maxLength={100}
@@ -153,7 +153,7 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
                                         e.target.value
                                     )
                                 }
-                                placeholder="Короткий опис папки..."
+                                placeholder="Короткий опис категорії..."
                                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all duration-200 bg-white hover:border-gray-300 text-gray-900 placeholder-gray-500"
                                 rows="3"
                                 maxLength={500}
@@ -167,7 +167,7 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
                         {/* Color */}
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-4">
-                                Колір папки
+                                Колір категорії
                             </label>
                             <div className="grid grid-cols-5 gap-3">
                                 {colors.map((color) => (

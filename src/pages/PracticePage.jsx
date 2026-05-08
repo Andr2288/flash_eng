@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import {
@@ -16,6 +16,10 @@ import {
     Languages,
     BarChart2,
     Loader,
+    LayoutGrid,
+    Check,
+    FolderOpen,
+    ChevronDown,
 } from "lucide-react";
 import {
     useVocabularyWordsStore,
@@ -25,6 +29,8 @@ import {
 } from "../store/index.js";
 import { useThunk } from "../hooks/use-thunk.js";
 import { useNavReselectStore } from "../store/useNavReselectStore.js";
+import { useCategoryStore } from "../store/useCategoryStore.js";
+import { matchesPracticeCategory } from "../store/features/vocabularyWords/vocabularyWordsStateLogic.js";
 
 const STATUS_CONFIG = {
     MISSED: {
@@ -203,12 +209,209 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
     );
 };
 
+const PracticeCategoryDropdown = ({
+    categories,
+    value,
+    onChange,
+    className = "",
+}) => {
+    const [open, setOpen] = useState(false);
+    const rootRef = useRef(null);
+
+    const options = useMemo(() => {
+        return [
+            {
+                id: null,
+                label: "Усі категорії",
+                hint: "Повний словник",
+                kind: "all",
+            },
+            {
+                id: "uncategorized",
+                label: "Без категорії",
+                hint: "Картки без категорії",
+                kind: "uncategorized",
+            },
+            ...categories.map((c) => ({
+                id: c._id,
+                label: c.name,
+                hint: c.description?.trim() || "Категорія",
+                kind: "folder",
+                color: c.color || "#6366f1",
+            })),
+        ];
+    }, [categories]);
+
+    const selected = useMemo(() => {
+        return (
+            options.find((o) => o.id === value) ??
+            options[0] ?? {
+                id: null,
+                label: "Усі категорії",
+                hint: "Повний словник",
+                kind: "all",
+            }
+        );
+    }, [options, value]);
+
+    useEffect(() => {
+        if (!open) {
+            return;
+        }
+        const onDocMouseDown = (e) => {
+            if (rootRef.current && !rootRef.current.contains(e.target)) {
+                setOpen(false);
+            }
+        };
+        const onKey = (e) => {
+            if (e.key === "Escape") {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", onDocMouseDown);
+        document.addEventListener("keydown", onKey);
+        return () => {
+            document.removeEventListener("mousedown", onDocMouseDown);
+            document.removeEventListener("keydown", onKey);
+        };
+    }, [open]);
+
+    const renderOptionIcon = (opt, small) => {
+        const box = small ? "h-9 w-9 rounded-lg" : "h-10 w-10 rounded-xl";
+        if (opt.kind === "all") {
+            return (
+                <span
+                    className={`flex ${box} shrink-0 items-center justify-center bg-linear-to-br from-indigo-500 to-violet-600 text-white shadow-sm`}
+                >
+                    <LayoutGrid className={small ? "h-4 w-4" : "h-5 w-5"} />
+                </span>
+            );
+        }
+        if (opt.kind === "uncategorized") {
+            return (
+                <span
+                    className={`flex ${box} shrink-0 items-center justify-center bg-linear-to-br from-slate-500 to-slate-700 text-white shadow-sm`}
+                >
+                    <FolderOpen className={small ? "h-4 w-4" : "h-5 w-5"} />
+                </span>
+            );
+        }
+        return (
+            <span
+                className={`flex ${box} shrink-0 items-center justify-center text-white shadow-sm`}
+                style={{
+                    background: `linear-gradient(145deg, ${opt.color}, color-mix(in srgb, ${opt.color} 72%, #1e293b))`,
+                }}
+            >
+                <FolderOpen className={small ? "h-4 w-4" : "h-5 w-5"} />
+            </span>
+        );
+    };
+
+    return (
+        <div className={`relative ${className}`} ref={rootRef}>
+            <button
+                type="button"
+                id="practice-category-trigger"
+                aria-haspopup="listbox"
+                aria-expanded={open}
+                aria-controls="practice-category-listbox"
+                onClick={() => setOpen((v) => !v)}
+                className="flex w-full min-w-0 items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3.5 text-left shadow-md transition-all duration-200 hover:border-indigo-200 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2"
+            >
+                {renderOptionIcon(selected, true)}
+                <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-gray-900">
+                        {selected.label}
+                    </span>
+                    <span className="mt-0.5 block truncate text-xs text-gray-500">
+                        {selected.hint}
+                    </span>
+                </span>
+                <ChevronDown
+                    className={`h-5 w-5 shrink-0 text-gray-400 transition-transform duration-200 ${
+                        open ? "rotate-180 text-indigo-500" : ""
+                    }`}
+                    aria-hidden
+                />
+            </button>
+
+            {open && (
+                <div
+                    id="practice-category-listbox"
+                    role="listbox"
+                    aria-labelledby="practice-category-trigger"
+                    className="absolute left-0 right-0 z-50 mt-2 max-h-[min(28rem,calc(100dvh-10rem))] overflow-y-auto overflow-x-hidden rounded-2xl border border-gray-200/90 bg-white py-1.5 shadow-xl shadow-indigo-100/50 ring-1 ring-indigo-100/30 [scrollbar-width:thin] [scrollbar-color:rgb(199_210_254)_transparent] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-indigo-200/90"
+                >
+                    {options.map((opt, index) => {
+                        const isSelected = opt.id === value;
+                        const showDivider =
+                            index === 2 && categories.length > 0;
+                        return (
+                            <div key={String(opt.id ?? "all")}>
+                                {showDivider && (
+                                    <div
+                                        className="my-1.5 border-t border-gray-100"
+                                        aria-hidden
+                                    />
+                                )}
+                                <button
+                                    type="button"
+                                    role="option"
+                                    aria-selected={isSelected}
+                                    onClick={() => {
+                                        onChange(opt.id);
+                                        setOpen(false);
+                                    }}
+                                    className={`flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors duration-150 ${
+                                        isSelected
+                                            ? "bg-indigo-50/90"
+                                            : "hover:bg-linear-to-r hover:from-slate-50 hover:to-transparent"
+                                    }`}
+                                >
+                                    {renderOptionIcon(opt, true)}
+                                    <span className="min-w-0 flex-1">
+                                        <span className="block truncate text-sm font-medium text-gray-900">
+                                            {opt.label}
+                                        </span>
+                                        <span className="mt-0.5 block truncate text-xs text-gray-500">
+                                            {opt.hint}
+                                        </span>
+                                    </span>
+                                    {isSelected && (
+                                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
+                                            <Check
+                                                className="h-4 w-4"
+                                                strokeWidth={2.5}
+                                            />
+                                        </span>
+                                    )}
+                                </button>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const PracticePage = () => {
     const [uiState, setUiState] = useState({
         showExercise: false,
     });
 
+    const [selectedPracticeCategoryId, setSelectedPracticeCategoryId] =
+        useState(null);
+
     const [vocabularyLoadSettled, setVocabularyLoadSettled] = useState(false);
+
+    const { categories, getCategories } = useCategoryStore(
+        useShallow((s) => ({
+            categories: s.categories,
+            getCategories: s.getCategories,
+        }))
+    );
 
     const { exerciseState, data } = useVocabularyWordsStore(
         useShallow((state) => ({
@@ -226,6 +429,10 @@ const PracticePage = () => {
     const practiceNavReselect = useNavReselectStore(
         (s) => s.bumps["/practice"] ?? 0
     );
+
+    useEffect(() => {
+        getCategories();
+    }, [getCategories]);
 
     useEffect(() => {
         let disposed = false;
@@ -254,6 +461,14 @@ const PracticePage = () => {
 
     const showVocabularyLoader =
         !vocabularyLoadSettled || isLoadingVocabularyWords;
+
+    const statsData = useMemo(() => {
+        const id = exerciseState.practiceCategoryId;
+        if (id === null || id === undefined || id === "") {
+            return data;
+        }
+        return data.filter((w) => matchesPracticeCategory(w, id));
+    }, [data, exerciseState.practiceCategoryId]);
 
     const ExerciseType = {
         TranslateSentenceExercise: "translate_sentence_exercise",
@@ -331,6 +546,7 @@ const PracticePage = () => {
             currentVocabularyWordIndex: 0,
             generateNextStage: true,
             exerciseType,
+            practiceCategoryId: selectedPracticeCategoryId,
         });
 
         makeNextSelection();
@@ -375,15 +591,15 @@ const PracticePage = () => {
             {/* Scrollable Content */}
             {!uiState.showExercise && (
                 <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
-                    <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col">
-                        {showVocabularyLoader ? (
-                            <div className="flex min-h-[45vh] flex-1 flex-col items-center justify-center gap-4">
-                                <Loader className="w-10 h-10 animate-spin text-blue-600" />
-                                <p className="text-sm text-gray-600">
-                                    Зачекайте, будь ласка
-                                </p>
-                            </div>
-                        ) : loadingVocabularyWordsError ? (
+                    {showVocabularyLoader ? (
+                        <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col items-center justify-center gap-4 min-h-[45vh]">
+                            <Loader className="w-10 h-10 animate-spin text-blue-600" />
+                            <p className="text-sm text-gray-600">
+                                Зачекайте, будь ласка
+                            </p>
+                        </div>
+                    ) : loadingVocabularyWordsError ? (
+                        <div className="mx-auto w-full max-w-7xl">
                             <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center max-w-lg mx-auto">
                                 <p className="text-red-800 font-medium">
                                     Ой. Щось пішло не так :(
@@ -393,12 +609,42 @@ const PracticePage = () => {
                                     з’єднання.
                                 </p>
                             </div>
-                        ) : (
-                            <div>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                                    <Target className="w-5 h-5 mr-2 text-blue-500" />
-                                    Основні вправи
-                                </h3>
+                        </div>
+                    ) : (
+                        <div className="mx-auto w-full max-w-7xl">
+                                <section className="relative z-10 mb-10 rounded-2xl border border-indigo-100/80 bg-white/90 shadow-md shadow-indigo-100/30 ring-1 ring-white/60 backdrop-blur-sm">
+                                    <div
+                                        className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl"
+                                        aria-hidden
+                                    >
+                                        <div className="absolute -right-12 -top-10 h-32 w-32 rounded-full bg-linear-to-br from-indigo-200/40 to-violet-200/25 blur-2xl" />
+                                    </div>
+                                    <div className="relative z-10 flex flex-col gap-5 p-6 sm:flex-row sm:items-end sm:justify-between sm:gap-8 sm:p-8">
+                                        <div className="max-w-xl shrink-0">
+                                            <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600/90">
+                                                Перед стартом
+                                            </p>
+                                            <h2 className="mt-1 text-lg font-bold text-gray-900 sm:text-xl">
+                                                Категорія для практики
+                                            </h2>
+                                            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                                                Оберіть категорію — вправи братимуть
+                                                слова лише з неї. За
+                                                замовчуванням використовується
+                                                весь словник.
+                                            </p>
+                                        </div>
+                                        <PracticeCategoryDropdown
+                                            categories={categories}
+                                            value={selectedPracticeCategoryId}
+                                            onChange={
+                                                setSelectedPracticeCategoryId
+                                            }
+                                            className="w-full sm:max-w-md sm:shrink-0"
+                                        />
+                                    </div>
+                                </section>
+
                                 <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
                                     {coreExercisesData.map((exercise) => {
                                         const Icon = exercise.icon;
@@ -471,9 +717,8 @@ const PracticePage = () => {
                                         );
                                     })}
                                 </div>
-                            </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -490,8 +735,8 @@ const PracticePage = () => {
                     <StatsSidebar
                         isOpen={uiState.showStatsSidebar}
                         onToggle={toggleStatsSidebar}
-                        data={data}
-                        exerciseType={"translate_sentence_exercise"}
+                        data={statsData}
+                        exerciseType={exerciseState.exerciseType}
                     />
                 </div>
             )}

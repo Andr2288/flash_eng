@@ -554,7 +554,7 @@ const FlashcardForm = ({
                         {/* Category Selection */}
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-3">
-                                Папка
+                                Категорія
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -570,7 +570,7 @@ const FlashcardForm = ({
                                     }
                                     className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white transition-all duration-200 hover:border-gray-300 text-gray-900"
                                 >
-                                    <option value="">Без папки</option>
+                                    <option value="">Без категорії</option>
                                     {categories.map((category) => (
                                         <option
                                             key={category._id}

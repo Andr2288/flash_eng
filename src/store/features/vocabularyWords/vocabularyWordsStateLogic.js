@@ -1,4 +1,22 @@
 /**
+ * @param {string|null|undefined} practiceCategoryId
+ *        `null` / `undefined` / `""` — усі слова; `"uncategorized"` — без категорії; інакше uuid категорії.
+ */
+function matchesPracticeCategory(vocabularyItem, practiceCategoryId) {
+    if (
+        practiceCategoryId === null ||
+        practiceCategoryId === undefined ||
+        practiceCategoryId === ""
+    ) {
+        return true;
+    }
+    if (practiceCategoryId === "uncategorized") {
+        return vocabularyItem.categoryId == null;
+    }
+    return vocabularyItem.categoryId === practiceCategoryId;
+}
+
+/**
  * Після оновлення статусів MISSED: у `state.data` спочатку всі MISSED
  * для поточного типу вправи в порядку, зворотному до того, як вони йшли
  * у масиві до розбиття; далі всі інші слова без зміни відносного порядку.
@@ -112,6 +130,8 @@ const findMissedVocabularyItems = (state) => {
 };
 
 const selectNextItems = (state) => {
+    const practiceCategoryId = state.exerciseState.practiceCategoryId;
+
     let currentTypeStatusProperty = "";
     let currentTypeCheckpointProperty = "";
     let currentTypeLastReviewedProperty = "";
@@ -132,8 +152,9 @@ const selectNextItems = (state) => {
 
     const missedItemIndex = state.data.findIndex((vocabularyItem) => {
         return (
+            matchesPracticeCategory(vocabularyItem, practiceCategoryId) &&
             vocabularyItem.metodology_parameters[currentTypeStatusProperty] ===
-            "MISSED"
+                "MISSED"
         );
     });
     if (missedItemIndex !== -1) {
@@ -145,6 +166,7 @@ const selectNextItems = (state) => {
 
     const yesterdayItemIndex = state.data.findIndex((vocabularyItem) => {
         if (
+            !matchesPracticeCategory(vocabularyItem, practiceCategoryId) ||
             !vocabularyItem.metodology_parameters[
                 currentTypeLastReviewedProperty
             ]
@@ -185,6 +207,7 @@ const selectNextItems = (state) => {
 
     const sevenDaysAgoItemIndex = state.data.findIndex((vocabularyItem) => {
         if (
+            !matchesPracticeCategory(vocabularyItem, practiceCategoryId) ||
             !vocabularyItem.metodology_parameters[
                 currentTypeLastReviewedProperty
             ]
@@ -225,6 +248,7 @@ const selectNextItems = (state) => {
 
     const fourteenDaysAgoItemIndex = state.data.findIndex((vocabularyItem) => {
         if (
+            !matchesPracticeCategory(vocabularyItem, practiceCategoryId) ||
             !vocabularyItem.metodology_parameters[
                 currentTypeLastReviewedProperty
             ]
@@ -266,6 +290,7 @@ const selectNextItems = (state) => {
 
     const thirtyDaysAgoItemIndex = state.data.findIndex((vocabularyItem) => {
         if (
+            !matchesPracticeCategory(vocabularyItem, practiceCategoryId) ||
             !vocabularyItem.metodology_parameters[
                 currentTypeLastReviewedProperty
             ]
@@ -308,6 +333,7 @@ const selectNextItems = (state) => {
     const newItems = state.data
         .filter(
             (vocabularyItem) =>
+                matchesPracticeCategory(vocabularyItem, practiceCategoryId) &&
                 vocabularyItem.metodology_parameters[
                     currentTypeStatusProperty
                 ] === "NEW"
@@ -324,6 +350,7 @@ const selectNextItems = (state) => {
 
     const againItemIndex = state.data.findIndex((vocabularyItem) => {
         if (
+            !matchesPracticeCategory(vocabularyItem, practiceCategoryId) ||
             !vocabularyItem.metodology_parameters[
                 currentTypeLastReviewedProperty
             ]
@@ -360,6 +387,7 @@ const selectNextItems = (state) => {
 
 export {
     findMissedVocabularyItems,
+    matchesPracticeCategory,
     reorderDataMissedReversedThenRest,
     selectNextItems,
 };

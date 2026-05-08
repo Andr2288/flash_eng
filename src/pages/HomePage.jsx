@@ -419,7 +419,7 @@ const HomePage = () => {
 
     const getCategoryTitle = () => {
         if (!selectedCategoryData) return "Всі флешкартки";
-        if (selectedCategoryData._id === "uncategorized") return "Без папки";
+        if (selectedCategoryData._id === "uncategorized") return "Без категорії";
         return selectedCategoryData.name;
     };
 
@@ -464,7 +464,7 @@ const HomePage = () => {
                                     <button
                                         onClick={handleBackToCategories}
                                         className="cursor-pointer hover:bg-blue-50 p-2 rounded-xl transition-colors"
-                                        title="Повернутися до папок (Esc)"
+                                        title="Повернутися до категорій (Esc)"
                                     >
                                         <ArrowLeft className="w-6 h-6 text-blue-600" />
                                     </button>
@@ -505,7 +505,7 @@ const HomePage = () => {
                                                                         4
                                                                   ? "картки"
                                                                   : "карток"
-                                                      } в цій папці`}
+                                                      } в цій категорії`}
                                             </p>
                                         </div>
                                     </div>
@@ -686,12 +686,12 @@ const HomePage = () => {
                                 <h3 className="text-xl font-medium text-gray-900 mb-2">
                                     {searchQuery.trim()
                                         ? `Не знайдено карток за запитом "${searchQuery}"`
-                                        : "Немає карток в цій папці"}
+                                        : "Немає карток в цій категорії"}
                                 </h3>
                                 <p className="text-gray-600 mb-4">
                                     {searchQuery.trim()
                                         ? "Спробуйте інший запит або створіть нову картку"
-                                        : "Створіть свою першу флеш картку в цій папці"}
+                                        : "Створіть свою першу флеш картку в цій категорії"}
                                 </p>
 
                                 <button

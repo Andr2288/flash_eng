@@ -9,6 +9,7 @@ import {
     updateExerciseState,
     updateVocabularyWord,
 } from "../../store";
+import { matchesPracticeCategory } from "../../store/features/vocabularyWords/vocabularyWordsStateLogic.js";
 import { Loader, CheckCircle, XCircle } from "lucide-react";
 
 const FillTheGapExercise = () => {
@@ -64,8 +65,14 @@ const FillTheGapExercise = () => {
             const isUpperCase =
                 result.correctAnswer === result.correctAnswer.toUpperCase();
 
-            // 2. Беремо елементи з data, виключаючи correctAnswer
-            const words = data
+            // 2. Беремо елементи з тієї ж категорії (або з усього словника), виключаючи correctAnswer
+            const pool = data.filter((item) =>
+                matchesPracticeCategory(
+                    item,
+                    exerciseState.practiceCategoryId
+                )
+            );
+            const words = pool
                 .map((item) => item.main_parameters.text)
                 .filter((text) => text !== result.correctAnswer);
 

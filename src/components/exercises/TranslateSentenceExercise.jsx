@@ -8,9 +8,10 @@ import {
     updateExerciseState,
     makeNextSelection,
 } from "../../store";
+import { matchesPracticeCategory } from "../../store/features/vocabularyWords/vocabularyWordsStateLogic.js";
 import { useShallow } from "zustand/react/shallow";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 import { Loader, Eye, Lightbulb, Volume2 } from "lucide-react";
 
@@ -42,6 +43,17 @@ const TranslateSentenceExercise = () => {
             exerciseState: state.exerciseState,
             checkpoints: state.checkpoints,
         }))
+    );
+
+    const practicePool = useMemo(
+        () =>
+            data.filter((item) =>
+                matchesPracticeCategory(
+                    item,
+                    exerciseState.practiceCategoryId
+                )
+            ),
+        [data, exerciseState.practiceCategoryId]
     );
 
     const [uiState, setUiState] = useState({
@@ -419,7 +431,7 @@ const TranslateSentenceExercise = () => {
                         </button>
                     )}
                 </>
-            ) : data.length === 0 ? (
+            ) : practicePool.length === 0 ? (
                 <div className="text-center py-8 sm:py-12">
                     <p className="text-sm sm:text-base text-gray-500">
                         Немає слів для вивчення :(
@@ -442,7 +454,7 @@ const TranslateSentenceExercise = () => {
                 <button
                     onClick={() => handleNextButtonClick("AGAIN")}
                     hidden={
-                        data.length <= 0 ||
+                        practicePool.length <= 0 ||
                         exerciseState.isLoading ||
                         exerciseState.currentSelection.length <= 0
                     }
@@ -453,7 +465,7 @@ const TranslateSentenceExercise = () => {
                 <button
                     onClick={() => handleNextButtonClick("REVIEW")}
                     hidden={
-                        data.length <= 0 ||
+                        practicePool.length <= 0 ||
                         exerciseState.isLoading ||
                         exerciseState.currentSelection.length <= 0
                     }
