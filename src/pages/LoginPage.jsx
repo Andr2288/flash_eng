@@ -79,6 +79,14 @@ const LoginPage = () => {
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition text-gray-900"
                                 placeholder="••••••••"
                             />
+                            <div className="mt-2 text-right">
+                                <Link
+                                    to="/forgot-password"
+                                    className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                                >
+                                    Забули пароль?
+                                </Link>
+                            </div>
                         </div>
 
                         {error && (

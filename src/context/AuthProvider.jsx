@@ -64,6 +64,40 @@ function AuthProvider({ children }) {
         }
     }, []);
 
+    const requestPasswordReset = useCallback(async (email) => {
+        const normalizedEmail = String(email || "").trim();
+        if (!normalizedEmail) {
+            throw new Error("Вкажіть електронну пошту");
+        }
+
+        const redirectTo = `${window.location.origin}/reset-password`;
+        const { data, error } = await supabase.auth.resetPasswordForEmail(
+            normalizedEmail,
+            {
+                redirectTo,
+            }
+        );
+        if (error) {
+            throw error;
+        }
+        return data;
+    }, []);
+
+    const updatePassword = useCallback(async (password) => {
+        const nextPassword = String(password || "");
+        if (nextPassword.length < 6) {
+            throw new Error("Пароль має містити щонайменше 6 символів");
+        }
+
+        const { data, error } = await supabase.auth.updateUser({
+            password: nextPassword,
+        });
+        if (error) {
+            throw error;
+        }
+        return data;
+    }, []);
+
     const updateProfile = useCallback(async ({ fullName, profilePic }) => {
         const trimmed = (fullName || "").trim();
         if (!trimmed || trimmed.length < 2) {
@@ -132,6 +166,8 @@ function AuthProvider({ children }) {
             signInWithEmail,
             signUpWithEmail,
             signOut,
+            requestPasswordReset,
+            updatePassword,
             updateProfile,
         }),
         [
@@ -141,6 +177,8 @@ function AuthProvider({ children }) {
             signInWithEmail,
             signUpWithEmail,
             signOut,
+            requestPasswordReset,
+            updatePassword,
             updateProfile,
         ]
     );

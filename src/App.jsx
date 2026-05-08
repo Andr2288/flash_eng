@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Loader } from "lucide-react";
 
 import Navbar from "./components/common/Navbar.jsx";
@@ -6,6 +6,8 @@ import Navbar from "./components/common/Navbar.jsx";
 import {
     LoginPage,
     SignUpPage,
+    ForgotPasswordPage,
+    ResetPasswordPage,
     HomePage,
     PracticePage,
     ProfilePage,
@@ -22,6 +24,13 @@ import { useAuth } from "./context/useAuth.js";
 
 function App() {
     const { user, loading } = useAuth();
+    const location = useLocation();
+    const isAuthPage = [
+        "/login",
+        "/signup",
+        "/forgot-password",
+        "/reset-password",
+    ].includes(location.pathname);
 
     if (loading) {
         return (
@@ -34,7 +43,7 @@ function App() {
 
     return (
         <div>
-            {user ? <Navbar /> : null}
+            {user && !isAuthPage ? <Navbar /> : null}
 
             <Routes>
                 <Route
@@ -73,6 +82,8 @@ function App() {
                         )
                     }
                 />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route
                     path="/settings"
                     element={
