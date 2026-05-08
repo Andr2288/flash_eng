@@ -1,9 +1,5 @@
 import OpenAI from "openai";
 import { supabase } from "./supabase.js";
-import {
-    generatePrompt,
-    generateRegenerateExamplesPrompt,
-} from "../../../lib/prompts.js";
 
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 const DEEPL_API_KEY = import.meta.env.VITE_DEEPL_API_KEY;
@@ -47,12 +43,51 @@ const DeepLTargetLanguage = {
 Object.freeze(DeepLTargetLanguage);
 
 function parseJsonOutput(text) {
-    const cleaned = text
-        .replace(/^```json\s*/i, "")
-        .replace(/^```\s*/i, "")
-        .replace(/\s*```$/, "")
-        .trim();
-    return JSON.parse(cleaned);
+    const raw = String(text || "").trim();
+    if (!raw) {
+        throw new Error("OpenAI returned empty output");
+    }
+
+    const removeCodeFence = (value) =>
+        value
+            .replace(/^```json\s*/i, "")
+            .replace(/^```\s*/i, "")
+            .replace(/\s*```$/, "")
+            .trim();
+
+    const tryParse = (value) => {
+        try {
+            return JSON.parse(value);
+        } catch {
+            return null;
+        }
+    };
+
+    // 1) Direct parse (in case model returns plain JSON)
+    const direct = tryParse(raw);
+    if (direct) {
+        return direct;
+    }
+
+    // 2) Parse after removing markdown fences
+    const deFenced = removeCodeFence(raw);
+    const parsedDefenced = tryParse(deFenced);
+    if (parsedDefenced) {
+        return parsedDefenced;
+    }
+
+    // 3) Extract the first JSON object block as a fallback
+    const firstBrace = deFenced.indexOf("{");
+    const lastBrace = deFenced.lastIndexOf("}");
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        const extracted = deFenced.slice(firstBrace, lastBrace + 1).trim();
+        const parsedExtracted = tryParse(extracted);
+        if (parsedExtracted) {
+            return parsedExtracted;
+        }
+    }
+
+    throw new Error("OpenAI returned invalid JSON");
 }
 
 function buildResponsesCreatePayload(model, input) {
@@ -430,67 +465,75 @@ Bad example:
     return parsed;
 }
 
-async function generateFlashcardField({
-    text,
-    englishLevel = "B1",
-    promptType,
-    categoryContext = "",
-    model = GPTModel.GPT5Mini,
-}) {
-    const prompt = generatePrompt(
-        promptType,
-        text,
-        englishLevel,
-        categoryContext
-    );
-
-    const response = await client.responses.create({
-        ...buildResponsesCreatePayload(model, prompt),
-    });
-
-    const output = response.output_text?.trim() || "";
-
-    if (promptType === "examples") {
-        return parseJsonOutput(output);
-    }
-
-    return output;
-}
-
 async function generateCompleteFlashcard({
     text,
     englishLevel = "B1",
     categoryContext = "",
     model = GPTModel.GPT5Mini,
 }) {
-    const prompt = generatePrompt(
-        "completeFlashcard",
-        text,
-        englishLevel,
-        categoryContext
-    );
+    const input = `Create a comprehensive flashcard for an English vocabulary word/phrase. Word: "${text}".
+The output must be in English level: ${englishLevel}.
 
-    const response = await client.responses.create({
-        ...buildResponsesCreatePayload(model, prompt),
-    });
+Return JSON format:
+{
+  "text": "${text}",
+  "transcription": "Resources: Oxford Learner's Dictionaries. Must use \\n\\n between each variant. Format for output: UK: [ˌjuːnɪˈvɜːsəti] US: [ˌjuːnɪˈvɜːrsəti];",
+  "translation": "Several possible Ukrainian translation variants (1-2 or more) for: "${text}". Output only in the format like: "Виглядати; дивитися; вигляд; зовнішність". No extra text. Only the string.",
+  "shortDescription": "A very short description (1-2 sentences max, under 100 characters). The description should be concise and clear",
+  "explanation": "Write a comprehensive, detailed explanation of the word/phrase that includes ALL of the following elements:
 
-    return parseJsonOutput(response.output_text || "");
+1. DETAILED MEANING: Start with a clear, complete definition of the word. Explain what it means in depth, including any nuances or variations
+2. USAGE CONTEXT: Describe when and how this word is typically used in simple words to understand
+3. REAL-WORLD APPLICATION: Describe practical situations where this word is used and explain the meaning (for example you can use synonims)
+4. SOME INTERESTING FACTS: some facts form life or specific examples 
+
+Your explanation must be written in an engaging, educational article style appropriate for ${englishLevel} level learners (must use \\n\\n between paragraphs). Think of it as a mini-encyclopedia entry that thoroughly covers the topic. Use simple language but provide comprehensive information.
+
+Examples structure:
+  "examples": ["Example sentence 1 using the word", "Example sentence 2 showing different context", "Example sentence 3 with another usage"],
+  "notes": ""
 }
 
-async function regenerateFlashcardExamples({
-    text,
-    englishLevel = "B1",
-    categoryContext = "",
-    model = GPTModel.GPT5Mini,
-}) {
-    const prompt = generateRegenerateExamplesPrompt(
-        text,
-        englishLevel,
-        categoryContext
-    );
+Requirements:
+- Ensure all content is in ${englishLevel} English level
+- Don't use conclusion at the end of explanation like "In conclusion" or "Overall, ...", only the main information without unnecessary text
+- The "explanation" property text must be 3-4 paragraphs max
+
+Example for word "opportunity":
+
+{
+  "text": "opportunity",
+  "transcription": "UK: [ˌɒpəˈtjuːnəti]\\\\n\\\\nUS: [ˌɑːpərˈtuːnəti]",
+  "translation": "можливість; нагода; шанс; перспектива",
+  "shortDescription": "A chance to do something good or important that can help you succeed.",
+  "explanation": "An opportunity is a chance to do something that can be good for you. It is like a special moment when you can try something new or improve your life. When you have an opportunity, it means the right time has come to do something important.\\n\\nOpportunities can happen in many parts of your life. At work, you might get an opportunity to get a better job or learn new skills. At school, you might have an opportunity to join a club or study in another country. In your personal life, you might get an opportunity to meet new friends or visit new places. Some opportunities come and go quickly, so you need to act fast. Other opportunities stay for a longer time. The important thing is to notice them and decide if you want to try.\\n\\nThe word 'opportunity' is very common in English. People use it when they talk about jobs, education, and life in general. For example, your teacher might say 'This is a good opportunity to practice English.' Here, opportunity means a special chance or the right moment to improve your English skills by practicing. Your boss might say 'We have an opportunity to work with a new company.' It means we can start working together with another company. In real life, opportunities are everywhere. When you meet new people, that's an opportunity to make friends. When you see a job advertisement, that's an opportunity to get work. The word 'opportunity' is a noun. You can also use the word 'chance' which means almost the same thing.",
+  "examples": [
+    "This job is a good opportunity for me to learn new things.",
+    "I missed the opportunity to see my favorite band in concert.",
+    "Going to university is an opportunity to meet new friends."
+  ],
+  "notes": ""
+}
+
+Example for word "valley":
+
+{
+  "text": "valley",
+  "transcription": "UK: [ˈvæli]\\n\\nUS: [ˈvæli]",
+  "translation": "долина",
+  "shortDescription": "A low area of land between hills or mountains, often with a river or stream.",
+  "explanation": "A valley is a low area of land between hills or mountains. Valleys are made by rivers or ice moving through the land. Usually, the land goes down in the middle and up on both sides.\\n\\nSome valleys are wide with soft, green sides and flat bottoms. Other valleys are narrow with steep sides. Many valleys have rivers or small streams running through them. They can look like natural roads between hills or mountains.\\n\\nValleys are useful for people. The soil is rich, so farmers can grow crops. Many people live in valleys because they are protected from strong winds. Valleys make good paths for travel. Beautiful valleys attract tourists. Rivers in valleys can give water for drinking.\\n\\nSome valleys are very big. The Grand Canyon in the USA is 446 km long and 29 km wide. Some valleys on Mars are even bigger. Some valleys are made by rivers over millions of years. Others are made by ice called glaciers. Valleys are not always safe. Heavy rain can cause floods. Cold air can stay in valleys, making them colder than other places. Landslides can happen on valley sides. Fog is common and can make it hard to see.",
+  "examples": [
+    "The hikers walked through a beautiful valley with a river running through it.",
+    "Farmers grow crops in the fertile soil of the valley.",
+    "The Grand Canyon is a famous valley in the United States."
+  ],
+  "notes": ""
+}
+${categoryContext}`;
 
     const response = await client.responses.create({
-        ...buildResponsesCreatePayload(model, prompt),
+        ...buildResponsesCreatePayload(model, input),
     });
 
     return parseJsonOutput(response.output_text || "");
@@ -504,9 +547,7 @@ export {
     generateSpeech,
     generateSentenceCompletion,
     generateListenAndFill,
-    generateFlashcardField,
     generateCompleteFlashcard,
-    regenerateFlashcardExamples,
     translateWithDeepL,
     DeepLTargetLanguage,
 };
