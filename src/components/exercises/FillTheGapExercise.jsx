@@ -218,16 +218,7 @@ const FillTheGapExercise = () => {
 
         const nextVocabularyItemIndex = getNextVocabularyItemIndex();
 
-        const exercises = [
-            "translate_sentence_exercise",
-            "listen_and_fill_the_gap_exercise",
-        ];
-
-        const nextExerciseType =
-            exercises[Math.floor(Math.random() * exercises.length)];
-
         updateExerciseState({
-            exerciseType: nextExerciseType,
             currentVocabularyWordIndex: nextVocabularyItemIndex,
             generateNextStage: true,
         });

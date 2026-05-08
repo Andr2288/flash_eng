@@ -130,7 +130,7 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
             {/* Sidebar Panel */}
             <div
                 className={`absolute top-0 right-0 h-full z-10 transition-all duration-300 ease-in-out ${
-                    isOpen ? "w-56" : "w-0"
+                    isOpen ? "w-64" : "w-0"
                 } overflow-hidden`}
             >
                 <div className="w-64 h-full bg-white border-l border-gray-200 shadow-xl flex flex-col">
@@ -479,7 +479,13 @@ const PracticePage = () => {
 
             {/* Exercise View with Stats Sidebar */}
             {uiState.showExercise && (
-                <div className="relative flex min-h-0 flex-1 overflow-y-auto p-8 [scrollbar-gutter:stable]">
+                <div
+                    className={`relative flex min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable] transition-[padding] duration-300 ease-in-out ${
+                        uiState.showStatsSidebar
+                            ? "py-8 pl-8 pr-[calc(2rem+16rem)]"
+                            : "p-8"
+                    }`}
+                >
                     {exercise}
                     <StatsSidebar
                         isOpen={uiState.showStatsSidebar}
