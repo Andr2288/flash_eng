@@ -65,24 +65,17 @@ function App() {
                 <Route
                     path="/signup"
                     element={
-                        user ? (
-                            <Navigate to="/" replace />
-                        ) : (
-                            <SignUpPage />
-                        )
+                        user ? <Navigate to="/" replace /> : <SignUpPage />
                     }
                 />
                 <Route
                     path="/login"
-                    element={
-                        user ? (
-                            <Navigate to="/" replace />
-                        ) : (
-                            <LoginPage />
-                        )
-                    }
+                    element={user ? <Navigate to="/" replace /> : <LoginPage />}
                 />
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route
+                    path="/forgot-password"
+                    element={<ForgotPasswordPage />}
+                />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route
                     path="/settings"
