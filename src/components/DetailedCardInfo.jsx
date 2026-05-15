@@ -161,7 +161,7 @@ const DetailedCardInfo = ({
     }, [isImageChanging]);
 
     return (
-        <div className={`bg-white overflow-hidden ${className}`}>
+        <div className={`w-full min-w-0 bg-white overflow-hidden ${className}`}>
             {collapsible && (
                 <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
                     <button

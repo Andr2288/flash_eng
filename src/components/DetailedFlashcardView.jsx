@@ -383,9 +383,9 @@ const DetailedFlashcardView = ({
     const currentCard = updatedFlashcards[validCurrentIndex];
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div className="mx-auto w-full min-w-0 max-w-4xl shrink-0 self-stretch">
             {/* Main Card Container */}
-            <div className="relative">
+            <div className="relative w-full">
                 {/* Card Actions — лише на лицьовому боку */}
                 {!isFlipped && (
                     <div className="absolute top-6 right-6 z-20 flex space-x-1">
@@ -429,20 +429,24 @@ const DetailedFlashcardView = ({
 
                 {/* Card Content */}
                 <div
-                    className="bg-white rounded-2xl shadow-md overflow-hidden h-[400px] md:h-[458px] relative"
+                    className="relative h-[400px] w-full min-w-0 overflow-hidden rounded-2xl bg-white shadow-md md:h-[458px]"
                     onContextMenu={handleCardContextMenu}
                 >
                     {/* Front Side */}
-                    {!isFlipped && (
-                        <div
-                            key={`front-${validCurrentIndex}`}
-                            className={`h-full transition-all duration-150 ${
-                                isChanging ? "opacity-70" : "opacity-100"
-                            }`}
-                        >
-                            <div className="bg-white h-full flex flex-col justify-center items-center p-8">
-                                <div className="text-center space-y-3 w-full">
-                                    <h2 className="text-3xl font-bold text-gray-900 mb-2 break-words max-w-md mx-auto">
+                    <div
+                        key={`front-${validCurrentIndex}`}
+                        className={`absolute inset-0 h-full w-full transition-opacity duration-150 ${
+                            isFlipped
+                                ? "pointer-events-none opacity-0"
+                                : isChanging
+                                  ? "opacity-70"
+                                  : "opacity-100"
+                        }`}
+                        aria-hidden={isFlipped}
+                    >
+                        <div className="flex h-full w-full min-w-0 flex-col justify-center bg-white p-10">
+                            <div className="w-full min-w-0 space-y-3 text-center">
+                                <h2 className="mb-2 w-full break-words text-3xl font-bold text-gray-900">
                                         {currentCard.text}
                                     </h2>
 
@@ -483,37 +487,39 @@ const DetailedFlashcardView = ({
                                         </button>
                                     </div>
 
-                                    <p className="text-gray-500 text-base">
-                                        Натисніть Пробіл / Enter / ПКМ, щоб
-                                        побачити переклад
-                                    </p>
-                                </div>
+                                <p className="text-base text-gray-500">
+                                    Натисніть Пробіл / Enter / ПКМ, щоб
+                                    побачити переклад
+                                </p>
                             </div>
                         </div>
-                    )}
+                    </div>
 
                     {/* Back Side */}
-                    {isFlipped && (
-                        <div
-                            key={`back-${validCurrentIndex}`}
-                            className={`h-full transition-all duration-150 ${
-                                isChanging ? "opacity-70" : "opacity-100"
-                            }`}
-                        >
-                            <DetailedCardInfo
-                                displayCard={currentCard}
-                                className="h-full overflow-y-auto custom-scrollbar"
-                                defaultExpanded={true}
-                                collapsible={false}
-                                showTopSection={false}
-                            />
-                        </div>
-                    )}
+                    <div
+                        key={`back-${validCurrentIndex}`}
+                        className={`absolute inset-0 h-full w-full transition-opacity duration-150 ${
+                            !isFlipped
+                                ? "pointer-events-none opacity-0"
+                                : isChanging
+                                  ? "opacity-70"
+                                  : "opacity-100"
+                        }`}
+                        aria-hidden={!isFlipped}
+                    >
+                        <DetailedCardInfo
+                            displayCard={currentCard}
+                            className="h-full w-full min-w-0 overflow-y-auto custom-scrollbar"
+                            defaultExpanded={true}
+                            collapsible={false}
+                            showTopSection={false}
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Navigation */}
-            <div className="flex justify-between items-center mt-4 max-w-4xl mx-auto">
+            <div className="mx-auto mt-4 flex w-full min-w-0 max-w-4xl items-center justify-between">
                 {/* Left button */}
                 <button
                     onClick={prevCard}

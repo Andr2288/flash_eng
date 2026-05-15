@@ -748,11 +748,18 @@ const HomePage = () => {
                                                     handleCardClick(index)
                                                 }
                                             >
-                                                <div className="flex flex-col justify-between p-6 h-full">
-                                                    <div className="mb-4">
+                                                <div className="relative flex flex-col justify-between p-6 h-full">
+                                                    <span
+                                                        className={`absolute top-4 right-4 z-10 inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${LEVEL_BADGE_STYLES[getNormalizedEnglishLevel(card.englishLevel)]}`}
+                                                    >
+                                                        {getNormalizedEnglishLevel(
+                                                            card.englishLevel
+                                                        )}
+                                                    </span>
+                                                    <div className="mb-4 pr-12">
                                                         <div className="flex items-center space-x-2 mb-1">
                                                             <div
-                                                                className="w-3 h-3 rounded-full"
+                                                                className="w-3 h-3 shrink-0 rounded-full"
                                                                 style={{
                                                                     backgroundColor:
                                                                         card
@@ -761,7 +768,7 @@ const HomePage = () => {
                                                                         "#6B7280",
                                                                 }}
                                                             ></div>
-                                                            <h3 className="text-lg font-bold text-gray-900 break-words">
+                                                            <h3 className="min-w-0 text-lg font-bold text-gray-900 break-words">
                                                                 {searchQuery.trim() ? (
                                                                     <span
                                                                         dangerouslySetInnerHTML={{
@@ -778,13 +785,6 @@ const HomePage = () => {
                                                                     card.text
                                                                 )}
                                                             </h3>
-                                                            <span
-                                                                className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${LEVEL_BADGE_STYLES[getNormalizedEnglishLevel(card.englishLevel)]}`}
-                                                            >
-                                                                {getNormalizedEnglishLevel(
-                                                                    card.englishLevel
-                                                                )}
-                                                            </span>
                                                         </div>
 
                                                         {card.transcription && (

@@ -91,6 +91,17 @@ const EXERCISE_LABEL = {
     [ExerciseType.ListenAndFillTheGapExercise]: "Слухання та письмо",
 };
 
+const GRADING_BADGE = {
+    self: {
+        label: "Самооцінювання",
+        className: "border-amber-200 bg-amber-50 text-amber-800",
+    },
+    auto: {
+        label: "Автоперевірка",
+        className: "border-emerald-200 bg-emerald-50 text-emerald-800",
+    },
+};
+
 const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
     const statusKey =
         EXERCISE_STATUS_KEY[exerciseType] ||
@@ -493,6 +504,7 @@ const PracticePage = () => {
                 "Навички перекладу",
                 "Розуміння контексту",
             ],
+            gradingMode: "self",
         },
         {
             id: "fill_the_gap_exercise",
@@ -509,6 +521,7 @@ const PracticePage = () => {
                 "Навички читання",
                 "Розуміння контексту",
             ],
+            gradingMode: "auto",
         },
         {
             id: "listen-and-fill-exercise",
@@ -525,6 +538,7 @@ const PracticePage = () => {
                 "Навички слухання",
                 "Навички вимови",
             ],
+            gradingMode: "auto",
         },
     ];
 
@@ -639,6 +653,8 @@ const PracticePage = () => {
                                 <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
                                     {coreExercisesData.map((exercise) => {
                                         const Icon = exercise.icon;
+                                        const gradingBadge =
+                                            GRADING_BADGE[exercise.gradingMode];
 
                                         return (
                                             <div
@@ -650,6 +666,13 @@ const PracticePage = () => {
                                                 }
                                                 className={`group relative bg-white rounded-2xl p-8 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-2`}
                                             >
+                                                {gradingBadge ? (
+                                                    <span
+                                                        className={`absolute top-4 right-4 z-10 inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${gradingBadge.className}`}
+                                                    >
+                                                        {gradingBadge.label}
+                                                    </span>
+                                                ) : null}
                                                 <div>
                                                     <div
                                                         className={`absolute inset-0 bg-linear-to-br ${exercise.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`}
