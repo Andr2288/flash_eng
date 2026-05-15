@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
 import * as api from "./features/vocabularyWords/vocabularyWordsApi.js";
+import { usePracticeSettingsStore } from "./usePracticeSettingsStore.js";
 import {
     findMissedVocabularyItems,
     reorderDataMissedReversedThenRest,
@@ -140,13 +141,16 @@ const useVocabularyWordsStore = create(
         },
 
         generateExerciseVocabularyItem: async (vocabularyWordMainParameters) => {
+            const { englishLevel } =
+                usePracticeSettingsStore.getState().getGenerationOptions();
             set((state) => {
                 state.exerciseState.isLoading = true;
                 state.exerciseState.generateNextStage = false;
             });
             try {
                 const parsed = await api.generateExerciseVocabularyItem(
-                    vocabularyWordMainParameters
+                    vocabularyWordMainParameters,
+                    { englishLevel }
                 );
                 set((state) => {
                     state.exerciseState.generatedExerciseData = parsed;
@@ -159,13 +163,28 @@ const useVocabularyWordsStore = create(
             }
         },
 
-        generateSpeech: (text) => api.generateSpeech(text),
+        generateSpeech: (text) => {
+            const { ttsVoice, ttsSpeed } =
+                usePracticeSettingsStore.getState().getGenerationOptions();
+            return api.generateSpeech(text, { voice: ttsVoice, speed: ttsSpeed });
+        },
 
-        generateSentenceCompletion: (vocabularyWordMainParameters) =>
-            api.generateSentenceCompletion(vocabularyWordMainParameters),
+        generateSentenceCompletion: (vocabularyWordMainParameters) => {
+            const { englishLevel } =
+                usePracticeSettingsStore.getState().getGenerationOptions();
+            return api.generateSentenceCompletion(
+                vocabularyWordMainParameters,
+                { englishLevel }
+            );
+        },
 
-        generateListenAndFill: (vocabularyWordMainParameters) =>
-            api.generateListenAndFill(vocabularyWordMainParameters),
+        generateListenAndFill: (vocabularyWordMainParameters) => {
+            const { englishLevel } =
+                usePracticeSettingsStore.getState().getGenerationOptions();
+            return api.generateListenAndFill(vocabularyWordMainParameters, {
+                englishLevel,
+            });
+        },
 
         translateWithDeepL: (params) => api.translateWithDeepL(params),
     }))

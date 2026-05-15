@@ -7,6 +7,7 @@ import {
     ListenAndFillTheGapExercise,
 } from "../components/exercises/index.js";
 import { LoadErrorNotice } from "../components/LoadErrorNotice.jsx";
+import { PracticeSettingsPanel } from "../components/PracticeSettingsPanel.jsx";
 
 import {
     ChevronLeft,
@@ -723,6 +724,8 @@ const PracticePage = () => {
                                     );
                                 })}
                             </div>
+
+                            <PracticeSettingsPanel />
                         </div>
                     )}
                 </div>

@@ -1,5 +1,12 @@
 import OpenAI from "openai";
 import { supabase } from "./supabase.js";
+import {
+    buildEnglishLevelRequirement,
+    normalizeTtsSpeed,
+    normalizeTtsVoice,
+    pickRandomTtsVoice,
+    TTS_VOICE_RANDOM,
+} from "../../../constants/practiceSettings.js";
 
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 const DEEPL_API_KEY = import.meta.env.VITE_DEEPL_API_KEY;
@@ -235,7 +242,11 @@ async function updateVocabularyWord({
     return data;
 }
 
-async function generateExerciseVocabularyItem(vocabularyWordMainParameters) {
+async function generateExerciseVocabularyItem(
+    vocabularyWordMainParameters,
+    { englishLevel } = {}
+) {
+    const levelRequirement = buildEnglishLevelRequirement(englishLevel);
     const input = `Generate a JSON object for an English word/phrase/pattern.
 
 INPUT:
@@ -251,7 +262,8 @@ OUTPUT STRUCTURE:
 }
 
 REQUIREMENTS:
-1. Create ONE example sentence for English learners (BEGINNER Level - A1-A2)
+1. Create ONE example sentence for English learners
+${levelRequirement}
 3. As Ukrainian example as English example must sound native and natural - DO NOT translate word-by-word
 4. Reference Cambridge, Oxford, Collins, or YouGlish for usage guidance.
 5. If the input contains relevant translations - use them as translation examples and don't translate the word/phrase/pattern by yourself
@@ -300,11 +312,23 @@ OUTPUT:
     return parsed;
 }
 
-async function generateSpeech(text) {
+function resolveTtsVoice(voice) {
+    const normalized = normalizeTtsVoice(voice);
+    if (normalized === TTS_VOICE_RANDOM) {
+        return pickRandomTtsVoice();
+    }
+    return normalized;
+}
+
+async function generateSpeech(
+    text,
+    { voice, speed } = {}
+) {
     const response = await client.audio.speech.create({
         model: "gpt-4o-mini-tts",
-        voice: TTSVoice.Marin,
+        voice: resolveTtsVoice(voice ?? TTSVoice.Marin),
         input: text,
+        speed: normalizeTtsSpeed(speed ?? 1),
     });
 
     const arrayBuffer = await response.arrayBuffer();
@@ -314,7 +338,11 @@ async function generateSpeech(text) {
     return url;
 }
 
-async function generateSentenceCompletion(vocabularyWordMainParameters) {
+async function generateSentenceCompletion(
+    vocabularyWordMainParameters,
+    { englishLevel } = {}
+) {
+    const levelRequirement = buildEnglishLevelRequirement(englishLevel);
     const input = `Create a sentence completion exercise for word/phrase/pattern.
 
 INPUT:
@@ -334,7 +362,7 @@ Return a JSON object with this exact structure:
 }
 
 Requirements:
-- Create the sentence for English learners (BEGINNER Level - A1)
+${levelRequirement}
 - The displaySentence should have exactly one ____ where the word (or several words) was / were removed
 - correctAnswer: The actual exact form of word/phrase/pattern that fits (may be different due to tense, plural, etc.)
 - hint: Create an explanation/description for the word/phrase/pattern. Make it clear and concise but don't use the word itself or its direct translations. The explanation should be 1 sentence long and help learners identify the word.
@@ -389,7 +417,11 @@ Bad example:
     return parsed;
 }
 
-async function generateListenAndFill(vocabularyWordMainParameters) {
+async function generateListenAndFill(
+    vocabularyWordMainParameters,
+    { englishLevel } = {}
+) {
+    const levelRequirement = buildEnglishLevelRequirement(englishLevel);
     const input = `Create a sentence completion exercise for word/phrase/pattern.
 
 INPUT:
@@ -409,7 +441,7 @@ Return a JSON object with this exact structure:
 }
 
 Requirements:
-- Create the sentence for English learners (BEGINNER Level - A1)
+${levelRequirement}
 - The displaySentence should have exactly one ____ where the word (or several words) was / were removed
 - correctAnswer: The actual exact form of word/phrase/pattern that fits (may be different due to tense, plural, etc.)
 - hint: Create an explanation/description for the word/phrase/pattern. Make it clear and concise but don't use the word itself or its direct translations. The explanation should be 1 sentence long and help learners identify the word.
