@@ -8,6 +8,50 @@ import {
     selectNextItems,
 } from "./features/vocabularyWords/vocabularyWordsStateLogic.js";
 
+function mapVocabularyWordFromRow(word) {
+    const category = word.flashcard_categories
+        ? {
+              id: word.flashcard_categories.id,
+              name: word.flashcard_categories.name,
+              color: word.flashcard_categories.color,
+          }
+        : null;
+
+    return {
+        id: word.id,
+        categoryId: word.category_id ?? null,
+        category,
+        main_parameters: {
+            text: word.text,
+            topic: word.topic,
+            relevant_translations: word.relevant_translations,
+        },
+        metodology_parameters: {
+            status_translate_sentence_exercise:
+                word.status_translate_sentence_exercise,
+            status_fill_the_gap_exercise: word.status_fill_the_gap_exercise,
+            status_listen_and_fill_the_gap_exercise:
+                word.status_listen_and_fill_the_gap_exercise,
+
+            checkpoint_translate_sentence_exercise:
+                word.checkpoint_translate_sentence_exercise,
+            checkpoint_fill_the_gap_exercise:
+                word.checkpoint_fill_the_gap_exercise,
+            checkpoint_listen_and_fill_the_gap_exercise:
+                word.checkpoint_listen_and_fill_the_gap_exercise,
+
+            last_reviewed_translate_sentence_exercise:
+                word.last_reviewed_translate_sentence_exercise,
+            last_reviewed_fill_the_gap_exercise:
+                word.last_reviewed_fill_the_gap_exercise,
+            last_reviewed_listen_and_fill_the_gap_exercise:
+                word.last_reviewed_listen_and_fill_the_gap_exercise,
+
+            createdAt: word.created_at,
+        },
+    };
+}
+
 const useVocabularyWordsStore = create(
     immer((set) => ({
         singleStatusMode: true,
@@ -50,37 +94,7 @@ const useVocabularyWordsStore = create(
         addVocabularyWord: async (newWord) => {
             const word = await api.addVocabularyWord(newWord);
             set((state) => {
-                state.data.push({
-                    id: word.id,
-                    categoryId: word.category_id ?? null,
-                    main_parameters: {
-                        text: word.text,
-                        topic: word.topic,
-                        relevant_translations: word.relevant_translations,
-                    },
-                    metodology_parameters: {
-                        status_translate_sentence_exercise:
-                            word.status_translate_sentence_exercise,
-                        status_fill_the_gap_exercise:
-                            word.status_fill_the_gap_exercise,
-                        status_listen_and_fill_the_gap_exercise:
-                            word.status_listen_and_fill_the_gap_exercise,
-
-                        checkpoint_translate_sentence_exercise:
-                            word.checkpoint_translate_sentence_exercise,
-                        checkpoint_fill_the_gap_exercise:
-                            word.checkpoint_fill_the_gap_exercise,
-                        checkpoint_listen_and_fill_the_gap_exercise:
-                            word.checkpoint_listen_and_fill_the_gap_exercise,
-
-                        last_reviewed_translate_sentence_exercise:
-                            word.last_reviewed_translate_sentence_exercise,
-                        last_reviewed_fill_the_gap_exercise:
-                            word.last_reviewed_fill_the_gap_exercise,
-                        last_reviewed_listen_and_fill_the_gap_exercise:
-                            word.last_reviewed_listen_and_fill_the_gap_exercise,
-                    },
-                });
+                state.data.push(mapVocabularyWordFromRow(word));
 
                 if (state.exerciseState.currentSelection.length === 0) {
                     state.exerciseState.currentSelection =
@@ -93,39 +107,7 @@ const useVocabularyWordsStore = create(
         fetchVocabularyWords: async () => {
             const vocabulary_words = await api.fetchVocabularyWords();
             set((state) => {
-                state.data = vocabulary_words.map((word) => ({
-                    id: word.id,
-                    categoryId: word.category_id ?? null,
-                    main_parameters: {
-                        text: word.text,
-                        topic: word.topic,
-                        relevant_translations: word.relevant_translations,
-                    },
-                    metodology_parameters: {
-                        status_translate_sentence_exercise:
-                            word.status_translate_sentence_exercise,
-                        status_fill_the_gap_exercise:
-                            word.status_fill_the_gap_exercise,
-                        status_listen_and_fill_the_gap_exercise:
-                            word.status_listen_and_fill_the_gap_exercise,
-
-                        checkpoint_translate_sentence_exercise:
-                            word.checkpoint_translate_sentence_exercise,
-                        checkpoint_fill_the_gap_exercise:
-                            word.checkpoint_fill_the_gap_exercise,
-                        checkpoint_listen_and_fill_the_gap_exercise:
-                            word.checkpoint_listen_and_fill_the_gap_exercise,
-
-                        last_reviewed_translate_sentence_exercise:
-                            word.last_reviewed_translate_sentence_exercise,
-                        last_reviewed_fill_the_gap_exercise:
-                            word.last_reviewed_fill_the_gap_exercise,
-                        last_reviewed_listen_and_fill_the_gap_exercise:
-                            word.last_reviewed_listen_and_fill_the_gap_exercise,
-
-                        createdAt: word.created_at,
-                    },
-                }));
+                state.data = vocabulary_words.map(mapVocabularyWordFromRow);
             });
             return vocabulary_words;
         },
@@ -141,36 +123,11 @@ const useVocabularyWordsStore = create(
                 set((state) => {
                     const index = state.data.findIndex((w) => w.id === word.id);
                     if (index !== -1) {
+                        const mapped = mapVocabularyWordFromRow(word);
                         state.data[index] = {
-                            id: word.id,
-                            categoryId: word.category_id ?? null,
-                            main_parameters: {
-                                text: word.text,
-                                topic: word.topic,
-                                relevant_translations: word.relevant_translations,
-                            },
-                            metodology_parameters: {
-                                status_translate_sentence_exercise:
-                                    word.status_translate_sentence_exercise,
-                                status_fill_the_gap_exercise:
-                                    word.status_fill_the_gap_exercise,
-                                status_listen_and_fill_the_gap_exercise:
-                                    word.status_listen_and_fill_the_gap_exercise,
-
-                                checkpoint_translate_sentence_exercise:
-                                    word.checkpoint_translate_sentence_exercise,
-                                checkpoint_fill_the_gap_exercise:
-                                    word.checkpoint_fill_the_gap_exercise,
-                                checkpoint_listen_and_fill_the_gap_exercise:
-                                    word.checkpoint_listen_and_fill_the_gap_exercise,
-
-                                last_reviewed_translate_sentence_exercise:
-                                    word.last_reviewed_translate_sentence_exercise,
-                                last_reviewed_fill_the_gap_exercise:
-                                    word.last_reviewed_fill_the_gap_exercise,
-                                last_reviewed_listen_and_fill_the_gap_exercise:
-                                    word.last_reviewed_listen_and_fill_the_gap_exercise,
-                            },
+                            ...mapped,
+                            category:
+                                mapped.category ?? state.data[index].category,
                         };
                     }
                 });

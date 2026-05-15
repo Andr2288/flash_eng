@@ -152,6 +152,9 @@ async function translateWithDeepL({
     return translatedText;
 }
 
+const VOCABULARY_WORD_SELECT =
+    "*, flashcard_categories(id, name, color)";
+
 async function requireUserId() {
     const {
         data: { session },
@@ -179,7 +182,7 @@ async function addVocabularyWord(newWord) {
                 relevant_translations: newWord.relevant_translations || null,
             },
         ])
-        .select();
+        .select(VOCABULARY_WORD_SELECT);
 
     if (error) {
         throw new Error(error.message);
@@ -193,7 +196,7 @@ async function fetchVocabularyWords() {
 
     const { data: vocabulary_words, error } = await supabase
         .from("vocabulary_words")
-        .select("*")
+        .select(VOCABULARY_WORD_SELECT)
         .eq("user_id", userId)
         .order("id", { ascending: false });
 
@@ -223,7 +226,7 @@ async function updateVocabularyWord({
         })
         .eq("id", id)
         .eq("user_id", userId)
-        .select();
+        .select(VOCABULARY_WORD_SELECT);
 
     if (error) {
         throw new Error(error.message);

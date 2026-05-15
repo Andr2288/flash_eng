@@ -157,21 +157,30 @@ const ProfilePage = () => {
 
         const wordsThisWeek = weeklyActivity.reduce((s, d) => s + d.count, 0);
 
-        const topicMap = new Map();
+        const categoryMap = new Map();
         list.forEach((w) => {
-            const raw = w.main_parameters?.topic;
-            const name =
-                raw && String(raw).trim() ? String(raw).trim() : "Без теми";
-            topicMap.set(name, (topicMap.get(name) || 0) + 1);
+            const cat = w.category;
+            const key = cat?.id ?? "__uncategorized__";
+            const existing = categoryMap.get(key);
+            if (existing) {
+                existing.count += 1;
+                return;
+            }
+            categoryMap.set(key, {
+                id: key,
+                name: cat?.name?.trim() || "Без категорії",
+                color:
+                    cat?.color ||
+                    TOPIC_PALETTE[categoryMap.size % TOPIC_PALETTE.length],
+                count: 1,
+            });
         });
 
-        const topicStats = [...topicMap.entries()]
-            .map(([name, count], index) => ({
-                id: name,
-                name,
-                color: TOPIC_PALETTE[index % TOPIC_PALETTE.length],
-                count,
-                percentage: totalWords > 0 ? (count / totalWords) * 100 : 0,
+        const topicStats = [...categoryMap.values()]
+            .map((entry) => ({
+                ...entry,
+                percentage:
+                    totalWords > 0 ? (entry.count / totalWords) * 100 : 0,
             }))
             .sort((a, b) => b.count - a.count);
 
@@ -411,12 +420,12 @@ const ProfilePage = () => {
                                     <div className="flex items-center space-x-3 mb-6">
                                         <BarChart3 className="w-5 h-5 text-emerald-600" />
                                         <h3 className="text-lg font-semibold text-gray-900">
-                                            Топ тем
+                                            Топ категорій
                                         </h3>
                                     </div>
                                     {stats.topicStats.length === 0 ? (
                                         <p className="text-sm text-gray-500">
-                                            Додайте слова з темами — тут
+                                            Додайте картки в категорії — тут
                                             з’явиться розподіл.
                                         </p>
                                     ) : (

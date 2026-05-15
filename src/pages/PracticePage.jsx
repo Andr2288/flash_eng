@@ -124,35 +124,42 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
 
     const total = data.length;
 
+    const toggleButtonClassName =
+        "flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 text-gray-600 hover:text-blue-600 text-sm font-medium cursor-pointer";
+
     return (
         <>
-            
-            <button
-                onClick={onToggle}
-                className="absolute top-4 right-7 z-20 flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 text-gray-600 hover:text-blue-600 text-sm font-medium cursor-pointer"
-            >
-                <BarChart2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Статистика</span>
-                <ChevronLeft
-                    className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                />
-            </button>
+            {!isOpen && (
+                <button
+                    onClick={onToggle}
+                    className={`absolute top-4 right-7 z-20 ${toggleButtonClassName}`}
+                >
+                    <BarChart2 className="h-4 w-4" />
+                    <span className="hidden sm:inline">Статистика</span>
+                    <ChevronLeft className="h-4 w-4" />
+                </button>
+            )}
 
-            
             <div
                 className={`absolute top-0 right-0 h-full z-10 transition-all duration-300 ease-in-out ${
                     isOpen ? "w-64" : "w-0"
                 } overflow-hidden`}
             >
                 <div className="w-64 h-full bg-white border-l border-gray-200 shadow-xl flex flex-col">
-                    
-                    <div className="p-5 pt-18">
-                        <p className="text-md text-gray-400 mt-1.5 ml-9">
+                    <div className="flex flex-col items-center gap-3 border-b border-gray-100 px-4 pb-4 pt-5">
+                        <button
+                            onClick={onToggle}
+                            className={toggleButtonClassName}
+                        >
+                            <BarChart2 className="h-4 w-4" />
+                            <span>Статистика</span>
+                            <ChevronLeft className="h-4 w-4 rotate-180" />
+                        </button>
+                        <p className="text-center text-md text-gray-400">
                             Всього: {total} слів
                         </p>
                     </div>
 
-                    
                     <div className="flex-1 overflow-y-auto p-4 pt-0 mr-3.5 space-y-2.5">
                         {Object.entries(STATUS_CONFIG).map(
                             ([status, config]) => {
@@ -184,7 +191,7 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
                                                 {count}
                                             </span>
                                         </div>
-                                        
+
                                         <div className="h-1.5 bg-white/60 rounded-full overflow-hidden">
                                             <div
                                                 className={`h-full ${config.color} rounded-full transition-all duration-500`}
@@ -314,7 +321,10 @@ const PracticeCategoryDropdown = ({
     };
 
     return (
-        <div className={`relative ${className}`} ref={rootRef}>
+        <div
+            className={`relative ${open ? "z-30" : ""} ${className}`}
+            ref={rootRef}
+        >
             <button
                 type="button"
                 id="practice-category-trigger"
@@ -346,7 +356,7 @@ const PracticeCategoryDropdown = ({
                     id="practice-category-listbox"
                     role="listbox"
                     aria-labelledby="practice-category-trigger"
-                    className="absolute left-0 right-0 z-50 mt-2 max-h-[min(28rem,calc(100dvh-10rem))] overflow-y-auto overflow-x-hidden rounded-2xl border border-gray-200/90 bg-white py-1.5 shadow-xl shadow-indigo-100/50 ring-1 ring-indigo-100/30 [scrollbar-width:thin] [scrollbar-color:rgb(199_210_254)_transparent] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-indigo-200/90"
+                    className="absolute left-0 right-0 z-[100] mt-2 max-h-[min(28rem,calc(100dvh-10rem))] overflow-y-auto overflow-x-hidden rounded-2xl border border-gray-200/90 bg-white py-1.5 shadow-xl shadow-indigo-100/50 ring-1 ring-indigo-100/30 [scrollbar-width:thin] [scrollbar-color:rgb(199_210_254)_transparent] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-indigo-200/90"
                 >
                     {options.map((opt, index) => {
                         const isSelected = opt.id === value;
@@ -576,7 +586,6 @@ const PracticePage = () => {
 
     return (
         <div className="ml-68 flex h-[100dvh] max-h-[100dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
-            
             {!uiState.showExercise && (
                 <div className="shrink-0 bg-white border-b border-gray-200 overflow-hidden p-8">
                     <div className="mx-auto flex items-center">
@@ -596,7 +605,6 @@ const PracticePage = () => {
                 </div>
             )}
 
-            
             {!uiState.showExercise && (
                 <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
                     {showVocabularyLoader ? (
@@ -610,126 +618,116 @@ const PracticePage = () => {
                         <LoadErrorNotice />
                     ) : (
                         <div className="mx-auto w-full max-w-7xl">
-                                <section className="relative z-10 mb-10 rounded-2xl border border-indigo-100/80 bg-white/90 shadow-md shadow-indigo-100/30 ring-1 ring-white/60 backdrop-blur-sm">
-                                    <div
-                                        className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl"
-                                        aria-hidden
-                                    >
-                                        <div className="absolute -right-12 -top-10 h-32 w-32 rounded-full bg-linear-to-br from-indigo-200/40 to-violet-200/25 blur-2xl" />
+                            <section className="relative z-20 mb-10 rounded-2xl border border-indigo-100/80 bg-white/90 shadow-md shadow-indigo-100/30 ring-1 ring-white/60 backdrop-blur-sm">
+                                <div
+                                    className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl"
+                                    aria-hidden
+                                >
+                                    <div className="absolute -right-12 -top-10 h-32 w-32 rounded-full bg-linear-to-br from-indigo-200/40 to-violet-200/25 blur-2xl" />
+                                </div>
+                                <div className="relative z-10 flex flex-col gap-5 p-6 sm:flex-row sm:items-end sm:justify-between sm:gap-8 sm:p-8">
+                                    <div className="max-w-xl shrink-0">
+                                        <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600/90">
+                                            Перед стартом
+                                        </p>
+                                        <h2 className="mt-1 text-lg font-bold text-gray-900 sm:text-xl">
+                                            Категорія для практики
+                                        </h2>
+                                        <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                                            Оберіть категорію, з якої вправи
+                                            братимусь картки
+                                        </p>
                                     </div>
-                                    <div className="relative z-10 flex flex-col gap-5 p-6 sm:flex-row sm:items-end sm:justify-between sm:gap-8 sm:p-8">
-                                        <div className="max-w-xl shrink-0">
-                                            <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600/90">
-                                                Перед стартом
-                                            </p>
-                                            <h2 className="mt-1 text-lg font-bold text-gray-900 sm:text-xl">
-                                                Категорія для практики
-                                            </h2>
-                                            <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                                                Оберіть категорію — вправи братимуть
-                                                слова лише з неї. За
-                                                замовчуванням використовується
-                                                весь словник.
-                                            </p>
-                                        </div>
-                                        <PracticeCategoryDropdown
-                                            categories={categories}
-                                            value={selectedPracticeCategoryId}
-                                            onChange={
-                                                setSelectedPracticeCategoryId
+                                    <PracticeCategoryDropdown
+                                        categories={categories}
+                                        value={selectedPracticeCategoryId}
+                                        onChange={setSelectedPracticeCategoryId}
+                                        className="w-full sm:max-w-md sm:shrink-0"
+                                    />
+                                </div>
+                            </section>
+
+                            <div className="relative z-0 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+                                {coreExercisesData.map((exercise) => {
+                                    const Icon = exercise.icon;
+                                    const gradingBadge =
+                                        GRADING_BADGE[exercise.gradingMode];
+
+                                    return (
+                                        <div
+                                            key={exercise.id}
+                                            onClick={() =>
+                                                handleExerciseButtonClick(
+                                                    exercise.type
+                                                )
                                             }
-                                            className="w-full sm:max-w-md sm:shrink-0"
-                                        />
-                                    </div>
-                                </section>
+                                            className={`group relative bg-white rounded-2xl p-8 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-2`}
+                                        >
+                                            {gradingBadge ? (
+                                                <span
+                                                    className={`absolute top-4 right-4 z-[1] inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${gradingBadge.className}`}
+                                                >
+                                                    {gradingBadge.label}
+                                                </span>
+                                            ) : null}
+                                            <div>
+                                                <div
+                                                    className={`absolute inset-0 bg-linear-to-br ${exercise.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`}
+                                                />
 
-                                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
-                                    {coreExercisesData.map((exercise) => {
-                                        const Icon = exercise.icon;
-                                        const gradingBadge =
-                                            GRADING_BADGE[exercise.gradingMode];
-
-                                        return (
-                                            <div
-                                                key={exercise.id}
-                                                onClick={() =>
-                                                    handleExerciseButtonClick(
-                                                        exercise.type
-                                                    )
-                                                }
-                                                className={`group relative bg-white rounded-2xl p-8 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-2`}
-                                            >
-                                                {gradingBadge ? (
-                                                    <span
-                                                        className={`absolute top-4 right-4 z-10 inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${gradingBadge.className}`}
-                                                    >
-                                                        {gradingBadge.label}
-                                                    </span>
-                                                ) : null}
-                                                <div>
-                                                    <div
-                                                        className={`absolute inset-0 bg-linear-to-br ${exercise.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`}
-                                                    />
-
-                                                    <div
-                                                        className={`w-16 h-16 bg-linear-to-br ${exercise.color} rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300`}
-                                                    >
-                                                        <Icon className="w-8 h-8 text-white" />
-                                                    </div>
-
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <h4 className="text-xl font-bold text-gray-900">
-                                                            {exercise.title}
-                                                        </h4>
-                                                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
-                                                    </div>
-
-                                                    <p className="text-gray-600 mb-6">
-                                                        {exercise.description}
-                                                    </p>
+                                                <div
+                                                    className={`w-16 h-16 bg-linear-to-br ${exercise.color} rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300`}
+                                                >
+                                                    <Icon className="w-8 h-8 text-white" />
                                                 </div>
 
-                                                <div className="relative">
-                                                    <div className="flex items-center space-x-4 mb-6 text-sm">
-                                                        <div
-                                                            className={`flex items-center ${exercise.difficultyColor}`}
-                                                        >
-                                                            <span
-                                                                className={`w-2 h-2 ${exercise.difficultyBg} rounded-full mr-2`}
-                                                            />
-                                                            {
-                                                                exercise.difficulty
-                                                            }
-                                                        </div>
-                                                    </div>
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <h4 className="text-xl font-bold text-gray-900">
+                                                        {exercise.title}
+                                                    </h4>
+                                                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                                                </div>
 
-                                                    <div className="space-y-2 mb-2">
-                                                        {exercise.features.map(
-                                                            (
-                                                                feature,
-                                                                index
-                                                            ) => (
-                                                                <div
-                                                                    key={index}
-                                                                    className="flex items-center text-sm text-gray-600"
-                                                                >
-                                                                    <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3" />
-                                                                    {feature}
-                                                                </div>
-                                                            )
-                                                        )}
+                                                <p className="text-gray-600 mb-6">
+                                                    {exercise.description}
+                                                </p>
+                                            </div>
+
+                                            <div className="relative">
+                                                <div className="flex items-center space-x-4 mb-6 text-sm">
+                                                    <div
+                                                        className={`flex items-center ${exercise.difficultyColor}`}
+                                                    >
+                                                        <span
+                                                            className={`w-2 h-2 ${exercise.difficultyBg} rounded-full mr-2`}
+                                                        />
+                                                        {exercise.difficulty}
                                                     </div>
+                                                </div>
+
+                                                <div className="space-y-2 mb-2">
+                                                    {exercise.features.map(
+                                                        (feature, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="flex items-center text-sm text-gray-600"
+                                                            >
+                                                                <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3" />
+                                                                {feature}
+                                                            </div>
+                                                        )
+                                                    )}
                                                 </div>
                                             </div>
-                                        );
-                                    })}
-                                </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     )}
                 </div>
             )}
 
-            
             {uiState.showExercise && (
                 <div
                     className={`relative flex min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable] transition-[padding] duration-300 ease-in-out ${
