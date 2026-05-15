@@ -36,7 +36,6 @@ const ListenAndFillTheGapExercise = () => {
             }))
         );
 
-    // TranslateSentenceExercise state
     const [exerciseData, setExerciseData] = useState(null);
     const [userAnswer, setUserAnswer] = useState("");
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -44,7 +43,6 @@ const ListenAndFillTheGapExercise = () => {
     const [showResult, setShowResult] = useState(false);
     const [isTranslating, setIsTranslating] = useState(false);
 
-    // Audio state
     const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
 
     const inputRef = useRef(null);
@@ -63,7 +61,6 @@ const ListenAndFillTheGapExercise = () => {
         [data, exerciseState.practiceCategoryId]
     );
 
-    // Генерація вправи при зміні поточного слова
     useEffect(() => {
         if (
             exerciseState.currentSelection.length > 0 &&
@@ -83,7 +80,6 @@ const ListenAndFillTheGapExercise = () => {
 
     const loadExercise = async (vocabularyWordMainParameters) => {
         try {
-            // Reset state
             setUserAnswer("");
             setSelectedAnswer(null);
             setIsCorrect(null);
@@ -125,17 +121,14 @@ const ListenAndFillTheGapExercise = () => {
         const normalizedCorrect = normalizeText(correctAnswer);
         const normalizedOriginal = normalizeText(originalWord);
 
-        // Check exact match with correct form
         if (normalizedAnswer === normalizedCorrect) {
             return true;
         }
 
-        // Check exact match with original word
         if (normalizedAnswer === normalizedOriginal) {
             return true;
         }
 
-        // Check if it's part of a phrase
         if (normalizedCorrect.includes(" ")) {
             return normalizedCorrect
                 .split(" ")
@@ -367,7 +360,7 @@ const ListenAndFillTheGapExercise = () => {
                             </span>
                         </div>
                     )}
-                    {/* Audio Controls */}
+                    
                     <div className="text-center mb-8">
                         <h2 className="text-lg font-semibold text-gray-700 mb-4">
                             Яке слово ви чуєте на місці пропуску?
@@ -397,7 +390,7 @@ const ListenAndFillTheGapExercise = () => {
                                 </button>
                             </div>
 
-                            {/* Show sentence text */}
+                            
                             {exerciseData?.displaySentence && (
                                 <div>
                                     <p className="text-xl text-gray-800 leading-relaxed font-mono tracking-wide mb-3">
@@ -432,9 +425,9 @@ const ListenAndFillTheGapExercise = () => {
                                     {showResult &&
                                         exerciseData.sentenceTranslation && (
                                             <div className="pt-3 border-t border-blue-300">
-                                                {/*<p className="text-sm text-gray-600 mb-1">*/}
-                                                {/*    Переклад речення:*/}
-                                                {/*</p>*/}
+                                                
+                                                
+                                                
                                                 <p className="text-base text-gray-700 italic">
                                                     {
                                                         exerciseData.sentenceTranslation
@@ -447,7 +440,7 @@ const ListenAndFillTheGapExercise = () => {
                         </div>
                     </div>
 
-                    {/* Answer Input */}
+                    
                     <div className="w-1/2 space-y-4">
                         <div className="mx-auto">
                             <div className="relative">

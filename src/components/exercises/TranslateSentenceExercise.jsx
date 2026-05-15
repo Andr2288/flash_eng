@@ -93,7 +93,6 @@ const TranslateSentenceExercise = () => {
             return;
         }
 
-        // TODO: Оновити дані поточного слова
         const currentWord =
             exerciseState.currentSelection[
                 exerciseState.currentVocabularyWordIndex
@@ -172,20 +171,6 @@ const TranslateSentenceExercise = () => {
                     ].main_parameters
                 );
 
-                // console.log(generated.example_ukr);
-                //
-                // const translated = await doTranslateWithDeepL({
-                //     text: generated.example_eng,
-                // });
-                //
-                // updateExerciseState({
-                //     generatedExerciseData: {
-                //         ...generated,
-                //         example_ukr: translated,
-                //     },
-                // });
-                //
-                // console.log(translated);
             }
         };
 
@@ -262,20 +247,20 @@ const TranslateSentenceExercise = () => {
 
     const content = (
         <div className="mb-4 flex-1 flex flex-col items-center justify-center w-full text-center">
-            {/*{isLoadingVocabularyWords ? (*/}
-            {/*    <div className="text-center py-8 sm:py-12">*/}
-            {/*        <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />*/}
-            {/*        <p className="text-sm sm:text-base text-gray-600">*/}
-            {/*            Завантаження карток...*/}
-            {/*        </p>*/}
-            {/*    </div>*/}
-            {/*) : loadingVocabularyWordsError ? (*/}
-            {/*    <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">*/}
-            {/*        <p className="text-red-600 font-medium text-sm sm:text-base">*/}
-            {/*            Упс! Сталася помилка під час завантаження карток :(*/}
-            {/*        </p>*/}
-            {/*</div>*/}
-            {/*) :*/}
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
 
             {exerciseState.isLoading ? (
                 <div className="text-center py-8 sm:py-12">

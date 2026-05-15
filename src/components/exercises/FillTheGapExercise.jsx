@@ -73,11 +73,9 @@ const FillTheGapExercise = () => {
             setSentenceData(result);
             setCorrectAnswer(result.correctAnswer);
 
-            // 1. Визначаємо регістр correctAnswer
             const isUpperCase =
                 result.correctAnswer === result.correctAnswer.toUpperCase();
 
-            // 2. Беремо елементи з тієї ж категорії (або з усього словника), виключаючи correctAnswer
             const pool = data.filter((item) =>
                 matchesPracticeCategory(
                     item,
@@ -88,20 +86,16 @@ const FillTheGapExercise = () => {
                 .map((item) => item.main_parameters.text)
                 .filter((text) => text !== result.correctAnswer);
 
-            // 3. Рандомно перемішуємо та беремо 3
             const randomWords = words
                 .sort(() => Math.random() - 0.5)
                 .slice(0, 3);
 
-            // 4. Формуємо options
             let options = [result.correctAnswer, ...randomWords];
 
-            // 5. Приводимо до одного регістру
             options = options.map((word) =>
                 isUpperCase ? word.toUpperCase() : word.toLowerCase()
             );
 
-            // 6. Перемішуємо options (Fisher–Yates)
             for (let i = options.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [options[i], options[j]] = [options[j], options[i]];
@@ -113,7 +107,6 @@ const FillTheGapExercise = () => {
         }
     };
 
-    // Генерація вправи при зміні поточного слова
     useEffect(() => {
         if (
             exerciseState.currentSelection.length > 0 &&
@@ -368,9 +361,9 @@ const FillTheGapExercise = () => {
                             {showResult &&
                                 sentenceData?.sentenceTranslation && (
                                     <div className="pt-3 border-t border-emerald-300">
-                                        {/*<p className="text-sm text-gray-700 mb-1">*/}
-                                        {/*    Переклад речення:*/}
-                                        {/*</p>*/}
+                                        
+                                        
+                                        
                                         <p className="text-base text-gray-700 italic">
                                             {sentenceData.sentenceTranslation}
                                         </p>
@@ -385,7 +378,7 @@ const FillTheGapExercise = () => {
                         </div>
                     </div>
 
-                    {/* Answer Options */}
+                    
                     <div className="grid grid-cols-2 gap-4 w-full mx-auto mb-6">
                         {answerOptions.map((option, index) => {
                             let buttonClass =
@@ -438,7 +431,7 @@ const FillTheGapExercise = () => {
                         })}
                     </div>
 
-                    {/* Next Button */}
+                    
                     <div className="w-1/2 flex justify-center">
                         <button
                             onClick={handleNextClick}

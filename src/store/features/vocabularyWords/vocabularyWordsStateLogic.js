@@ -1,7 +1,4 @@
-/**
- * @param {string|null|undefined} practiceCategoryId
- *        `null` / `undefined` / `""` — усі слова; `"uncategorized"` — без категорії; інакше uuid категорії.
- */
+
 function matchesPracticeCategory(vocabularyItem, practiceCategoryId) {
     if (
         practiceCategoryId === null ||
@@ -16,11 +13,7 @@ function matchesPracticeCategory(vocabularyItem, practiceCategoryId) {
     return vocabularyItem.categoryId === practiceCategoryId;
 }
 
-/**
- * Після оновлення статусів MISSED: у `state.data` спочатку всі MISSED
- * для поточного типу вправи в порядку, зворотному до того, як вони йшли
- * у масиві до розбиття; далі всі інші слова без зміни відносного порядку.
- */
+
 const reorderDataMissedReversedThenRest = (state) => {
     let statusProperty;
 
@@ -112,16 +105,6 @@ const findMissedVocabularyItems = (state) => {
             daysPassedAfterLastReview >
             state.checkpoints[currentCheckpointIndex].threshold
         ) {
-            // console.log(
-            //     `Знайшов елемент, де пропущено повторення: ${vocabularyItem.main_parameters.text}
-            //         Current Checkpoint: ${vocabularyItem.metodology_parameters[currentTypeCheckpointProperty]}
-            //         Last previewed: ${new Date(vocabularyItem.metodology_parameters[currentTypeLastReviewedProperty])}
-            //         Threshold for Current Checkpoint: ${state.checkpoints[currentCheckpointIndex].threshold}
-            //         Days passed after last review: ${daysPassedAfterLastReview}
-            //         ***
-            //         Set Status to: "MISSED"
-            //         `
-            // );
 
             vocabularyItem.metodology_parameters[currentTypeStatusProperty] =
                 "MISSED";

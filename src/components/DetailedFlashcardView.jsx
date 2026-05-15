@@ -384,9 +384,9 @@ const DetailedFlashcardView = ({
 
     return (
         <div className="mx-auto w-full min-w-0 max-w-4xl shrink-0 self-stretch">
-            {/* Main Card Container */}
+            
             <div className="relative w-full">
-                {/* Card Actions — лише на лицьовому боку */}
+                
                 {!isFlipped && (
                     <div className="absolute top-6 right-6 z-20 flex space-x-1">
                         <button
@@ -427,12 +427,12 @@ const DetailedFlashcardView = ({
                     </div>
                 )}
 
-                {/* Card Content */}
+                
                 <div
                     className="relative h-[400px] w-full min-w-0 overflow-hidden rounded-2xl bg-white shadow-md md:h-[458px]"
                     onContextMenu={handleCardContextMenu}
                 >
-                    {/* Front Side */}
+                    
                     <div
                         key={`front-${validCurrentIndex}`}
                         className={`absolute inset-0 h-full w-full transition-opacity duration-150 ${
@@ -495,7 +495,7 @@ const DetailedFlashcardView = ({
                         </div>
                     </div>
 
-                    {/* Back Side */}
+                    
                     <div
                         key={`back-${validCurrentIndex}`}
                         className={`absolute inset-0 h-full w-full transition-opacity duration-150 ${
@@ -518,9 +518,9 @@ const DetailedFlashcardView = ({
                 </div>
             </div>
 
-            {/* Navigation */}
+            
             <div className="mx-auto mt-4 flex w-full min-w-0 max-w-4xl items-center justify-between">
-                {/* Left button */}
+                
                 <button
                     onClick={prevCard}
                     disabled={validCurrentIndex === 0 || isChanging}
@@ -530,7 +530,7 @@ const DetailedFlashcardView = ({
                     <span>Попередня</span>
                 </button>
 
-                {/* Center dots */}
+                
                 <div className="flex space-x-1 overflow-hidden max-w-md">
                     {updatedFlashcards.length <= 20 ? (
                         updatedFlashcards.map((_, index) => (
@@ -563,7 +563,7 @@ const DetailedFlashcardView = ({
                     )}
                 </div>
 
-                {/* Right button */}
+                
                 <button
                     onClick={nextCard}
                     disabled={
@@ -577,7 +577,7 @@ const DetailedFlashcardView = ({
                 </button>
             </div>
 
-            {/* Delete Confirmation Modal */}
+            
             <ConfirmDeleteModal
                 isOpen={showDeleteModal}
                 onClose={handleDeleteCancel}

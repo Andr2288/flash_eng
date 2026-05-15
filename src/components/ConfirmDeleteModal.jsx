@@ -1,4 +1,3 @@
-// frontend/src/components/ConfirmDeleteModal.jsx
 
 import { useEffect } from "react";
 import { AlertTriangle, X } from "lucide-react";
@@ -10,15 +9,12 @@ const ConfirmDeleteModal = ({
     cardText,
     isDeleting,
 }) => {
-    // Обробка хоткізів для модального вікна
     useEffect(() => {
         if (!isOpen) return;
 
         const handleKeyPress = (event) => {
-            // Перевіряємо, чи не заблоковано дії через isDeleting
             if (isDeleting) return;
 
-            // ESC для скасування
             if (event.key === "Escape") {
                 event.preventDefault();
                 event.stopPropagation();
@@ -26,7 +22,6 @@ const ConfirmDeleteModal = ({
                 return;
             }
 
-            // Enter для підтвердження
             if (event.key === "Enter") {
                 event.preventDefault();
                 event.stopPropagation();
@@ -35,7 +30,6 @@ const ConfirmDeleteModal = ({
             }
         };
 
-        // Додаємо обробник подій
         window.addEventListener("keydown", handleKeyPress, { passive: false });
 
         return () => {
@@ -52,7 +46,7 @@ const ConfirmDeleteModal = ({
     return (
         <div className="fixed inset-0 bg-gradient-to-br from-gray-900/60 via-blue-900/40 to-indigo-900/60 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
-                {/* Header */}
+                
                 <div className="p-8 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
@@ -72,7 +66,7 @@ const ConfirmDeleteModal = ({
                     </div>
                 </div>
 
-                {/* Content */}
+                
                 <div className="p-8 flex flex-col gap-4">
                     <p className="text-gray-700">
                         Ви впевнені, що хочете видалити цю флеш картку?
@@ -94,7 +88,7 @@ const ConfirmDeleteModal = ({
                     </div>
                 </div>
 
-                {/* Actions */}
+                
                 <div className="p-8 border-t border-gray-200 flex space-x-3">
                     <button
                         type="button"

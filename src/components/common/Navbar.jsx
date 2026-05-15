@@ -49,7 +49,7 @@ const Navbar = () => {
 
     return (
         <div className="bg-white h-screen w-68 hidden md:fixed left-0 top-0 border-r border-gray-200 md:flex md:flex-col">
-            {/* Header */}
+            
             <div className="p-8 border-b border-gray-200">
                 <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-linear-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -66,7 +66,7 @@ const Navbar = () => {
                 </div>
             </div>
 
-            {/* Menu Items */}
+            
             <nav className="flex-1 py-6">
                 <ul className="space-y-2 px-4">
                     {menuItems.map((item) => {

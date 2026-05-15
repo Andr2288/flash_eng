@@ -63,20 +63,17 @@ function parseJsonOutput(text) {
         }
     };
 
-    // 1) Direct parse (in case model returns plain JSON)
     const direct = tryParse(raw);
     if (direct) {
         return direct;
     }
 
-    // 2) Parse after removing markdown fences
     const deFenced = removeCodeFence(raw);
     const parsedDefenced = tryParse(deFenced);
     if (parsedDefenced) {
         return parsedDefenced;
     }
 
-    // 3) Extract the first JSON object block as a fallback
     const firstBrace = deFenced.indexOf("{");
     const lastBrace = deFenced.lastIndexOf("}");
     if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
@@ -143,7 +140,6 @@ async function translateWithDeepL({
                 errorMessage = `DeepL API error: ${errorPayload.message}`;
             }
         } catch {
-            // keep generic message when DeepL doesn't return JSON
         }
         throw new Error(errorMessage);
     }

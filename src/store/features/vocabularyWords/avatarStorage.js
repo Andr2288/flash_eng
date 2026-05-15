@@ -6,9 +6,6 @@ function objectPath(userId) {
     return `${userId}/avatar.jpg`;
 }
 
-/**
- * Завантажує data URL у Storage; у metadata зберігається лише public URL.
- */
 export async function uploadProfileAvatarFromDataUrl(userId, dataUrl) {
     const response = await fetch(dataUrl);
     const blob = await response.blob();
@@ -17,7 +14,6 @@ export async function uploadProfileAvatarFromDataUrl(userId, dataUrl) {
             ? blob.type
             : "image/jpeg";
     const path = objectPath(userId);
-    // Спочатку прибираємо старий об’єкт — повторний upload з upsert інколи падає під RLS.
     await supabase.storage.from(BUCKET).remove([path]).catch(() => {});
     const { error } = await supabase.storage.from(BUCKET).upload(path, blob, {
         contentType,

@@ -62,13 +62,6 @@ const STATUS_CONFIG = {
         bg: "bg-orange-50",
         border: "border-orange-200",
     },
-    // REVIEW: {
-    //     label: "На повторенні",
-    //     color: "bg-purple-500",
-    //     textColor: "text-purple-700",
-    //     bg: "bg-purple-50",
-    //     border: "border-purple-200",
-    // },
 };
 
 const ExerciseType = {
@@ -133,7 +126,7 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
 
     return (
         <>
-            {/* Toggle Button */}
+            
             <button
                 onClick={onToggle}
                 className="absolute top-4 right-7 z-20 flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 text-gray-600 hover:text-blue-600 text-sm font-medium cursor-pointer"
@@ -145,21 +138,21 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
                 />
             </button>
 
-            {/* Sidebar Panel */}
+            
             <div
                 className={`absolute top-0 right-0 h-full z-10 transition-all duration-300 ease-in-out ${
                     isOpen ? "w-64" : "w-0"
                 } overflow-hidden`}
             >
                 <div className="w-64 h-full bg-white border-l border-gray-200 shadow-xl flex flex-col">
-                    {/* Header */}
+                    
                     <div className="p-5 pt-18">
                         <p className="text-md text-gray-400 mt-1.5 ml-9">
                             Всього: {total} слів
                         </p>
                     </div>
 
-                    {/* Stats */}
+                    
                     <div className="flex-1 overflow-y-auto p-4 pt-0 mr-3.5 space-y-2.5">
                         {Object.entries(STATUS_CONFIG).map(
                             ([status, config]) => {
@@ -191,7 +184,7 @@ const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
                                                 {count}
                                             </span>
                                         </div>
-                                        {/* Progress bar */}
+                                        
                                         <div className="h-1.5 bg-white/60 rounded-full overflow-hidden">
                                             <div
                                                 className={`h-full ${config.color} rounded-full transition-all duration-500`}
@@ -583,7 +576,7 @@ const PracticePage = () => {
 
     return (
         <div className="ml-68 flex h-[100dvh] max-h-[100dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
-            {/* Hero Section */}
+            
             {!uiState.showExercise && (
                 <div className="shrink-0 bg-white border-b border-gray-200 overflow-hidden p-8">
                     <div className="mx-auto flex items-center">
@@ -603,7 +596,7 @@ const PracticePage = () => {
                 </div>
             )}
 
-            {/* Scrollable Content */}
+            
             {!uiState.showExercise && (
                 <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
                     {showVocabularyLoader ? (
@@ -736,7 +729,7 @@ const PracticePage = () => {
                 </div>
             )}
 
-            {/* Exercise View with Stats Sidebar */}
+            
             {uiState.showExercise && (
                 <div
                     className={`relative flex min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable] transition-[padding] duration-300 ease-in-out ${

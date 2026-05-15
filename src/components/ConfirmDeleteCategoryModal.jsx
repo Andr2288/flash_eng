@@ -1,14 +1,8 @@
-// frontend/src/components/ConfirmDeleteCategoryModal.jsx
 
 import { useEffect } from "react";
 import { AlertTriangle, X, Folder, Trash2 } from "lucide-react";
 
-/**
- * Форми речення для N карток у категорії:
- * — остання цифра 1, але не 11: «буде видалена … картка, яка…»
- * — остання 2–4 і не десятки 12–14 (112 → «карток»), окремо 12–14: «… картки, які…»
- * — інакше (11, 5–10, 15–20, 112…): «буде видалено всі … карток, що…»
- */
+
 function FolderDeleteCardsInFolderWarning({ count }) {
     const n = count;
     const mod10 = n % 10;
@@ -52,15 +46,12 @@ const ConfirmDeleteCategoryModal = ({
     category,
     isDeleting,
 }) => {
-    // Обробка хоткізів для модального вікна
     useEffect(() => {
         if (!isOpen) return;
 
         const handleKeyPress = (event) => {
-            // Перевіряємо, чи не заблоковано дії через isDeleting
             if (isDeleting) return;
 
-            // ESC для скасування
             if (event.key === "Escape") {
                 event.preventDefault();
                 event.stopPropagation();
@@ -68,7 +59,6 @@ const ConfirmDeleteCategoryModal = ({
                 return;
             }
 
-            // Enter для підтвердження
             if (event.key === "Enter") {
                 event.preventDefault();
                 event.stopPropagation();
@@ -77,7 +67,6 @@ const ConfirmDeleteCategoryModal = ({
             }
         };
 
-        // Додаємо обробник подій
         window.addEventListener("keydown", handleKeyPress, { passive: false });
 
         return () => {
@@ -97,7 +86,7 @@ const ConfirmDeleteCategoryModal = ({
     return (
         <div className="fixed inset-0 bg-gradient-to-br from-gray-900/60 via-blue-900/40 to-indigo-900/60 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
-                {/* Header */}
+                
                 <div className="p-8 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
@@ -117,13 +106,13 @@ const ConfirmDeleteCategoryModal = ({
                     </div>
                 </div>
 
-                {/* Content */}
+                
                 <div className="p-8 flex flex-col gap-4">
                     <p className="text-gray-700">
                         Ви впевнені, що хочете видалити цю категорію?
                     </p>
 
-                    {/* Category Info */}
+                    
                     <div
                         className="bg-white rounded-lg p-4 border border-l-4"
                         style={{ borderColor: folderAccentColor }}
@@ -148,7 +137,7 @@ const ConfirmDeleteCategoryModal = ({
                         </div>
                     </div>
 
-                    {/* Warning about flashcards */}
+                    
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                         <div className="flex items-center space-x-3">
                             <Trash2 className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
@@ -174,7 +163,7 @@ const ConfirmDeleteCategoryModal = ({
                     </div>
                 </div>
 
-                {/* Actions */}
+                
                 <div className="p-8 border-t border-gray-200 flex space-x-3">
                     <button
                         type="button"

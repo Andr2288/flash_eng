@@ -33,7 +33,6 @@ const CategoryList = ({
     const [editingCategory, setEditingCategory] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Delete confirmation modal states
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [categoryToDelete, setCategoryToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -113,7 +112,6 @@ const CategoryList = ({
             setCategoryToDelete(null);
             await getFlashcards(null, { silent: true });
         } catch (error) {
-            // Error handling is done in the store
         } finally {
             setIsDeleting(false);
         }
@@ -162,7 +160,6 @@ const CategoryList = ({
                 const comparison = a.name.localeCompare(b.name, "uk");
                 return sortOrder === "asc" ? comparison : -comparison;
             } else {
-                // Sort by date
                 const aDate = new Date(a.createdAt);
                 const bDate = new Date(b.createdAt);
                 return sortOrder === "desc" ? bDate - aDate : aDate - bDate;
@@ -186,7 +183,6 @@ const CategoryList = ({
         return "карток";
     };
 
-    // Keyboard shortcuts
     useEffect(() => {
         const handleKeyPress = (event) => {
             const isModalOpen = document.querySelector(
@@ -254,9 +250,9 @@ const CategoryList = ({
             >
                 <div className="px-8 py-5">
                     <div className="flex items-center justify-between">
-                        {/* Left side - Main info */}
+                        
                         <div className="flex items-center space-x-4 flex-1">
-                            {/* Category icon */}
+                            
                             <div
                                 className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm"
                                 style={{
@@ -266,7 +262,7 @@ const CategoryList = ({
                                 <Folder className="w-6 h-6 text-white" />
                             </div>
 
-                            {/* Category details */}
+                            
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center space-x-3 mb-1">
                                     <h3 className="text-lg font-bold text-gray-900 truncate">
@@ -370,7 +366,7 @@ const CategoryList = ({
                         </div>
 
                         <div className="flex items-center space-x-4">
-                            {/* Sort controls */}
+                            
                             <div className="flex items-center space-x-2">
                                 <span className="text-sm text-gray-600">
                                     Сортувати:
@@ -532,7 +528,7 @@ const CategoryList = ({
                 </div>
             )}
 
-            {/* Category Form Modal */}
+            
             <CategoryForm
                 isOpen={showForm}
                 onClose={closeForm}
@@ -541,7 +537,7 @@ const CategoryList = ({
                 onSubmit={handleFormSubmit}
             />
 
-            {/* Delete Confirmation Modal for Categories */}
+            
             <ConfirmDeleteCategoryModal
                 isOpen={showDeleteModal}
                 onClose={handleDeleteCancel}

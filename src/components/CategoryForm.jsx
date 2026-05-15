@@ -1,4 +1,3 @@
-// frontend/src/components/CategoryForm.jsx
 
 import { useState, useEffect } from "react";
 import { Save, X, Folder } from "lucide-react";
@@ -60,12 +59,10 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
         }));
     };
 
-    // Keyboard handler for ESC
     useEffect(() => {
         if (!isOpen) return;
 
         const handleKeyPress = (event) => {
-            // ESC для закриття форми
             if (event.key === "Escape") {
                 event.preventDefault();
                 if (!isLoading) {
@@ -84,7 +81,7 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
     return (
         <div className="fixed inset-0 bg-gradient-to-br from-gray-900/60 via-blue-900/40 to-indigo-900/60 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-gray-100">
-                {/* Fixed Header */}
+                
                 <div className="sticky top-0 bg-white p-8 border-b border-blue-100 rounded-t-2xl z-10 flex-shrink-0">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center space-x-4">
@@ -119,10 +116,10 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
                     </div>
                 </div>
 
-                {/* Scrollable Content */}
+                
                 <div className="flex-1 overflow-y-auto bg-white">
                     <form onSubmit={handleSubmit} className="p-8 space-y-6">
-                        {/* Name */}
+                        
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-3">
                                 Назва категорії{" "}
@@ -145,7 +142,7 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
                             </p>
                         </div>
 
-                        {/* Description */}
+                        
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-3">
                                 Опис (опціонально)
@@ -169,7 +166,7 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
                             </p>
                         </div>
 
-                        {/* Color */}
+                        
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-4">
                                 Колір категорії
@@ -204,7 +201,7 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
                     </form>
                 </div>
 
-                {/* Fixed Footer */}
+                
                 <div className="sticky bottom-0 flex-shrink-0 rounded-b-2xl border-t border-gray-100 bg-white p-8">
                     <div className="flex w-full flex-col-reverse gap-3 sm:flex-row">
                         <button

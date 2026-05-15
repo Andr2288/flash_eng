@@ -17,7 +17,6 @@ const DetailedCardInfo = ({
     collapsible = true,
     showTopSection = true,
 }) => {
-    // Audio states
     const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
     const [isExpanded, setIsExpanded] = useState(() => {
@@ -40,7 +39,6 @@ const DetailedCardInfo = ({
         }
     }, [isCorrect, defaultExpanded, collapsible]);
 
-    // Audio cleanup
     useEffect(() => {
         return () => {
             if (currentAudioRef.current) {
@@ -64,12 +62,10 @@ const DetailedCardInfo = ({
         return processedText;
     };
 
-    // TTS Function
     const speakText = async (text) => {
         if (!text || isPlayingAudio) return;
 
         try {
-            // Stop current audio
             if (currentAudioRef.current) {
                 currentAudioRef.current.pause();
                 currentAudioRef.current = null;
@@ -111,7 +107,6 @@ const DetailedCardInfo = ({
         }
     };
 
-    // Get examples from card (supporting both old and new format)
     const getExamples = (card) => {
         if (
             card?.examples &&
