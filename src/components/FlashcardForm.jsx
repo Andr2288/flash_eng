@@ -440,22 +440,6 @@ const FlashcardForm = ({
                                         ? "Редагувати картку"
                                         : "Створити нову картку"}
                                 </h2>
-                                <div className="flex items-center space-x-4 mt-1">
-                                    <p className="text-sm text-gray-600">
-                                        Рівень для картки:{" "}
-                                        <span className="font-semibold text-blue-600">
-                                            {normalizeEnglishLevel(
-                                                englishLevel,
-                                                DEFAULT_ENGLISH_LEVEL
-                                            ) === AUTO_ENGLISH_LEVEL
-                                                ? "Автоматично"
-                                                : normalizeEnglishLevel(
-                                                      englishLevel,
-                                                      DEFAULT_ENGLISH_LEVEL
-                                                  )}
-                                        </span>
-                                    </p>
-                                </div>
                             </div>
                         </div>
                         <button
