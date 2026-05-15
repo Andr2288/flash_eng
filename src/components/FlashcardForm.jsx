@@ -72,9 +72,7 @@ const FlashcardForm = ({
         categoryId: "",
     });
 
-    const [englishLevel, setEnglishLevel] = useState(
-        normalizeEnglishLevel(DEFAULT_ENGLISH_LEVEL, DEFAULT_ENGLISH_LEVEL)
-    );
+    const [englishLevel, setEnglishLevel] = useState(AUTO_ENGLISH_LEVEL);
 
     const [isQuickCreating, setIsQuickCreating] = useState(false);
 
@@ -138,12 +136,7 @@ const FlashcardForm = ({
                 notes: "",
                 categoryId: preselectedCategoryId || "",
             });
-            setEnglishLevel(
-                normalizeEnglishLevel(
-                    DEFAULT_ENGLISH_LEVEL,
-                    DEFAULT_ENGLISH_LEVEL
-                )
-            );
+            setEnglishLevel(AUTO_ENGLISH_LEVEL);
         }
     }, [editingCard, isOpen, preselectedCategoryId, initialText]);
 
@@ -593,7 +586,7 @@ const FlashcardForm = ({
                                         setEnglishLevel(
                                             normalizeEnglishLevel(
                                                 e.target.value,
-                                                DEFAULT_ENGLISH_LEVEL
+                                                AUTO_ENGLISH_LEVEL
                                             )
                                         )
                                     }
