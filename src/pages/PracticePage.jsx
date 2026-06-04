@@ -5,7 +5,12 @@ import {
     TranslateSentenceExercise,
     FillTheGapExercise,
     ListenAndFillTheGapExercise,
+    MixedExercises,
 } from "../components/exercises/index.js";
+import {
+    MIXED_EXERCISE_TYPE,
+    pickRandomRoundExerciseType,
+} from "../constants/practiceExerciseTypes.js";
 import { LoadErrorNotice } from "../components/LoadErrorNotice.jsx";
 import { PracticeSettingsPanel } from "../components/PracticeSettingsPanel.jsx";
 
@@ -19,6 +24,7 @@ import {
     BarChart2,
     Loader,
     LayoutGrid,
+    Shuffle,
     Check,
     FolderOpen,
     ChevronDown,
@@ -69,6 +75,7 @@ const ExerciseType = {
     TranslateSentenceExercise: "translate_sentence_exercise",
     FillTheGapExercise: "fill_the_gap_exercise",
     ListenAndFillTheGapExercise: "listen_and_fill_the_gap_exercise",
+    MixedExercises: MIXED_EXERCISE_TYPE,
 };
 
 const EXERCISE_STATUS_KEY = {
@@ -83,6 +90,7 @@ const EXERCISE_LABEL = {
     [ExerciseType.TranslateSentenceExercise]: "Переклади речення",
     [ExerciseType.FillTheGapExercise]: "Доповни речення",
     [ExerciseType.ListenAndFillTheGapExercise]: "Слухання та письмо",
+    [ExerciseType.MixedExercises]: "Змішані вправи",
 };
 
 const GRADING_BADGE = {
@@ -94,6 +102,10 @@ const GRADING_BADGE = {
         label: "Автоперевірка",
         className: "border-emerald-200 bg-emerald-50 text-emerald-800",
     },
+    mixed: {
+        label: "Випадкова черга",
+        className: "border-violet-200 bg-violet-50 text-violet-800",
+    },
 };
 
 const StatsSidebar = ({
@@ -102,11 +114,13 @@ const StatsSidebar = ({
     data,
     exerciseType,
     singleStatusMode,
+    mixedMode,
 }) => {
-    const statusKey = singleStatusMode
-        ? EXERCISE_STATUS_KEY[ExerciseType.TranslateSentenceExercise]
-        : EXERCISE_STATUS_KEY[exerciseType] ||
-          EXERCISE_STATUS_KEY[ExerciseType.TranslateSentenceExercise];
+    const statusKey =
+        singleStatusMode || mixedMode
+            ? EXERCISE_STATUS_KEY[ExerciseType.TranslateSentenceExercise]
+            : EXERCISE_STATUS_KEY[exerciseType] ||
+              EXERCISE_STATUS_KEY[ExerciseType.TranslateSentenceExercise];
 
     const stats = useMemo(() => {
         const rawCounts = {
@@ -220,7 +234,9 @@ const StatsSidebar = ({
                             Поточна вправа
                         </p>
                         <p className="text-xs font-medium text-gray-600 text-center mt-0.5">
-                            {EXERCISE_LABEL[exerciseType] || "—"}
+                            {mixedMode
+                                ? EXERCISE_LABEL[ExerciseType.MixedExercises]
+                                : EXERCISE_LABEL[exerciseType] || "—"}
                         </p>
                     </div>
                 </div>
@@ -444,6 +460,8 @@ const PracticePage = () => {
         }))
     );
 
+    const mixedMode = exerciseState.mixedMode === true;
+
     const [
         doFetchVocabularyWords,
         isLoadingVocabularyWords,
@@ -493,12 +511,6 @@ const PracticePage = () => {
         }
         return data.filter((w) => matchesPracticeCategory(w, id));
     }, [data, exerciseState.practiceCategoryId]);
-
-    const ExerciseType = {
-        TranslateSentenceExercise: "translate_sentence_exercise",
-        FillTheGapExercise: "fill_the_gap_exercise",
-        ListenAndFillTheGapExercise: "listen_and_fill_the_gap_exercise",
-    };
 
     const coreExercisesData = [
         {
@@ -552,11 +564,31 @@ const PracticePage = () => {
             ],
             gradingMode: "auto",
         },
+        {
+            id: "mixed-exercises",
+            type: ExerciseType.MixedExercises,
+            title: "Змішані вправи",
+            description:
+                "Усі три типи вправ по черзі у випадковому порядку",
+            icon: Shuffle,
+            color: "from-violet-500 to-fuchsia-500",
+            difficulty: "Різна",
+            difficultyColor: "text-violet-600",
+            difficultyBg: "bg-violet-600",
+            features: [
+                "Переклад, доповнення та слухання",
+                "Випадкова черга вправ",
+                "Повторення типів дозволені",
+            ],
+            gradingMode: "mixed",
+        },
     ];
 
     let exercise;
 
-    if (exerciseState.exerciseType === ExerciseType.TranslateSentenceExercise) {
+    if (mixedMode) {
+        exercise = <MixedExercises />;
+    } else if (exerciseState.exerciseType === ExerciseType.TranslateSentenceExercise) {
         exercise = <TranslateSentenceExercise />;
     } else if (exerciseState.exerciseType === ExerciseType.FillTheGapExercise) {
         exercise = <FillTheGapExercise />;
@@ -569,10 +601,15 @@ const PracticePage = () => {
     Object.freeze(ExerciseType);
 
     const handleExerciseButtonClick = (exerciseType) => {
+        const isMixed = exerciseType === ExerciseType.MixedExercises;
+
         updateExerciseState({
             currentVocabularyWordIndex: 0,
             generateNextStage: true,
-            exerciseType,
+            mixedMode: isMixed,
+            exerciseType: isMixed
+                ? pickRandomRoundExerciseType()
+                : exerciseType,
             practiceCategoryId: selectedPracticeCategoryId,
         });
 
@@ -754,6 +791,7 @@ const PracticePage = () => {
                         data={statsData}
                         exerciseType={exerciseState.exerciseType}
                         singleStatusMode={singleStatusMode}
+                        mixedMode={mixedMode}
                     />
                 </div>
             )}

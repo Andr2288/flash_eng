@@ -17,7 +17,7 @@ function matchesPracticeCategory(vocabularyItem, practiceCategoryId) {
 const reorderDataMissedReversedThenRest = (state) => {
     let statusProperty;
 
-    if (state.singleStatusMode) {
+    if (state.singleStatusMode || state.exerciseState.mixedMode) {
         statusProperty = "status_translate_sentence_exercise";
     } else {
         statusProperty = `status_${state.exerciseState.exerciseType}`;
@@ -51,7 +51,7 @@ const findMissedVocabularyItems = (state) => {
     let currentTypeCheckpointProperty = "";
     let currentTypeLastReviewedProperty = "";
 
-    if (state.singleStatusMode) {
+    if (state.singleStatusMode || state.exerciseState.mixedMode) {
         currentTypeStatusProperty = "status_translate_sentence_exercise";
         currentTypeCheckpointProperty =
             "checkpoint_translate_sentence_exercise";
@@ -62,8 +62,6 @@ const findMissedVocabularyItems = (state) => {
         currentTypeCheckpointProperty = `checkpoint_${state.exerciseState.exerciseType}`;
         currentTypeLastReviewedProperty = `last_reviewed_${state.exerciseState.exerciseType}`;
     }
-
-    console.log(state.exerciseState.exerciseType);
 
     for (const vocabularyItem of state.data) {
         if (
@@ -119,7 +117,7 @@ const selectNextItems = (state) => {
     let currentTypeCheckpointProperty = "";
     let currentTypeLastReviewedProperty = "";
 
-    if (state.singleStatusMode) {
+    if (state.singleStatusMode || state.exerciseState.mixedMode) {
         currentTypeStatusProperty = "status_translate_sentence_exercise";
         currentTypeCheckpointProperty =
             "checkpoint_translate_sentence_exercise";

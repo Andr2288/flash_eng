@@ -59,6 +59,7 @@ const useVocabularyWordsStore = create(
         data: [],
         exerciseState: {
             exerciseType: "translate-sentence",
+            mixedMode: false,
             generatedExerciseData: null,
             currentSelection: [],
             currentVocabularyWordIndex: 0,

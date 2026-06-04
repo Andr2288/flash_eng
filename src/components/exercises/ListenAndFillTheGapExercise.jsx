@@ -177,7 +177,7 @@ const ListenAndFillTheGapExercise = () => {
 
         let currentCheckpointIndex = 0;
 
-        if (singleStatusMode) {
+        if (singleStatusMode || exerciseState.mixedMode) {
             currentCheckpointIndex = checkpoints.findIndex((checkpoint) => {
                 return (
                     checkpoint.checkpoint ===
@@ -197,7 +197,7 @@ const ListenAndFillTheGapExercise = () => {
 
         let currentLastReviewed = null;
 
-        if (singleStatusMode) {
+        if (singleStatusMode || exerciseState.mixedMode) {
             currentLastReviewed =
                 currentWord.metodology_parameters
                     .last_reviewed_translate_sentence_exercise;
@@ -225,7 +225,7 @@ const ListenAndFillTheGapExercise = () => {
 
         console.log(isCorrect);
         try {
-            if (singleStatusMode) {
+            if (singleStatusMode || exerciseState.mixedMode) {
                 await doUpdateVocabularyWord({
                     id: currentWord.id,
                     exerciseType: "translate_sentence_exercise",

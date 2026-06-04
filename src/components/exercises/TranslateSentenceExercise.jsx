@@ -38,13 +38,15 @@ const TranslateSentenceExercise = () => {
     const [doGenerateSpeech, isGeneratingSpeech, generateSpeechError] =
         useThunk(generateSpeech);
 
-    const { data, exerciseState, checkpoints } = useVocabularyWordsStore(
-        useShallow((state) => ({
-            data: state.data,
-            exerciseState: state.exerciseState,
-            checkpoints: state.checkpoints,
-        }))
-    );
+    const { data, exerciseState, checkpoints, singleStatusMode } =
+        useVocabularyWordsStore(
+            useShallow((state) => ({
+                data: state.data,
+                exerciseState: state.exerciseState,
+                checkpoints: state.checkpoints,
+                singleStatusMode: state.singleStatusMode,
+            }))
+        );
 
     const practicePool = useMemo(
         () =>
@@ -128,7 +130,10 @@ const TranslateSentenceExercise = () => {
         try {
             await doUpdateVocabularyWord({
                 id: currentWord.id,
-                exerciseType: exerciseState.exerciseType,
+                exerciseType:
+                    singleStatusMode || exerciseState.mixedMode
+                        ? "translate_sentence_exercise"
+                        : exerciseState.exerciseType,
                 metodology_parameters: {
                     status_translate_sentence_exercise: newStatus,
                     last_reviewed_translate_sentence_exercise:
