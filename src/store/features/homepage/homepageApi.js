@@ -8,7 +8,7 @@ function withTimeout(promise, ms) {
         timeoutId = setTimeout(() => reject(new Error("REQUEST_TIMEOUT")), ms);
     });
     return Promise.race([
-        promise.finally(() => clearTimeout(timeoutId)),
+        Promise.resolve(promise).finally(() => clearTimeout(timeoutId)),
         timeoutPromise,
     ]);
 }
@@ -204,7 +204,19 @@ async function updateCategory(id, payload) {
 }
 
 async function deleteCategory(id) {
-    const { error } = await supabase.from("flashcard_categories").delete().eq("id", id);
+    await requireUserId();
+
+    const { error: cardsError } = await supabase
+        .from("vocabulary_words")
+        .delete()
+        .eq("category_id", id);
+
+    if (cardsError) throw new Error(cardsError.message);
+
+    const { error } = await supabase
+        .from("flashcard_categories")
+        .delete()
+        .eq("id", id);
     if (error) throw new Error(error.message);
 }
 
