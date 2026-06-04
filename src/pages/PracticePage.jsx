@@ -96,10 +96,17 @@ const GRADING_BADGE = {
     },
 };
 
-const StatsSidebar = ({ isOpen, onToggle, data, exerciseType }) => {
-    const statusKey =
-        EXERCISE_STATUS_KEY[exerciseType] ||
-        "status_translate_sentence_exercise";
+const StatsSidebar = ({
+    isOpen,
+    onToggle,
+    data,
+    exerciseType,
+    singleStatusMode,
+}) => {
+    const statusKey = singleStatusMode
+        ? EXERCISE_STATUS_KEY[ExerciseType.TranslateSentenceExercise]
+        : EXERCISE_STATUS_KEY[exerciseType] ||
+          EXERCISE_STATUS_KEY[ExerciseType.TranslateSentenceExercise];
 
     const stats = useMemo(() => {
         const rawCounts = {
@@ -429,10 +436,11 @@ const PracticePage = () => {
         }))
     );
 
-    const { exerciseState, data } = useVocabularyWordsStore(
+    const { exerciseState, data, singleStatusMode } = useVocabularyWordsStore(
         useShallow((state) => ({
             exerciseState: state.exerciseState,
             data: state.data,
+            singleStatusMode: state.singleStatusMode,
         }))
     );
 
@@ -745,6 +753,7 @@ const PracticePage = () => {
                         onToggle={toggleStatsSidebar}
                         data={statsData}
                         exerciseType={exerciseState.exerciseType}
+                        singleStatusMode={singleStatusMode}
                     />
                 </div>
             )}
