@@ -315,7 +315,7 @@ const ListenAndFillTheGapExercise = () => {
     return (
         <ExerciseCardShell currentWord={currentWord}>
             {isLoading || exerciseState.isLoading ? (
-                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
+                <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
                     <p className="text-sm sm:text-base text-gray-600">
                         Зачекайте, будь ласка ...
@@ -324,7 +324,7 @@ const ListenAndFillTheGapExercise = () => {
             ) : updateVocabularyWordError ||
               generateListenAndFillError ||
               generateSpeechError ? (
-                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
+                <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6 w-full max-w-md">
                         <p className="text-red-600 font-medium text-sm sm:text-base text-center">
                             {GENERIC_ERROR_TOAST}
@@ -333,7 +333,7 @@ const ListenAndFillTheGapExercise = () => {
                 </div>
             ) : exerciseState.currentSelection.length > 0 &&
               !exerciseData ? (
-                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
+                <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
                     <p className="text-sm sm:text-base text-gray-600">
                         Зачекайте, будь ласка ...
@@ -368,7 +368,7 @@ const ListenAndFillTheGapExercise = () => {
                         </div>
                     )}
                     
-                    <div className="text-center mb-8">
+                    <div className="mb-8 w-full text-center">
                         <h2 className="text-lg font-semibold text-gray-700 mb-4">
                             Яке слово ви чуєте на місці пропуску?
                         </h2>
@@ -448,9 +448,8 @@ const ListenAndFillTheGapExercise = () => {
                     </div>
 
                     
-                    <div className="w-1/2 space-y-4">
-                        <div className="mx-auto">
-                            <div className="relative">
+                    <div className="mx-auto w-full max-w-sm space-y-4">
+                        <div className="relative">
                                 <input
                                     ref={inputRef}
                                     type="text"
@@ -481,16 +480,15 @@ const ListenAndFillTheGapExercise = () => {
                                     </div>
                                 )}
                             </div>
-                        </div>
 
                         {!showResult ? (
-                            <div className="flex justify-center text-center">
+                            <div className="flex justify-center">
                                 <button
                                     onClick={handleSubmitAnswer}
                                     disabled={
                                         !userAnswer.trim() || combinedProcessing
                                     }
-                                    className={`px-6 sm:px-22.5 py-3.5 rounded-md font-semibold flex-1 text-[17px] transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 shadow-md w-full sm:w-auto ${
+                                    className={`w-full rounded-md px-6 py-3.5 text-[17px] font-semibold shadow-md transition-all duration-200 sm:w-auto sm:px-22.5 flex items-center justify-center gap-2 sm:gap-3 ${
                                         !userAnswer.trim() || combinedProcessing
                                             ? "bg-gray-400 text-white cursor-not-allowed"
                                             : "bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white hover:shadow-lg hover:scale-102 cursor-pointer"
@@ -500,10 +498,10 @@ const ListenAndFillTheGapExercise = () => {
                                 </button>
                             </div>
                         ) : (
-                            <div className="flex justify-center text-center mt-4">
+                            <div className="mt-4 flex justify-center">
                                 <button
                                     onClick={handleNextClick}
-                                    className={`px-6 sm:px-22.5 py-3.5 rounded-md font-semibold text-[17px] flex-1 transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg hover:scale-102 cursor-pointer w-full`}
+                                    className="w-full cursor-pointer rounded-md bg-linear-to-r from-blue-500 to-blue-600 px-6 py-3.5 text-[17px] font-semibold text-white shadow-md transition-all duration-200 hover:scale-102 hover:from-blue-600 hover:to-blue-700 hover:shadow-lg flex items-center justify-center gap-2 sm:w-auto sm:px-22.5"
                                 >
                                     Далі
                                 </button>
@@ -512,13 +510,13 @@ const ListenAndFillTheGapExercise = () => {
                     </div>
                 </>
             ) : practicePool.length === 0 ? (
-                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
+                <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
                     <p className="text-sm sm:text-base text-gray-500">
                         Немає слів для вивчення :(
                     </p>
                 </div>
             ) : (
-                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
+                <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
                     <p className="text-sm sm:text-base text-gray-500">
                         Ви вивчили обов'язковий мінімум на сьогодні :)
                     </p>

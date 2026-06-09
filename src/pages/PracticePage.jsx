@@ -161,7 +161,7 @@ const StatsSidebar = ({
             )}
 
             {!isOpen && (
-                <div className="sticky top-0 z-20 flex shrink-0 justify-end px-3 pb-1 pt-2 md:absolute md:right-7 md:top-4 md:p-0">
+                <div className="sticky top-0 z-20 flex shrink-0 justify-end px-4 pb-2 pt-2 md:absolute md:right-7 md:top-4 md:px-0 md:pb-0 md:pt-0">
                     <button
                         onClick={onToggle}
                         className={toggleButtonClassName}

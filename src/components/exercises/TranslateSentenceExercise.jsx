@@ -254,7 +254,7 @@ const TranslateSentenceExercise = () => {
     };
 
     const content = (
-        <div className="mb-4 flex w-full flex-col items-center text-center">
+        <div className="mb-4 flex w-full flex-1 flex-col items-center text-center">
             
             
             
@@ -271,7 +271,7 @@ const TranslateSentenceExercise = () => {
             
 
             {exerciseState.isLoading ? (
-                <div className="text-center py-8 sm:py-12">
+                <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
                     <p className="text-sm sm:text-base text-gray-600">
                         Зачекайте, будь ласка ...
@@ -280,10 +280,12 @@ const TranslateSentenceExercise = () => {
             ) : updateVocabularyWordError ||
               generateExerciseVocabularyItemError ||
               generateSpeechError ? (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
-                    <p className="text-red-600 font-medium text-sm sm:text-base">
-                        {GENERIC_ERROR_TOAST}
-                    </p>
+                <div className="flex w-full flex-1 flex-col items-center justify-center px-4">
+                    <div className="w-full max-w-md rounded-lg border border-red-200 bg-red-50 p-4 sm:p-6">
+                        <p className="text-center text-sm font-medium text-red-600 sm:text-base">
+                            {GENERIC_ERROR_TOAST}
+                        </p>
+                    </div>
                 </div>
             ) : exerciseState.currentSelection.length > 0 &&
               exerciseState.generatedExerciseData ? (
@@ -422,13 +424,13 @@ const TranslateSentenceExercise = () => {
                     )}
                 </>
             ) : practicePool.length === 0 ? (
-                <div className="flex w-full flex-col items-center py-4 sm:py-8">
+                <div className="flex w-full flex-1 flex-col items-center justify-center py-4 sm:py-8">
                     <p className="text-sm sm:text-base text-gray-500">
                         Немає слів для вивчення :(
                     </p>
                 </div>
             ) : (
-                <div className="flex w-full flex-col items-center py-4 sm:py-8">
+                <div className="flex w-full flex-1 flex-col items-center justify-center py-4 sm:py-8">
                     <p className="text-sm sm:text-base text-gray-500">
                         Ви вивчили обов'язковий мінімум на сьогодні :)
                     </p>
@@ -441,7 +443,7 @@ const TranslateSentenceExercise = () => {
         <ExerciseCardShell
             currentWord={currentWord}
             footer={
-            <div className="self-stretch flex flex-col sm:flex-row justify-center gap-3">
+            <div className="flex w-full max-w-sm flex-col justify-center gap-3 sm:max-w-none sm:flex-row">
                 <button
                     onClick={() => handleNextButtonClick("AGAIN")}
                     hidden={

@@ -277,7 +277,7 @@ const FillTheGapExercise = () => {
     return (
         <ExerciseCardShell currentWord={currentWord}>
             {isLoading || exerciseState.isLoading ? (
-                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
+                <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
                     <p className="text-sm sm:text-base text-gray-600">
                         Зачекайте, будь ласка ...
@@ -286,7 +286,7 @@ const FillTheGapExercise = () => {
             ) : updateVocabularyWordError ||
               generateSentenceCompletionError ||
               generateSpeechError ? (
-                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
+                <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6 w-full max-w-md">
                         <p className="text-red-600 font-medium text-sm sm:text-base text-center">
                             {GENERIC_ERROR_TOAST}
@@ -295,7 +295,7 @@ const FillTheGapExercise = () => {
                 </div>
             ) : exerciseState.currentSelection.length > 0 &&
               !sentenceData ? (
-                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
+                <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
                     <p className="text-sm sm:text-base text-gray-600">
                         Зачекайте, будь ласка ...
@@ -303,7 +303,7 @@ const FillTheGapExercise = () => {
                 </div>
             ) : exerciseState.currentSelection.length > 0 &&
               sentenceData ? (
-                <>
+                <div className="flex w-full flex-1 flex-col items-center">
                     {exerciseState.currentSelection.length > 0 && (
                         <div className="mb-8 flex justify-center">
                             <span
@@ -329,7 +329,7 @@ const FillTheGapExercise = () => {
                             </span>
                         </div>
                     )}
-                    <div className="text-center mb-6">
+                    <div className="mb-6 w-full text-center">
                         <h2 className="text-lg font-semibold text-gray-700 mb-4">
                             Яке слово підходить для пропуску?
                         </h2>
@@ -419,33 +419,34 @@ const FillTheGapExercise = () => {
                                     }
                                     className={buttonClass}
                                 >
-                                    <div className="flex items-center justify-between">
-                                        <span className="flex-1">{option}</span>
-                                        {selectedAnswer !== null && (
-                                            <span className="ml-3">
-                                                {option.toLowerCase() ===
-                                                correctAnswer.toLowerCase() ? (
-                                                    <CheckCircle className="w-6 h-6 text-green-600" />
-                                                ) : option ===
-                                                  selectedAnswer ? (
-                                                    <XCircle className="w-6 h-6 text-red-600" />
-                                                ) : null}
+                                    {selectedAnswer !== null ? (
+                                        <div className="flex items-center justify-between gap-3">
+                                            <span className="min-w-0 flex-1 text-left">
+                                                {option}
                                             </span>
-                                        )}
-                                    </div>
+                                            {option.toLowerCase() ===
+                                            correctAnswer.toLowerCase() ? (
+                                                <CheckCircle className="h-6 w-6 shrink-0 text-green-600" />
+                                            ) : option === selectedAnswer ? (
+                                                <XCircle className="h-6 w-6 shrink-0 text-red-600" />
+                                            ) : null}
+                                        </div>
+                                    ) : (
+                                        option
+                                    )}
                                 </button>
                             );
                         })}
                     </div>
 
                     
-                    <div className="w-1/2 flex justify-center">
+                    <div className="mx-auto flex w-full max-w-sm justify-center">
                         <button
                             onClick={handleNextClick}
                             disabled={
                                 selectedAnswer === null || combinedProcessing
                             }
-                            className={`px-6 sm:px-22.5 py-3.5 rounded-md font-semibold flex-1 text-[17px] transition-all duration-200 flex justify-center items-center gap-2 sm:gap-3 shadow-md w-full sm:w-auto ${
+                            className={`w-full rounded-md px-6 py-3.5 text-[17px] font-semibold shadow-md transition-all duration-200 sm:w-auto sm:px-22.5 flex items-center justify-center gap-2 sm:gap-3 ${
                                 selectedAnswer === null || combinedProcessing
                                     ? "bg-gray-400 text-white cursor-not-allowed"
                                     : "bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white hover:shadow-lg hover:scale-102 cursor-pointer"
@@ -454,15 +455,15 @@ const FillTheGapExercise = () => {
                             Далі
                         </button>
                     </div>
-                </>
+                </div>
             ) : practicePool.length === 0 ? (
-                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
+                <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
                     <p className="text-sm sm:text-base text-gray-500">
                         Немає слів для вивчення :(
                     </p>
                 </div>
             ) : (
-                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
+                <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
                     <p className="text-sm sm:text-base text-gray-500">
                         Ви вивчили обов'язковий мінімум на сьогодні :)
                     </p>
