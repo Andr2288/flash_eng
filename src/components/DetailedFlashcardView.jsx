@@ -388,7 +388,7 @@ const DetailedFlashcardView = ({
             <div className="relative w-full">
                 
                 {!isFlipped && (
-                    <div className="absolute top-6 right-6 z-20 flex space-x-1">
+                    <div className="absolute top-3 right-3 z-20 flex space-x-1 sm:top-6 sm:right-6">
                         <button
                             type="button"
                             onClick={() => {
@@ -417,7 +417,7 @@ const DetailedFlashcardView = ({
                 )}
 
                 {!isFlipped && (
-                    <div className="absolute top-6 left-6 z-20">
+                    <div className="absolute top-3 left-3 z-20 sm:top-6 sm:left-6">
                         <span
                             className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${LEVEL_BADGE_STYLES[getNormalizedEnglishLevel(currentCard.englishLevel)]}`}
                         >
@@ -429,8 +429,14 @@ const DetailedFlashcardView = ({
 
                 
                 <div
-                    className="relative h-[400px] w-full min-w-0 overflow-hidden rounded-2xl bg-white shadow-md md:h-[458px]"
+                    className="relative h-[min(72dvh,400px)] w-full min-w-0 cursor-pointer overflow-hidden rounded-2xl bg-white shadow-md sm:h-[400px] md:h-[458px]"
                     onContextMenu={handleCardContextMenu}
+                    onClick={(event) => {
+                        if (event.target.closest("button")) {
+                            return;
+                        }
+                        handleFlip();
+                    }}
                 >
                     
                     <div
@@ -444,9 +450,9 @@ const DetailedFlashcardView = ({
                         }`}
                         aria-hidden={isFlipped}
                     >
-                        <div className="flex h-full w-full min-w-0 flex-col justify-center bg-white p-10">
+                        <div className="flex h-full w-full min-w-0 flex-col justify-center bg-white p-5 sm:p-8 md:p-10">
                             <div className="w-full min-w-0 space-y-3 text-center">
-                                <h2 className="mb-2 w-full break-words text-3xl font-bold text-gray-900">
+                                <h2 className="mb-2 w-full break-words text-2xl font-bold text-gray-900 sm:text-3xl">
                                         {currentCard.text}
                                     </h2>
 
@@ -487,8 +493,8 @@ const DetailedFlashcardView = ({
                                         </button>
                                     </div>
 
-                                <p className="text-base text-gray-500">
-                                    Натисніть Пробіл / Enter / ПКМ, щоб
+                                <p className="px-2 text-sm text-gray-500 sm:text-base">
+                                    Торкніться картки або натисніть Пробіл, щоб
                                     побачити переклад
                                 </p>
                             </div>
@@ -519,19 +525,19 @@ const DetailedFlashcardView = ({
             </div>
 
             
-            <div className="mx-auto mt-4 flex w-full min-w-0 max-w-4xl items-center justify-between">
+            <div className="mx-auto mt-4 flex w-full min-w-0 max-w-4xl items-center justify-between gap-2 sm:gap-4">
                 
                 <button
                     onClick={prevCard}
                     disabled={validCurrentIndex === 0 || isChanging}
-                    className="flex items-center space-x-2 px-5 py-3 bg-gray-500 hover:bg-gray-600 disabled:bg-gray-300 text-white rounded-lg transition-colors min-w-[140px] cursor-pointer"
+                    className="flex min-w-0 cursor-pointer items-center space-x-1 rounded-lg bg-gray-500 px-3 py-2.5 text-white transition-colors hover:bg-gray-600 disabled:bg-gray-300 sm:min-w-[140px] sm:space-x-2 sm:px-5 sm:py-3"
                 >
-                    <ChevronLeft className="w-5 h-5" />
-                    <span>Попередня</span>
+                    <ChevronLeft className="h-5 w-5 shrink-0" />
+                    <span className="hidden sm:inline">Попередня</span>
                 </button>
 
                 
-                <div className="flex space-x-1 overflow-hidden max-w-md">
+                <div className="flex min-w-0 flex-1 justify-center space-x-1 overflow-hidden px-1 sm:max-w-md sm:flex-none">
                     {updatedFlashcards.length <= 20 ? (
                         updatedFlashcards.map((_, index) => (
                             <button
@@ -551,7 +557,7 @@ const DetailedFlashcardView = ({
                                 {validCurrentIndex + 1} /{" "}
                                 {updatedFlashcards.length}{" "}
                             </span>
-                            <div className="w-80 bg-gray-300 rounded-full h-2">
+                            <div className="h-2 w-24 rounded-full bg-gray-300 sm:w-48 md:w-80">
                                 <div
                                     className="bg-blue-600 h-2 rounded-full transition-all duration-200"
                                     style={{
@@ -570,10 +576,10 @@ const DetailedFlashcardView = ({
                         validCurrentIndex === updatedFlashcards.length - 1 ||
                         isChanging
                     }
-                    className="flex items-center space-x-2 px-5 py-3 bg-gray-500 hover:bg-gray-600 disabled:bg-gray-300 text-white rounded-lg transition-colors min-w-[140px] cursor-pointer"
+                    className="flex min-w-0 cursor-pointer items-center space-x-1 rounded-lg bg-gray-500 px-3 py-2.5 text-white transition-colors hover:bg-gray-600 disabled:bg-gray-300 sm:min-w-[140px] sm:space-x-2 sm:px-5 sm:py-3"
                 >
-                    <span>Наступна</span>
-                    <ChevronRight className="w-5 h-5" />
+                    <span className="hidden sm:inline">Наступна</span>
+                    <ChevronRight className="h-5 w-5 shrink-0" />
                 </button>
             </div>
 

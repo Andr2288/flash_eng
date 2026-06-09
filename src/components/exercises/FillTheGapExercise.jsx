@@ -277,7 +277,7 @@ const FillTheGapExercise = () => {
     return (
         <ExerciseCardShell currentWord={currentWord}>
             {isLoading || exerciseState.isLoading ? (
-                <div className="flex-1 flex flex-col items-center justify-center w-full text-center py-8 sm:py-12">
+                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
                     <p className="text-sm sm:text-base text-gray-600">
                         Зачекайте, будь ласка ...
@@ -286,7 +286,7 @@ const FillTheGapExercise = () => {
             ) : updateVocabularyWordError ||
               generateSentenceCompletionError ||
               generateSpeechError ? (
-                <div className="flex-1 flex flex-col items-center justify-center w-full text-center py-8 sm:py-12 min-h-48 sm:min-h-56">
+                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6 w-full max-w-md">
                         <p className="text-red-600 font-medium text-sm sm:text-base text-center">
                             {GENERIC_ERROR_TOAST}
@@ -295,7 +295,7 @@ const FillTheGapExercise = () => {
                 </div>
             ) : exerciseState.currentSelection.length > 0 &&
               !sentenceData ? (
-                <div className="flex-1 flex flex-col items-center justify-center w-full text-center py-8 sm:py-12">
+                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
                     <p className="text-sm sm:text-base text-gray-600">
                         Зачекайте, будь ласка ...
@@ -456,13 +456,13 @@ const FillTheGapExercise = () => {
                     </div>
                 </>
             ) : practicePool.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 text-center py-8 sm:py-12">
+                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
                     <p className="text-sm sm:text-base text-gray-500">
                         Немає слів для вивчення :(
                     </p>
                 </div>
             ) : (
-                <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 text-center py-8 sm:py-12">
+                <div className="flex w-full flex-col items-center text-center py-4 sm:py-8">
                     <p className="text-sm sm:text-base text-gray-500">
                         Ви вивчили обов'язковий мінімум на сьогодні :)
                     </p>

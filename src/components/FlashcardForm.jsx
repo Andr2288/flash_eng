@@ -428,14 +428,14 @@ const FlashcardForm = ({
         <div className="fixed inset-0 bg-gradient-to-br from-gray-900/60 via-blue-900/40 to-indigo-900/60 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-hidden flex flex-col border border-gray-100">
                 
-                <div className="sticky top-0 bg-white p-8 border-b border-blue-100 rounded-t-2xl z-10 flex-shrink-0">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                                <BookOpen className="w-6 h-6 text-white" />
+                <div className="sticky top-0 z-10 shrink-0 rounded-t-2xl border-b border-blue-100 bg-white p-4 sm:p-6 md:p-8">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="flex min-w-0 items-center space-x-3 sm:space-x-4">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 sm:h-12 sm:w-12">
+                                <BookOpen className="h-5 w-5 text-white sm:h-6 sm:w-6" />
                             </div>
-                            <div>
-                                <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                            <div className="min-w-0">
+                                <h2 className="truncate text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent sm:text-2xl">
                                     {editingCard
                                         ? "Редагувати картку"
                                         : "Створити нову картку"}
@@ -457,7 +457,7 @@ const FlashcardForm = ({
                     <form
                         id="flashcard-form"
                         onSubmit={handlePrimaryAction}
-                        className="p-8 space-y-6"
+                        className="space-y-6 p-4 sm:p-6 md:p-8"
                     >
                         
                         <div>

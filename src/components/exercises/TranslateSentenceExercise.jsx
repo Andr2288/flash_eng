@@ -254,7 +254,7 @@ const TranslateSentenceExercise = () => {
     };
 
     const content = (
-        <div className="mb-4 flex-1 flex flex-col items-center justify-center w-full text-center">
+        <div className="mb-4 flex w-full flex-col items-center text-center">
             
             
             
@@ -422,13 +422,13 @@ const TranslateSentenceExercise = () => {
                     )}
                 </>
             ) : practicePool.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 py-8 sm:py-12">
+                <div className="flex w-full flex-col items-center py-4 sm:py-8">
                     <p className="text-sm sm:text-base text-gray-500">
                         Немає слів для вивчення :(
                     </p>
                 </div>
             ) : (
-                <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 py-8 sm:py-12">
+                <div className="flex w-full flex-col items-center py-4 sm:py-8">
                     <p className="text-sm sm:text-base text-gray-500">
                         Ви вивчили обов'язковий мінімум на сьогодні :)
                     </p>

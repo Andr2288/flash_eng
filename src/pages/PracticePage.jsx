@@ -151,23 +151,34 @@ const StatsSidebar = ({
 
     return (
         <>
-            {!isOpen && (
+            {isOpen && (
                 <button
+                    type="button"
+                    aria-label="Закрити статистику"
                     onClick={onToggle}
-                    className={`absolute top-4 right-7 z-20 ${toggleButtonClassName}`}
-                >
-                    <BarChart2 className="h-4 w-4" />
-                    <span className="hidden sm:inline">Статистика</span>
-                    <ChevronLeft className="h-4 w-4" />
-                </button>
+                    className="fixed inset-0 z-[15] bg-black/30 md:hidden"
+                />
+            )}
+
+            {!isOpen && (
+                <div className="sticky top-0 z-20 flex shrink-0 justify-end px-3 pb-1 pt-2 md:absolute md:right-7 md:top-4 md:p-0">
+                    <button
+                        onClick={onToggle}
+                        className={toggleButtonClassName}
+                    >
+                        <BarChart2 className="h-4 w-4" />
+                        <span className="hidden sm:inline">Статистика</span>
+                        <ChevronLeft className="h-4 w-4" />
+                    </button>
+                </div>
             )}
 
             <div
-                className={`absolute top-0 right-0 h-full z-10 transition-all duration-300 ease-in-out ${
-                    isOpen ? "w-64" : "w-0"
+                className={`fixed right-0 top-0 z-20 h-full transition-all duration-300 ease-in-out md:absolute md:z-10 ${
+                    isOpen ? "w-[min(100%,18rem)]" : "w-0"
                 } overflow-hidden`}
             >
-                <div className="w-64 h-full bg-white border-l border-gray-200 shadow-xl flex flex-col">
+                <div className="flex h-full w-[min(100vw,18rem)] flex-col border-l border-gray-200 bg-white shadow-xl">
                     <div className="flex flex-col items-center gap-3 border-b border-gray-100 px-4 pb-4 pt-5">
                         <button
                             onClick={onToggle}
@@ -631,18 +642,18 @@ const PracticePage = () => {
     };
 
     return (
-        <div className="ml-68 flex h-[100dvh] max-h-[100dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
+        <div className="ml-sidebar flex h-app-mobile min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
             {!uiState.showExercise && (
-                <div className="shrink-0 bg-white border-b border-gray-200 overflow-hidden p-8">
+                <div className="shrink-0 overflow-hidden border-b border-gray-200 bg-white p-4 sm:p-6 md:p-8">
                     <div className="mx-auto flex items-center">
                         <div className="bg-linear-to-r from-blue-600 to-purple-600 w-10 h-10 rounded-lg flex items-center justify-center mr-3 shadow-md">
                             <Target className="w-6 h-6 text-white" />
                         </div>
-                        <div>
-                            <h1 className="text-xl font-bold text-gray-900">
+                        <div className="min-w-0">
+                            <h1 className="text-lg font-bold text-gray-900 sm:text-xl">
                                 Практика ⚡
                             </h1>
-                            <p className="text-gray-600">
+                            <p className="text-sm text-gray-600 sm:text-base">
                                 Покращуйте свої навички за допомогою
                                 інтерактивних вправ
                             </p>
@@ -652,7 +663,7 @@ const PracticePage = () => {
             )}
 
             {!uiState.showExercise && (
-                <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
+                <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pt-4 pb-scroll-end [scrollbar-gutter:stable] sm:px-6 sm:pt-6 md:p-8">
                     {showVocabularyLoader ? (
                         <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col items-center justify-center gap-4 min-h-[45vh]">
                             <Loader className="w-10 h-10 animate-spin text-blue-600" />
@@ -693,7 +704,7 @@ const PracticePage = () => {
                                 </div>
                             </section>
 
-                            <div className="relative z-0 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+                            <div className="relative z-0 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
                                 {coreExercisesData.map((exercise) => {
                                     const Icon = exercise.icon;
                                     const gradingBadge =
@@ -707,7 +718,7 @@ const PracticePage = () => {
                                                     exercise.type
                                                 )
                                             }
-                                            className={`group relative bg-white rounded-2xl p-8 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-2`}
+                                            className="group relative flex cursor-pointer flex-col justify-between rounded-2xl bg-white p-5 shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-lg sm:p-6 md:p-8"
                                         >
                                             {gradingBadge ? (
                                                 <span
@@ -722,19 +733,19 @@ const PracticePage = () => {
                                                 />
 
                                                 <div
-                                                    className={`w-16 h-16 bg-linear-to-br ${exercise.color} rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300`}
+                                                    className={`mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br ${exercise.color} transition-transform duration-300 group-hover:scale-110 sm:mb-8 sm:h-16 sm:w-16`}
                                                 >
-                                                    <Icon className="w-8 h-8 text-white" />
+                                                    <Icon className="h-6 w-6 text-white sm:h-8 sm:w-8" />
                                                 </div>
 
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <h4 className="text-xl font-bold text-gray-900">
+                                                <div className="mb-2 flex items-center justify-between">
+                                                    <h4 className="text-lg font-bold text-gray-900 sm:text-xl">
                                                         {exercise.title}
                                                     </h4>
                                                     <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
                                                 </div>
 
-                                                <p className="text-gray-600 mb-6">
+                                                <p className="mb-4 text-sm text-gray-600 sm:mb-6 sm:text-base">
                                                     {exercise.description}
                                                 </p>
                                             </div>
@@ -778,13 +789,12 @@ const PracticePage = () => {
 
             {uiState.showExercise && (
                 <div
-                    className={`relative flex min-h-0 flex-1 items-center justify-center overflow-y-auto [scrollbar-gutter:stable] transition-[padding] duration-300 ease-in-out ${
+                    className={`relative flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-gutter:stable] transition-[padding] duration-300 ease-in-out ${
                         uiState.showStatsSidebar
-                            ? "py-8 pl-8 pr-[calc(2rem+16rem)]"
-                            : "p-8"
+                            ? "md:py-8 md:pl-8 md:pr-[calc(2rem+16rem)]"
+                            : "md:p-8"
                     }`}
                 >
-                    {exercise}
                     <StatsSidebar
                         isOpen={uiState.showStatsSidebar}
                         onToggle={toggleStatsSidebar}
@@ -793,6 +803,15 @@ const PracticePage = () => {
                         singleStatusMode={singleStatusMode}
                         mixedMode={mixedMode}
                     />
+                    <div
+                        className={`flex min-h-full w-full flex-col justify-center pb-scroll-end ${
+                            uiState.showStatsSidebar
+                                ? "px-4 py-2"
+                                : "px-4 py-2 sm:px-6"
+                        }`}
+                    >
+                        <div className="w-full shrink-0">{exercise}</div>
+                    </div>
                 </div>
             )}
         </div>

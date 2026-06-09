@@ -1,6 +1,63 @@
 @import "tailwindcss";
 
+:root {
+    --sidebar-width: 17rem;
+    --mobile-nav-height: 4.5rem;
+}
+
+html {
+    overflow-x: hidden;
+}
+
 body {
     font-family: "Inter", sans-serif;
     box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+@layer utilities {
+    .ml-sidebar {
+        margin-left: 0;
+    }
+
+    .pb-mobile-nav {
+        padding-bottom: calc(
+            var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px)
+        );
+    }
+
+    /* Додатковий відступ в кінці скролу над нижньою навігацією (як на профілі) */
+    .pb-scroll-end {
+        padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .h-app-mobile {
+        height: calc(
+            100dvh - var(--mobile-nav-height) -
+                env(safe-area-inset-bottom, 0px)
+        );
+        max-height: calc(
+            100dvh - var(--mobile-nav-height) -
+                env(safe-area-inset-bottom, 0px)
+        );
+    }
+
+    @media (min-width: 48rem) {
+        .ml-sidebar {
+            margin-left: var(--sidebar-width);
+        }
+
+        .pb-mobile-nav {
+            padding-bottom: 0;
+        }
+
+        .pb-scroll-end {
+            padding-bottom: 0;
+        }
+
+        .h-app-mobile {
+            height: 100dvh;
+            max-height: 100dvh;
+        }
+    }
 }

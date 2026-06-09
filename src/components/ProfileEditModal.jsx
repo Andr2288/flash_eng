@@ -189,7 +189,7 @@ function ProfileEditModal({ onClose, onSave, initialData, isLoading }) {
                 className="flex max-h-[min(92vh,720px)] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-2xl shadow-gray-900/10"
                 onClick={(e) => e.stopPropagation()}
             >
-                <header className="shrink-0 border-b border-blue-100 bg-white p-8">
+                <header className="shrink-0 border-b border-blue-100 bg-white p-4 sm:p-6 md:p-8">
                     <div className="flex items-center justify-between">
                         <div className="flex min-w-0 items-center space-x-4">
                             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-linear-to-r from-orange-500 to-red-500">

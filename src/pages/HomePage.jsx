@@ -463,7 +463,7 @@ const HomePage = () => {
     const cardsToDisplay = searchQuery.trim() ? filteredFlashcards : flashcards;
 
     return (
-        <div className="ml-68 min-h-screen min-w-0 bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
+        <div className="ml-sidebar min-h-screen min-w-0 bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
             {currentView === "categories" ? (
                 <div className="min-w-0">
                     <CategoryList
@@ -476,33 +476,33 @@ const HomePage = () => {
                     />
                 </div>
             ) : (
-                <div className="flex h-[100dvh] min-h-0 w-full min-w-0 max-h-[100dvh] flex-col overflow-hidden">
-                    <div className="z-30 min-w-0 shrink-0 border-b border-l border-gray-200 bg-white">
-                        <div className="p-8">
-                            <div className="max-w-7xl mx-auto flex justify-between items-center">
-                                <div className="flex items-center space-x-2">
+                <div className="flex h-app-mobile min-h-0 w-full min-w-0 flex-col overflow-hidden">
+                    <div className="z-30 min-w-0 shrink-0 border-b border-gray-200 bg-white md:border-l">
+                        <div className="p-4 sm:p-6 md:p-8">
+                            <div className="mx-auto flex max-w-7xl flex-col gap-4">
+                                <div className="flex min-w-0 items-start gap-2 sm:items-center">
                                     <button
                                         onClick={handleBackToCategories}
-                                        className="cursor-pointer hover:bg-blue-50 p-2 rounded-xl transition-colors"
+                                        className="cursor-pointer shrink-0 rounded-xl p-2 transition-colors hover:bg-blue-50"
                                         title="Повернутися до категорій (Esc)"
                                     >
-                                        <ArrowLeft className="w-6 h-6 text-blue-600" />
+                                        <ArrowLeft className="h-6 w-6 text-blue-600" />
                                     </button>
 
-                                    <div className="flex items-center space-x-3">
+                                    <div className="flex min-w-0 items-center space-x-3">
                                         <div
-                                            className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md"
+                                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-md"
                                             style={{
                                                 background: `linear-gradient(to right, ${getCategoryColor()}, ${getCategoryColor()}dd)`,
                                             }}
                                         >
-                                            <Folder className="w-6 h-6 text-white" />
+                                            <Folder className="h-6 w-6 text-white" />
                                         </div>
-                                        <div>
-                                            <h1 className="text-xl font-bold text-gray-900">
+                                        <div className="min-w-0">
+                                            <h1 className="truncate text-lg font-bold text-gray-900 sm:text-xl">
                                                 {getCategoryTitle()}
                                             </h1>
-                                            <p className="text-gray-600">
+                                            <p className="text-sm text-gray-600 sm:text-base">
                                                 {searchQuery.trim()
                                                     ? `${cardsToDisplay.length} з ${flashcards.length} карток (пошук)`
                                                     : `${flashcards.length} ${
@@ -531,15 +531,15 @@ const HomePage = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center space-x-4">
+                                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
                                     {flashcardViewMode === "grid" &&
                                         flashcards.length > 0 && (
                                             <form
                                                 onSubmit={handleSearchSubmit}
-                                                className="relative"
+                                                className="relative w-full sm:w-auto sm:min-w-[16rem] md:min-w-[18rem]"
                                             >
                                                 <div className="relative">
-                                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                                    <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
                                                     <input
                                                         id="search-input"
                                                         type="text"
@@ -549,8 +549,8 @@ const HomePage = () => {
                                                                 e.target.value
                                                             )
                                                         }
-                                                        placeholder="Пошук карток... (Ctrl+F)"
-                                                        className="pl-10 pr-10 py-2 w-68 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                                        placeholder="Пошук карток..."
+                                                        className="w-full rounded-lg border-2 border-gray-200 py-2 pl-10 pr-10 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                                                     />
                                                     {searchQuery && (
                                                         <button
@@ -568,23 +568,25 @@ const HomePage = () => {
                                         )}
 
                                     {flashcards.length > 0 && (
-                                        <div className="flex items-center">
-                                            <div className="flex bg-blue-50 rounded-xl p-1">
+                                        <div className="flex w-full items-center sm:w-auto">
+                                            <div className="flex w-full rounded-xl bg-blue-50 p-1 sm:w-auto">
                                                 <button
                                                     onClick={() =>
                                                         setFlashcardViewMode(
                                                             "grid"
                                                         )
                                                     }
-                                                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer ${
+                                                    className={`flex flex-1 cursor-pointer items-center justify-center space-x-2 rounded-lg px-3 py-2 transition-all duration-200 sm:flex-none sm:px-4 ${
                                                         flashcardViewMode ===
                                                         "grid"
                                                             ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm"
                                                             : "text-gray-600 hover:text-gray-900"
                                                     }`}
                                                 >
-                                                    <Grid3X3 className="w-5 h-5" />
-                                                    <span>Сітка</span>
+                                                    <Grid3X3 className="h-5 w-5 shrink-0" />
+                                                    <span className="text-sm sm:text-base">
+                                                        Сітка
+                                                    </span>
                                                 </button>
                                                 <button
                                                     onClick={() =>
@@ -592,39 +594,39 @@ const HomePage = () => {
                                                             "detailed"
                                                         )
                                                     }
-                                                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer ${
+                                                    className={`flex flex-1 cursor-pointer items-center justify-center space-x-2 rounded-lg px-3 py-2 transition-all duration-200 sm:flex-none sm:px-4 ${
                                                         flashcardViewMode ===
                                                         "detailed"
                                                             ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm"
                                                             : "text-gray-600 hover:text-gray-900"
                                                     }`}
                                                 >
-                                                    <Eye className="w-5 h-5" />
-                                                    <span>Детально</span>
+                                                    <Eye className="h-5 w-5 shrink-0" />
+                                                    <span className="text-sm sm:text-base">
+                                                        Детально
+                                                    </span>
                                                 </button>
                                             </div>
                                         </div>
                                     )}
 
-                                    <div className="flex items-center">
-                                        <button
-                                            onClick={() => setShowForm(true)}
-                                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg"
-                                            title="Створити нову картку (Ctrl + Space)"
-                                        >
-                                            <Plus className="w-5 h-5" />
-                                            <span>Нова картка</span>
-                                        </button>
-                                    </div>
+                                    <button
+                                        onClick={() => setShowForm(true)}
+                                        className="flex w-full cursor-pointer items-center justify-center space-x-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-3 text-white shadow-md transition-all duration-200 hover:from-blue-600 hover:to-blue-700 hover:shadow-lg sm:w-auto sm:px-6"
+                                        title="Створити нову картку (Ctrl + Space)"
+                                    >
+                                        <Plus className="h-5 w-5 shrink-0" />
+                                        <span>Нова картка</span>
+                                    </button>
                                 </div>
                             </div>
 
                             {searchQuery.trim() && (
-                                <div className="max-w-7xl mx-auto mt-4">
-                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
-                                        <div className="flex items-center space-x-2">
-                                            <Search className="w-5 h-5 text-blue-600" />
-                                            <span className="text-blue-800">
+                                <div className="mx-auto mt-4 max-w-7xl">
+                                    <div className="flex flex-col gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                                        <div className="flex min-w-0 items-start space-x-2 sm:items-center">
+                                            <Search className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 sm:mt-0" />
+                                            <span className="text-sm text-blue-800 sm:text-base">
                                                 {cardsToDisplay.length === 0 ? (
                                                     <>
                                                         Не знайдено карток за
@@ -680,7 +682,7 @@ const HomePage = () => {
                                         </div>
                                         <button
                                             onClick={clearSearch}
-                                            className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+                                            className="shrink-0 self-end text-sm font-medium text-blue-600 hover:text-blue-800 sm:self-auto"
                                         >
                                             Очистити
                                         </button>
@@ -690,7 +692,7 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
+                    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pt-4 pb-scroll-end [scrollbar-gutter:stable] sm:px-6 sm:pt-6 md:p-8">
                         {flashcardsLoadError ? (
                             <LoadErrorNotice />
                         ) : isLoadingFlashcards ? (
@@ -739,7 +741,7 @@ const HomePage = () => {
                                         onCardIndexChange={setCurrentCardIndex}
                                     />
                                 ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
                                         {cardsToDisplay.map((card, index) => (
                                             <div
                                                 key={card._id}

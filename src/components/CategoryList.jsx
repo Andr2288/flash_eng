@@ -248,13 +248,13 @@ const CategoryList = ({
                     }
                 }}
             >
-                <div className="px-8 py-5">
-                    <div className="flex items-center justify-between">
+                <div className="px-4 py-4 sm:px-6 sm:py-5 md:px-8">
+                    <div className="flex items-start justify-between gap-3 sm:items-center">
                         
-                        <div className="flex items-center space-x-4 flex-1">
+                        <div className="flex min-w-0 flex-1 items-center space-x-3 sm:space-x-4">
                             
                             <div
-                                className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm"
+                                className="h-10 w-10 shrink-0 rounded-xl flex items-center justify-center shadow-sm sm:h-12 sm:w-12"
                                 style={{
                                     background: `linear-gradient(135deg, ${categoryData.color}, ${categoryData.color}cc)`,
                                 }}
@@ -264,14 +264,14 @@ const CategoryList = ({
 
                             
                             <div className="flex-1 min-w-0">
-                                <div className="flex items-center space-x-3 mb-1">
-                                    <h3 className="text-lg font-bold text-gray-900 truncate">
+                                <div className="mb-1 flex items-center space-x-2 sm:space-x-3">
+                                    <h3 className="truncate text-base font-bold text-gray-900 sm:text-lg">
                                         {categoryData.name}
                                     </h3>
                                     {categoryData._id !== "all" &&
                                         categoryData._id !==
                                             "uncategorized" && (
-                                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                            <span className="hidden shrink-0 rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-500 sm:inline">
                                                 {formatDate(
                                                     categoryData.createdAt ||
                                                         categoryData.dateText
@@ -298,7 +298,7 @@ const CategoryList = ({
                             </div>
                         </div>
 
-                        <div className="flex items-center space-x-6">
+                        <div className="flex shrink-0 items-center sm:space-x-6">
                             {canEdit && (
                                 <div className="flex space-x-1">
                                     <button
@@ -347,34 +347,34 @@ const CategoryList = ({
     const sortedCategories = getSortedCategories();
 
     return (
-        <div className="flex h-[100dvh] max-h-[100dvh] min-h-0 min-w-0 flex-col overflow-hidden">
+        <div className="flex h-app-mobile min-h-0 min-w-0 flex-col overflow-hidden">
             <div className="z-20 min-w-0 shrink-0 bg-white border-b border-gray-200">
-                <div className="p-8">
-                    <div className="mx-auto flex justify-between items-center">
-                        <div className="flex flex-row items-center">
-                            <div className="bg-gradient-to-r from-blue-500 to-blue-600 w-10 h-10 text-white rounded-lg flex items-center justify-center mr-3 shadow-md">
+                <div className="p-4 sm:p-6 md:p-8">
+                    <div className="mx-auto flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div className="flex min-w-0 flex-row items-center">
+                            <div className="mr-3 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md">
                                 <Folder className="w-6 h-6" />
                             </div>
-                            <div>
-                                <h2 className="text-xl font-bold text-gray-900">
+                            <div className="min-w-0">
+                                <h2 className="text-lg font-bold text-gray-900 sm:text-xl">
                                     Категорії
                                 </h2>
-                                <p className="text-gray-600">
+                                <p className="text-sm text-gray-600 sm:text-base">
                                     Організуйте свої флешкартки по категоріях
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex items-center space-x-4">
+                        <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end md:w-auto">
                             
-                            <div className="flex items-center space-x-2">
-                                <span className="text-sm text-gray-600">
+                            <div className="flex items-center justify-between gap-2 sm:justify-start sm:space-x-2">
+                                <span className="shrink-0 text-sm text-gray-600">
                                     Сортувати:
                                 </span>
-                                <div className="flex items-center gap-0.5 rounded-lg bg-gray-100 py-0">
+                                <div className="flex flex-1 items-center justify-end gap-0.5 rounded-lg bg-gray-100 py-0 sm:flex-none">
                                     <button
                                         onClick={() => handleSortChange("date")}
-                                        className={`cursor-pointer flex items-center space-x-1 rounded-md px-3 py-3 text-sm transition-colors ${
+                                        className={`cursor-pointer flex flex-1 items-center justify-center space-x-1 rounded-md px-2 py-2.5 text-sm transition-colors sm:flex-none sm:px-3 sm:py-3 ${
                                             sortBy === "date"
                                                 ? "bg-white text-blue-600 shadow-sm"
                                                 : "text-gray-600 hover:text-gray-900"
@@ -392,7 +392,7 @@ const CategoryList = ({
                                         onClick={() =>
                                             handleSortChange("alphabet")
                                         }
-                                        className={`cursor-pointer flex items-center space-x-1 rounded-md px-3 py-3 text-sm transition-colors ${
+                                        className={`cursor-pointer flex flex-1 items-center justify-center space-x-1 rounded-md px-2 py-2.5 text-sm transition-colors sm:flex-none sm:px-3 sm:py-3 ${
                                             sortBy === "alphabet"
                                                 ? "bg-white text-blue-600 shadow-sm"
                                                 : "text-gray-600 hover:text-gray-900"
@@ -411,10 +411,10 @@ const CategoryList = ({
 
                             <button
                                 onClick={() => setShowForm(true)}
-                                className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-md hover:shadow-lg"
+                                className="cursor-pointer flex w-full items-center justify-center space-x-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-3 text-white shadow-md transition-all duration-200 hover:from-blue-600 hover:to-blue-700 hover:shadow-lg sm:w-auto sm:px-6"
                                 title="Створити нову категорію (Ctrl + Space)"
                             >
-                                <Plus className="w-5 h-5" />
+                                <Plus className="w-5 h-5 shrink-0" />
                                 <span>Нова категорія</span>
                             </button>
                         </div>
@@ -423,7 +423,7 @@ const CategoryList = ({
             </div>
 
             {isBootstrapping ? (
-                <div className="flex flex-1 flex-col items-center justify-center min-h-[45vh] gap-4 px-8">
+                <div className="flex min-h-[45vh] flex-1 flex-col items-center justify-center gap-4 px-4 sm:px-8">
                     <Loader className="w-10 h-10 animate-spin text-blue-600" />
                     <p className="text-sm text-gray-600">
                         Зачекайте, будь ласка
@@ -432,7 +432,7 @@ const CategoryList = ({
             ) : loadError ? (
                 <LoadErrorNotice className="px-8" />
             ) : (
-                <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8 sm:px-12 lg:px-16 space-y-4 [scrollbar-gutter:stable]">
+                <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 pt-4 pb-scroll-end [scrollbar-gutter:stable] sm:px-8 sm:pt-8 md:px-12 md:pb-12 md:pt-12 lg:px-16 lg:pb-16 lg:pt-16">
                     <div className="space-y-4">
                         <CategoryRow
                             categoryData={allCategoriesData}

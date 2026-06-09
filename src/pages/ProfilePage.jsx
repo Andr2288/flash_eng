@@ -202,16 +202,16 @@ const ProfilePage = () => {
 
     const profileHeader = (
         <div className="shrink-0 bg-white border-b border-gray-200">
-            <div className="p-8">
-                <div className="max-w-7xl mx-auto flex items-center">
+            <div className="p-4 sm:p-6 md:p-8">
+                <div className="mx-auto flex max-w-7xl items-center">
                     <div className="bg-linear-to-r from-orange-600 to-red-600 w-10 h-10 rounded-lg flex items-center justify-center mr-3 shadow-md">
                         <User className="w-6 h-6 text-white" />
                     </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-900">
+                    <div className="min-w-0">
+                        <h1 className="text-lg font-bold text-gray-900 sm:text-xl">
                             Профіль
                         </h1>
-                        <p className="text-gray-600">
+                        <p className="text-sm text-gray-600 sm:text-base">
                             Статистика словника та акаунту FlashEng
                         </p>
                     </div>
@@ -222,9 +222,9 @@ const ProfilePage = () => {
 
     if (authLoading || !user) {
         return (
-            <div className="ml-68 flex h-[100dvh] max-h-[100dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
+            <div className="ml-sidebar flex h-app-mobile min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
                 {profileHeader}
-                <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 [scrollbar-gutter:stable]">
+                <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pt-4 pb-scroll-end [scrollbar-gutter:stable] sm:px-6 sm:pt-6 md:p-8">
                     <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-center gap-4 py-24 min-h-[45vh]">
                         <Loader className="w-10 h-10 animate-spin text-blue-600" />
                         <p className="text-sm text-gray-600">
@@ -240,10 +240,10 @@ const ProfilePage = () => {
     const name = resolveShownName(user);
 
     return (
-        <div className="ml-68 flex h-[100dvh] max-h-[100dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
+        <div className="ml-sidebar flex h-app-mobile min-h-0 min-w-0 flex-col overflow-hidden bg-linear-to-br from-slate-100 via-blue-50 to-indigo-100">
             {profileHeader}
 
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-8 pb-12 [scrollbar-gutter:stable]">
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pt-4 pb-scroll-end [scrollbar-gutter:stable] sm:px-6 sm:pt-6 md:p-8">
                 <div className="mx-auto flex w-full max-w-7xl flex-col space-y-8">
                     <div className="shrink-0 bg-white rounded-xl shadow-md p-6">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

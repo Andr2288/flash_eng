@@ -5,7 +5,7 @@ import { vocabularyWordToDisplayCard } from "../../store/features/vocabularyWord
 
 /** Та сама ширина, що в DetailedFlashcardView на головній (max-w-4xl). */
 const EXERCISE_CARD_LAYOUT_CLASS =
-    "mx-auto w-full min-w-0 max-w-4xl shrink-0 min-h-160 sm:min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-12 pb-8";
+    "mx-auto w-full min-w-0 max-w-4xl shrink-0 flex flex-col items-stretch bg-white rounded-2xl shadow-md p-4 pb-6 sm:p-8 sm:pb-8 md:p-12";
 
 const ExerciseCardShell = ({
     currentWord,

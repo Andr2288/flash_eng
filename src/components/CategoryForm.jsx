@@ -82,7 +82,7 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
         <div className="fixed inset-0 bg-gradient-to-br from-gray-900/60 via-blue-900/40 to-indigo-900/60 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col border border-gray-100">
                 
-                <div className="sticky top-0 bg-white p-8 border-b border-blue-100 rounded-t-2xl z-10 flex-shrink-0">
+                <div className="sticky top-0 z-10 shrink-0 rounded-t-2xl border-b border-blue-100 bg-white p-4 sm:p-6 md:p-8">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center space-x-4">
                             <div
@@ -118,7 +118,7 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
 
                 
                 <div className="flex-1 overflow-y-auto bg-white">
-                    <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-6 p-4 sm:p-6 md:p-8">
                         
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -202,7 +202,7 @@ const CategoryForm = ({ isOpen, onClose, editingCategory, isLoading }) => {
                 </div>
 
                 
-                <div className="sticky bottom-0 flex-shrink-0 rounded-b-2xl border-t border-gray-100 bg-white p-8">
+                <div className="sticky bottom-0 shrink-0 rounded-b-2xl border-t border-gray-100 bg-white p-4 sm:p-6 md:p-8">
                     <div className="flex w-full flex-col-reverse gap-3 sm:flex-row">
                         <button
                             type="button"
