@@ -75,7 +75,7 @@ const ExerciseCardShell = ({
                         className="max-h-[min(60dvh,32rem)] min-h-0 overflow-y-auto custom-scrollbar sm:max-h-[min(65dvh,36rem)]"
                         defaultExpanded={true}
                         collapsible={false}
-                        showTopSection={false}
+                        showTopSection={true}
                     />
                     <p className="mt-3 hidden text-center text-xs text-gray-400 md:block">
                         ПКМ — повернутися до вправи
