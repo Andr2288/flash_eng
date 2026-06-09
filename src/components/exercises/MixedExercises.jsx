@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { TranslateSentenceExercise } from "./TranslateSentenceExercise";
@@ -24,7 +24,7 @@ const MixedExercises = () => {
 
     const prevIndexRef = useRef(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (prevIndexRef.current === null) {
             prevIndexRef.current = currentVocabularyWordIndex;
             return;
@@ -36,6 +36,8 @@ const MixedExercises = () => {
 
         updateExerciseState({
             exerciseType: pickRandomRoundExerciseType(),
+            generateNextStage: true,
+            generatedExerciseData: null,
         });
     }, [currentVocabularyWordIndex]);
 

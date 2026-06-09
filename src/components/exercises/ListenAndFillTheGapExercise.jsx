@@ -11,6 +11,7 @@ import {
 } from "../../store";
 import { matchesPracticeCategory } from "../../store/features/vocabularyWords/vocabularyWordsStateLogic.js";
 import { GENERIC_ERROR_TOAST } from "../../constants/toastMessages.js";
+import { ExerciseCardShell } from "./ExerciseCardShell.jsx";
 import { Loader, CheckCircle, XCircle, Volume2 } from "lucide-react";
 
 const ListenAndFillTheGapExercise = () => {
@@ -62,20 +63,19 @@ const ListenAndFillTheGapExercise = () => {
     );
 
     useEffect(() => {
-        if (
-            exerciseState.currentSelection.length > 0 &&
-            exerciseState.generateNextStage
-        ) {
-            const currentWord =
-                exerciseState.currentSelection[
-                    exerciseState.currentVocabularyWordIndex
-                ];
-            loadExercise(currentWord.main_parameters);
+        const currentWord =
+            exerciseState.currentSelection[
+                exerciseState.currentVocabularyWordIndex
+            ];
+
+        if (!currentWord) {
+            return;
         }
+
+        loadExercise(currentWord.main_parameters);
     }, [
         exerciseState.currentSelection,
         exerciseState.currentVocabularyWordIndex,
-        exerciseState.generateNextStage,
     ]);
 
     const loadExercise = async (vocabularyWordMainParameters) => {
@@ -286,6 +286,13 @@ const ListenAndFillTheGapExercise = () => {
         }
     };
 
+    const currentWord =
+        exerciseState.currentSelection.length > 0
+            ? exerciseState.currentSelection[
+                  exerciseState.currentVocabularyWordIndex
+              ]
+            : null;
+
     const STATUS_MAP = {
         NEW: {
             label: "Нове",
@@ -306,7 +313,7 @@ const ListenAndFillTheGapExercise = () => {
     };
 
     return (
-        <div className="w-full sm:w-2/3 min-h-160 sm:min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-12 pb-8 mx-5 sm:m-auto">
+        <ExerciseCardShell currentWord={currentWord}>
             {isLoading || exerciseState.isLoading ? (
                 <div className="flex-1 flex flex-col items-center justify-center w-full text-center py-8 sm:py-12">
                     <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
@@ -517,7 +524,7 @@ const ListenAndFillTheGapExercise = () => {
                     </p>
                 </div>
             )}
-        </div>
+        </ExerciseCardShell>
     );
 };
 

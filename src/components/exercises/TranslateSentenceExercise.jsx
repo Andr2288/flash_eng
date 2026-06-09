@@ -15,6 +15,7 @@ import { useState, useEffect, useMemo } from "react";
 
 import { Loader, Eye, Lightbulb, Volume2 } from "lucide-react";
 import { GENERIC_ERROR_TOAST } from "../../constants/toastMessages.js";
+import { ExerciseCardShell } from "./ExerciseCardShell.jsx";
 
 const TranslateSentenceExercise = () => {
     const [
@@ -165,27 +166,22 @@ const TranslateSentenceExercise = () => {
     };
 
     useEffect(() => {
-        const run = async () => {
-            if (
-                exerciseState.currentSelection.length > 0 &&
-                exerciseState.generateNextStage
-            ) {
-                const generated = await doGenerateExerciseVocabularyItem(
-                    exerciseState.currentSelection[
-                        exerciseState.currentVocabularyWordIndex
-                    ].main_parameters
-                );
+        const currentSelectionItem =
+            exerciseState.currentSelection[
+                exerciseState.currentVocabularyWordIndex
+            ];
 
-            }
-        };
+        if (!currentSelectionItem) {
+            return;
+        }
 
-        run();
+        doGenerateExerciseVocabularyItem(
+            currentSelectionItem.main_parameters
+        ).catch(() => {});
     }, [
         doGenerateExerciseVocabularyItem,
-        doTranslateWithDeepL,
         exerciseState.currentSelection,
         exerciseState.currentVocabularyWordIndex,
-        exerciseState.generateNextStage,
     ]);
 
     useEffect(() => {
@@ -230,6 +226,13 @@ const TranslateSentenceExercise = () => {
             return part;
         });
     };
+
+    const currentWord =
+        exerciseState.currentSelection.length > 0
+            ? exerciseState.currentSelection[
+                  exerciseState.currentVocabularyWordIndex
+              ]
+            : null;
 
     const STATUS_MAP = {
         NEW: {
@@ -435,8 +438,9 @@ const TranslateSentenceExercise = () => {
     );
 
     return (
-        <div className="w-full sm:w-2/3 min-h-160 sm:min-h-130 flex flex-col items-center bg-white rounded-2xl shadow-md p-12 pb-8 mx-5 sm:m-auto">
-            {content}
+        <ExerciseCardShell
+            currentWord={currentWord}
+            footer={
             <div className="self-stretch flex flex-col sm:flex-row justify-center gap-3">
                 <button
                     onClick={() => handleNextButtonClick("AGAIN")}
@@ -461,7 +465,10 @@ const TranslateSentenceExercise = () => {
                     Добре
                 </button>
             </div>
-        </div>
+            }
+        >
+            {content}
+        </ExerciseCardShell>
     );
 };
 

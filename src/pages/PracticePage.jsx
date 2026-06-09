@@ -778,7 +778,7 @@ const PracticePage = () => {
 
             {uiState.showExercise && (
                 <div
-                    className={`relative flex min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable] transition-[padding] duration-300 ease-in-out ${
+                    className={`relative flex min-h-0 flex-1 items-center justify-center overflow-y-auto [scrollbar-gutter:stable] transition-[padding] duration-300 ease-in-out ${
                         uiState.showStatsSidebar
                             ? "py-8 pl-8 pr-[calc(2rem+16rem)]"
                             : "p-8"
